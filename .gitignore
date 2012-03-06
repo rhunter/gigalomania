@@ -1,5 +1,6 @@
 _old/
 archive/
+docs/
 gfx/
 gfx_2x/
 gfxsource/
@@ -11,3 +12,15 @@ sound/
 
 *.dll
 *.lib
+*.exe
+*.opt
+*.plg
+*.suo
+*.vcproj.*
+*.vcxproj.*
+
+*.svg
+*.png
+*.ogg
+
+gpl.txt
