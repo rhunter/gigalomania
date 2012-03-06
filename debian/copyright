@@ -1,0 +1,45 @@
+This package was debianized by Mark Harman <mark.harman@ntlworld.com>
+on Fri, 29 Jul 2011 00:29:43 +0100
+
+The source is available from https://launchpad.net/gigalomania
+
+bomb.wav - from Bomb-SoundBible.com-891110113.wav, by Mike Koenig, under Creative Commons Attribution 3.0.
+
+pain1.wav - from http://opengameart.org/content/vocal-grunts, by Matthew Newman, under GPL v2 or later, or Creative Commons Attribution-ShareAlike 3.0.
+
+misc_menu_3.wav - from http://opengameart.org/content/gui-sound-effects, by Lokif, under CC0.
+
+woodbrk.wav - modified from FreeCiv, under the GPL.
+
+deadtree1_00.png - modified from http://opengameart.org/content/widelands-dead-trees, taken from Widelands, under the GPL v2.
+
+tree*_*.png and "wood" element icon - modified from http://opengameart.org/content/widelands-trees-greenland, taken from Widelands, under the GPL v2.
+
+rock*.png, log0.png and "rock" element icon - modified from http://opengameart.org/content/isometric-64x64-outside-tileset, by Yar, under Creative Commons Attribution 3.0.
+
+"lightbulb" icon - modified from Crystal_Clear_app_ktip.png - from http://commons.wikimedia.org/wiki/File:Crystal_Clear_app_ktip.png, by Everaldo Coelho and YellowIcon under the LGPL.
+
+"lab" icon - modified from Potion_icon.jpg - from http://commons.wikimedia.org/wiki/File:Potion_icon.jpg, by Tanemori, under Creative Commons Attribution 2.1 Japan.
+
+"bone" element icon - modified from femur.png - from http://opengameart.org/content/pixel-art-femur, by bart, under CC0.
+
+"gold", "silver", "red gem" element icons - modified from http://opengameart.org/content/loot, by sunburn, under Creative Commons Attribution 3.0.
+
+"bricks" element icon - modified from http://opengameart.org/content/16x16-tiles, by Ogrebane, under CC0.
+
+"moon", "leaves", "fire", "green gem" element icons - modified from http://opengameart.org/content/skill-item-and-spell-icons, by Paulius Jurgelevičius, under CC0.
+
+"star" element icon - modified from http://opengameart.org/content/star , by Écrivain, under CC0.
+
+"alien" element icon - modified from http://opengameart.org/content/faces-0, by Paulius Jurgelevičius, under CC0.
+
+The rendered building graphics use texture maps from:
+
+    * Tileable5.png, Tileable9.png, Tileable10.png - from http://opengameart.org/content/117-stone-wall-tilable-textures-in-8-themes, by p0ss, under the GPL 2.
+    * "Fence Panel" - from http://www.lovetextures.com under Creative Commons Attribution 2.0.
+    * 2010-09-04_11-56-46.jpg, 2010-09-04_08-32-36.jpg - from http://opengameart.org/content/45-high-res-ground-texture-photos, by bart, under Creative Commons Attribution 3.0.
+    * bricks2.jpg - from http://opengameart.org/content/brick-texture, by Bart K, under the GPL v2, GPL v3, and Creative Commons Attribution Share Alike 3.0.
+    * brick_seier.jpg - from http://www.flickr.com/photos/seier/4340689010/ by "seier+seier" under Creative Commons Attribution 2.0.
+    * Shingle.png - from http://opengameart.org/content/dims-enviromental-and-architectural-textures, by Dim, under Creative Commons Attribution 3.0.
+
+All source files, along with graphics and other files not listed above, are Copyright 2003-2011 Mark Harman, Fredrik Sörensson, Stephen Fish, Andreas Herzig, released under the GPL v2 or later.  See /usr/share/common-licenses/GPL-2 .

@@ -1,0 +1,82 @@
+gigalomania (0.23) maverick; urgency=low
+
+  * Trash designs wasn't working in two mouse button mode (for Windows,
+    OS X, Linux - Symbian, Maemo and Meego were unaffected).
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Sun, 19 Feb 2012 14:42:00 +0000
+
+gigalomania (0.22) maverick; urgency=low
+
+  * Fail rather than crashing if unable to find any maps for an age.
+  * Don't reset music/sound on/off choice when switching to next age or
+    island.
+  * Wasn't updating control panel GUI properly when buildings were
+    destroyed.
+  * If a building is destroyed, people in that building are now lost.
+  * Ported to Nokia smartphones running Symbian.
+  * Ported to Nokia smartphones running Maemo (N900) and Meego (N950, N9).
+  * Auto-slow: slows to slowest timerate automatically when one of your
+    sectors is attacked.
+  * Pause button on main screen, to allow pausing without pressing
+    keyboard; click anywhere to unpause.
+  * Quit button on main screen, to allow quitting without pressing
+    keyboard.
+  * Option to enable UI that works with only one mouse button (can also be
+    enabled by default with the command line option "onemousebutton").
+  * New command line option "mobile_ui", which enables the UI to work when
+    no mouse pointer present; also enlarges the UI click regions, to make
+    icons easier to click on a touchscreen.
+  * Progress bar shown on start up.
+  * In-game help text.
+  * Option to disable sound.
+  * Application icon for Windows, Linux, Maemo, Meego and Symbian.
+  * Online Help link for Symbian version.
+  * Improved documentation.
+  * Requests for confirmation before quitting a game.
+  * Significantly faster start up time.
+  * Improved input model - mouse clicks and presses now properly
+    distinguished.
+  * Better support for various widescreen and mobile resolutions.
+  * Expanded UI click region for text buttons.
+  * Various changes to UI to work better on small touchscreens.
+  * Improved lightbulb and lab icons.
+  * Made lightbulb icon easier to see against background.
+  * Reduced file sizes of some of the image files.
+  * Linux version now installs to /opt.
+  * Linux version now stores data in ~/.config/gigalomania instead of
+    ~/.gigalomania.
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Fri, 10 Feb 2012 23:12:00 +0000
+
+gigalomania (0.21) maverick; urgency=low
+
+  * Game sometimes crashed when starting an island, when playing a second
+    time or later.
+  * Fixed makefile for GCC 4.6 (Ubuntu 11.10 Oneiric).
+  * Game window is now centred when run in windowed mode.
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Mon, 16 Nov 2011 23:47:00 +0000
+
+gigalomania (0.20) maverick; urgency=low
+
+  * Assertion failure on startup if resolution less than
+    640x512 (the game will now work at this low resolution,
+    though note the graphics won't look that great).
+  * Changed height resolution from multiples of 256 to
+    multiples of 240 (more compatible with typical PC
+    resolutions).
+  * Smoother scaling, to improve graphics quality when run at
+    lower resolutions (320x240 or 640x480).
+  * Windows version now compiled with Visual Studio Express
+    2010 SP1.
+  * Windows version now uses the Visual C++ runtime DLLs,
+    instead of including them in the exe (generally safer,
+    when using 3rd party DLLs).
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Mon, 31 Oct 2011 00:15:00 +0000
+
+gigalomania (0.19) karmic; urgency=low
+
+  * First packaged release.
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Fri, 29 Jul 2011 00:29:43 +0100

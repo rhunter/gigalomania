@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Gigalomania
+Comment=2D RTS Game
+Exec=/usr/bin/gigalomania_mobile.sh
+Terminal=false
+Type=Application
+Icon=gigalomania48
+Categories=Game;
+StartupNotify=true
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Type=application/x-executable

@@ -1,0 +1,122 @@
+This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 10.04 64 bit), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+
+Linux
+=====
+
+You need to install the following libraries: SDL ( http://www.libsdl.org/ ), SDL_Image ( http://www.libsdl.org/projects/SDL_image/ ), SDL_Mixer ( http://www.libsdl.org/projects/SDL_mixer/ ).
+
+On Ubuntu and Debian, you can install the required libraries with:
+
+sudo apt-get install libsdl1.2-dev
+sudo apt-get install libsdl-image1.2-dev
+sudo apt-get install libsdl-mixer1.2-dev
+
+To compile Gigalomania, open a terminal window in the Gigalomania folder, and type: make
+
+This will produce the Gigalomania executable, which you can run with: ./gigalomania
+
+To run in fullscreen mode, run the script gigalomania_fullscreen.sh. If this doesn't run, you may need to make the file executable with:
+
+chmod 755 gigalomania_fullscreen.sh
+
+Linux installation:
+
+You can install Gigalomania by typing (still from the source directory): sudo make install
+
+This means that you can then run the game by typing gigalomania at a terminal (without being in the source directory). To run in full screen mode, type: gigalomania fullscreen
+
+It will also (at least in GNOME) add shortcuts to the menu Applications/Games/.
+
+Uninstallation can be done with: sudo make uninstall
+
+Packages can also be created using debuild.
+
+Windows
+=======
+
+You need additional files to compile this program:
+
+SDL: sdl.lib . See http://www.libsdl.org/ .
+
+SDL_image: sdl_image.lib . See http://www.libsdl.org/projects/SDL_image/ .
+
+SDL_mixer: sdl_mixer.lib . See http://www.libsdl.org/projects/SDL_mixer/ .
+
+OS X
+====
+
+To compile on OS X, you need XCode (from http://dev.apple.com/ ) and port (from http://www.macports.org/ ). You can then install the required libraries with:
+
+sudo port install libsdl
+sudo port install libsdl_image
+sudo port install libsdl_gfx
+sudo port install libsdl_mixer
+
+To build, type:
+	make
+
+And to run:
+	./gigalomania
+
+Maemo
+=====
+
+Gigalomania can be compiled on Maemo devices (e.g., Nokia N900). The method should be similar to Linux (see above). One difference is that (un)installation should be performed with the commands:
+
+sudo make install_maemo
+sudo make uninstall_maemo
+
+When running from the command line, you'll need to do:
+
+./gigalomania fullscreen onemousebutton mobile_ui
+
+to get the correct options for mobile touchscreen devices. When installed and launched from the applications menu, this should happen automatically.
+
+Meego
+=====
+
+The method should be the same as for Maemo (see above), but with the installation commands:
+
+sudo make install_meego
+sudo make uninstall_meego
+
+Symbian
+=======
+
+For Nokia Symbian smartphones, use the Qt SDK from Nokia: http://qt.nokia.com/ . Note that the distributed Symbian binary uses the images in gfx_2x rather than gfx (for faster startup - higher resolution not really needed on mobile devices), but to get this to work, you'll have to rename the folders, so that the images in "gfx_2x" are in "gfx".
+
+Important: Each Symbian application should have a unique UID. If you wish to distribute your own binaries made with this source, please obtain your own UID, and edit the gigalomania.pro file with it. In particular, the one I use for distribution is provided by Nokia only for use on the Ovi store, and must not be used elsewhere. You can obtain your own UID for free from Symbian Signed ( https://www.symbiansigned.com ).
+
+(Note that you could even use the Qt method to compile for Windows, Linux, Maemo, Meego and OS X, instead of using C++/SDL as described above, however this is untested.)
+
+Notes
+=====
+
+Version 0.22 adds support for Qt (primarily for Nokia Symbian smartphone support). Also ported to Maemo and Meego.
+
+Version 0.19 onwards supports installation on Linux rather than just running from the source folder.
+
+Version 0.18 onwards uses SDL_Mixer instead of FMOD. Windows version now compiled with Visual C++ 2010 Express Edition.
+
+Version 0.16 fixed the includes for FMOD to look in the fmodex/ folder (if you had things set up to compile with previous versions, you may need to fix the FMOD install - see the instructions above).
+
+Version 0.13 onwards requires at least SDL 1.2.10 on Linux (for current_w/current_h in SDL_VideoInfo).
+
+Version 0.11 onwards uses FMOD 4 instead of the earlier FMOD 3.x versions.
+
+Versions 0.6 and earlier compiled under Borland C++ Builder Pro 4, but support for this is now removed.
+
+Versions 0.4 and earlier used FreeImage, but this has been replaced with SDL_image.
+
+Licence
+=======
+
+Gigalomania is released under the GPL v2 or later.
+
+Please contact me if you have suggestions, bug fixes or whatever: mark dot harman at ntlworld dot com .
+
+Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
+
+More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
+
+Mark Harman 4 February 2012

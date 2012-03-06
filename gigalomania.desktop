@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Gigalomania
+Comment=2D RTS Game
+Exec=/opt/gigalomania/gigalomania
+Path=/opt/gigalomania/
+Terminal=false
+Type=Application
+Icon=gigalomania64
+Categories=Game;
+StartupNotify=true

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Gigalomania Fullscreen
+Comment=2D RTS Game (fullscreen mode)
+Exec=/opt/gigalomania/gigalomania fullscreen
+Path=/opt/gigalomania/
+Terminal=false
+Type=Application
+Icon=gigalomania64
+Categories=Game;
+StartupNotify=true
