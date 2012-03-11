@@ -68,6 +68,7 @@ void MainWindow::showExpanded()
 #else
     show();
 #endif
+    // n.b., showFullScreen() causes crash on Android?! We set fullscreen via the AndroidManifest.xml instead
 }
 
 void MainWindow::updateScene() {

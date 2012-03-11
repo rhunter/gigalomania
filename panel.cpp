@@ -38,16 +38,6 @@ void registerClick() {
     QtMobility::QFeedbackEffect::playThemeEffect(QtMobility::QFeedbackEffect::ThemeBasicButton);
 #endif
     s_guiclick->setVolume(0.125f);
-
-    // hack to avoid mouse click also clicking on another item straight away
-    /*lastmouseclick_time += 100;
-    if( mobile_ui ) {
-        // needs to be slower on Symbian!?
-        lastmouseclick_time += 500;
-    }
-    else {
-        lastmouseclick_time += 100;
-    }*/
 }
 
 PanelPage::PanelPage(int offset_x,int offset_y) {

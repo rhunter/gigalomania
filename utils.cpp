@@ -159,7 +159,7 @@ char application_name[] = "Gigalomania";
 FILE *logfile = NULL;
 
 // Maemo/Meego treated as Linux as far as paths are concerned
-#ifdef Q_OS_SYMBIAN
+#ifdef USING_QT
 char *application_path = NULL;
 char *logfilename = NULL;
 char *oldlogfilename = NULL;
@@ -181,8 +181,8 @@ char *getApplicationFilename(const char *name) {
     // not safe to use LOG here, as logfile may not have been initialised!
     //printf("getApplicationFilename: %s\n", name);
     //printf("application_path: %s\n", application_path);
-// Maemo/Meego treated as Linux as far as paths are concerned
-#ifdef Q_OS_SYMBIAN
+    // Maemo/Meego treated as Linux as far as paths are concerned
+#ifdef USING_QT
     /*int len = strlen(application_path) + 1 + strlen(name);
     char *filename = new char[len+1];
     sprintf(filename, "%s/%s", application_path, name);*/
@@ -226,7 +226,7 @@ void initLogFile() {
 
 	// first need to establish full path, and create folder if necessary
     // Maemo/Meego treated as Linux as far as paths are concerned
-#ifdef Q_OS_SYMBIAN
+#ifdef USING_QT
     QString pathQt (QDesktopServices::storageLocation (QDesktopServices::DataLocation));
     QString nativePath(QDir::toNativeSeparators(pathQt));
     application_path = new char[nativePath.length()+1];
@@ -322,6 +322,9 @@ void initLogFile() {
 #elif defined(Q_WS_MAEMO_5)
     // must be before __linux, as Maemo/Meego also defines __linux
     LOG("Platform: Maemo/Meego\n");
+#elif defined(Q_OS_ANDROID)
+        // must be before __linux, as Android also defines __linux
+        LOG("Platform: Android\n");
 #elif __linux
 	LOG("Platform: Linux\n");
 #elif defined(__APPLE__) && defined(__MACH__)

@@ -48,17 +48,17 @@ using std::stringstream;
 //---------------------------------------------------------------------------
 
 const int majorVersion = 0;
-const int minorVersion = 23;
+const int minorVersion = 24;
 
 // onemousebutton means UI can be used with one mouse button only
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5)
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
 bool onemousebutton = true;
 #else
 bool onemousebutton = false;
 #endif
 
 // mobile_ui means no mouse pointer
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5)
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
 bool mobile_ui = true;
 #else
 bool mobile_ui = false;

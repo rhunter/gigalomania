@@ -8,7 +8,10 @@ using std::string;
 #include "resources.h"
 
 //#include <QSound>
+#ifndef Q_OS_ANDROID
+// Phonon not supported on Qt Android?
 #include <phonon/MediaObject>
+#endif
 
 bool initSound();
 void updateSound();
@@ -20,8 +23,12 @@ class Sample : public TrackedObject {
 	Mix_Chunk *chunk;
     int channel;*/
 
-    //QSound *sound;
+#ifndef Q_OS_ANDROID
     Phonon::MediaObject *sound;
+#else
+    void *sound;
+#endif
+    //QSound *sound;
     string text;
 public:
     /*Sample(bool is_music, Mix_Music *music, Mix_Chunk *chunk) : is_music(is_music), music(music), chunk(chunk) {

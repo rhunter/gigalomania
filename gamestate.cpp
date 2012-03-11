@@ -138,14 +138,6 @@ bool AmmoEffect::render() const {
 	return false;
 }
 
-/*#if defined(Q_OS_SYMBIAN)
-// fades seem slower on Symbian (Nokia 5800), for some reason?
-const int fade_time_c = 500;
-const int whitefade_time_c = 500;
-#else
-const int fade_time_c = 1000;
-const int whitefade_time_c = 1000;
-#endif*/
 const int fade_time_c = 1000;
 const int whitefade_time_c = 1000;
 
