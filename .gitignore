@@ -18,6 +18,7 @@ sound/
 *.suo
 *.vcproj.*
 *.vcxproj.*
+*.sdf
 
 *.svg
 *.png
