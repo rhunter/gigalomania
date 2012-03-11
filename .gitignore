@@ -9,6 +9,8 @@ islands/
 music/
 pics/
 sound/
+Debug/
+Release/
 
 *.dll
 *.lib
