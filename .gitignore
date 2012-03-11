@@ -19,6 +19,7 @@ sound/
 *.vcproj.*
 *.vcxproj.*
 *.sdf
+*.opensdf
 
 *.svg
 *.png
