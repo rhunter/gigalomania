@@ -89,8 +89,15 @@ Important: Each Symbian application should have a unique UID. If you wish to dis
 
 (Note that you could even use the Qt method to compile for Windows, Linux, Maemo, Meego and OS X, instead of using C++/SDL as described above, however this is untested.)
 
+Source Control
+==============
+
+Since version 0.23, I've released the source online using Git. Note that I work with the auto crlf turned off (otherwise it converts all the Linux line endings into Windows format, since I develop on Windows, which messes things up for the Linux source release).
+
 Notes
 =====
+
+Version 0.23 is released online as a Git repository.
 
 Version 0.22 adds support for Qt (primarily for Nokia Symbian smartphone support). Also ported to Maemo and Meego.
 
