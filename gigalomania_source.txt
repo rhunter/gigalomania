@@ -1,4 +1,4 @@
-This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 10.04 64 bit), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 10.04 64 bit), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
 
 Linux
 =====
@@ -89,15 +89,22 @@ Important: Each Symbian application should have a unique UID. If you wish to dis
 
 (Note that you could even use the Qt method to compile for Windows, Linux, Maemo, Meego and OS X, instead of using C++/SDL as described above, however this is untested.)
 
+Android
+=======
+
+For Android devices, use Android for Qt (Necessitas): http://sourceforge.net/p/necessitas/ . Note that this is an unofficial Qt port still in alpha, but it seems to work well enough.
+
 Source Control
 ==============
 
-Since version 0.23, I've released the source online using Git. Note that I work with the auto crlf turned off (otherwise it converts all the Linux line endings into Windows format, since I develop on Windows, which messes things up for the Linux source release).
+Since version 0.23, I've released the source online using Git, at https://sourceforge.net/p/gigalomania/code . Note that I work with the auto crlf turned off (otherwise it converts all the Linux line endings into Windows format, since I develop on Windows, which messes things up for the Linux source release). If you want to work on the source, please check out the latest version from the repository.
 
-Notes
+History
 =====
 
-Version 0.23 is released online as a Git repository.
+Version 0.24 adds the Android port.
+
+Version 0.23 adds online Git repository.
 
 Version 0.22 adds support for Qt (primarily for Nokia Symbian smartphone support). Also ported to Maemo and Meego.
 
