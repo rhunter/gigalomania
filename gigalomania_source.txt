@@ -92,7 +92,7 @@ Important: Each Symbian application should have a unique UID. If you wish to dis
 Android
 =======
 
-For Android devices, use Android for Qt (Necessitas): http://sourceforge.net/p/necessitas/ . Note that this is an unofficial Qt port still in alpha, but it seems to work well enough.
+For Android devices, use Qt for Android (Necessitas): http://sourceforge.net/p/necessitas/ . Note that this is an unofficial Qt port still in alpha, but it seems to work well enough.
 
 Source Control
 ==============
