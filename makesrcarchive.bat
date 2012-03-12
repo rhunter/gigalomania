@@ -9,6 +9,7 @@ set dst="c:\temp\gigalomaniasrc"
 copy %src%\makearchive.bat %dst%
 copy %src%\makesrcarchive.bat %dst%
 copy %src%\makesymbianfolder.bat %dst%
+copy %src%\makeandroidfolder.bat %dst%
 copy %src%\gigalomania_source.txt %dst%
 copy %docsrc%\comp_gigalomania.html %dst%\readme.html
 
