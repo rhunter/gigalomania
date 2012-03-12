@@ -331,7 +331,8 @@ void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
 
 	if( enemiesPresentWithBombardment && sector->getBuilding(BUILDING_TOWER)->getHealth() <= EVACUATE_LEVEL ) {
 		// evacuate!
-		for(int i=0;i<N_BUILDINGS;i++) {
+		sector->evacuate();
+		/*for(int i=0;i<N_BUILDINGS;i++) {
 			Building *building = sector->getBuilding((Type)i);
 			if( building != NULL ) {
 				for(int j=0;j<building->getNTurrets();j++) {
@@ -342,11 +343,11 @@ void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
 		}
 		int men = sector->getAvailablePopulation();
 		if( men > 0 ) {
-			sector->getAssembledArmy()->add(10, men);
+			sector->getAssembledArmy()->add(n_epochs_c, men);
 			int n_pop = sector->getPopulation() - men;
 			sector->setPopulation(n_pop);
 		}
-		sector->getArmy(this->index)->add(sector->getAssembledArmy());
+		sector->getArmy(this->index)->add(sector->getAssembledArmy());*/
 	}
 
 	// recall army

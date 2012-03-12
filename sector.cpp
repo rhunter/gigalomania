@@ -419,8 +419,10 @@ gamestate(gamestate), sector(sector), type(type)
     //LOG("Building::Building(Sector [%d: %d, %d], Type %d)\n", sector->getPlayer(), sector->getXPos(), sector->getYPos(), type);
 	Rect2D turret_pos[max_building_turrets_c];
 
-	this->max_health = 100;
-	//this->max_health = 10;
+	if( this->type == BUILDING_TOWER )
+		this->max_health = 150;
+	else
+		this->max_health = 100;
 	this->health = this->max_health;
 	this->n_turrets = 0;
 	for(int i=0;i<max_building_turrets_c;i++) {
@@ -766,6 +768,9 @@ void Sector::createTower(int player,int population) {
 void Sector::destroyTower(bool nuked) {
 	LOG("Sector::destroyTower(%d) [%d: %d, %d]\n", nuked, player, xpos, ypos);
 	ASSERT_PLAYER(this->player);
+	if( !nuked ) {
+		this->evacuate();
+	}
 	/*delete this->buildings[BUILDING_TOWER];
 	this->buildings[BUILDING_TOWER] = NULL;*/
 	for(int i=0;i<N_BUILDINGS;i++) {
@@ -834,14 +839,16 @@ void Sector::destroyBuilding(Type building_type,bool silent) {
 			gamestate->setFlashingSquare(this->xpos, this->ypos);
 		}
 		for(int i=0;i<N_ID;i++) {
-			// n.b., we kill the open pit elements too, as the mine supersedes the open pit mine
+			/*
+			// n.b., we kill the open pit element miners too, as the mine supersedes the open pit mine
 			this->population -= this->n_miners[i];
+			*/
 			this->n_miners[i] = 0;
 		}
-		if( this->population < 0 ) {
+		/*if( this->population < 0 ) {
 			// shouldn't happen!
 			this->population = 0;
-		}
+		}*/
 	}
 	else if( building_type == BUILDING_FACTORY ) {
 		if( this->player == human_player && !silent ) {
@@ -849,11 +856,11 @@ void Sector::destroyBuilding(Type building_type,bool silent) {
 			//((PlayingGameState *)gamestate)->setFlashingSquare(this->xpos, this->ypos);
 			gamestate->setFlashingSquare(this->xpos, this->ypos);
 		}
-		this->population -= this->n_workers;
+		/*this->population -= this->n_workers;
 		if( this->population < 0 ) {
 			// shouldn't happen!
 			this->population = 0;
-		}
+		}*/
 		this->setWorkers(0); // call to also set the particle system rate
 		this->current_manufacture = NULL; // so the player can't try to set workers again!
 	}
@@ -865,11 +872,11 @@ void Sector::destroyBuilding(Type building_type,bool silent) {
 		}
 		if( this->current_design != NULL && this->current_design->getInvention()->getEpoch() > lab_epoch_c ) {
 			// for pre-lab epoch designs, we can imagine the designers can work without being in the lab...
-			this->population -= this->n_designers;
+			/*this->population -= this->n_designers;
 			if( this->population < 0 ) {
 				// shouldn't happen!
 				this->population = 0;
-			}
+			}*/
 			this->setDesigners(0);
 			this->current_design = NULL; // so the player can't try to set designers again!
 		}
@@ -1403,7 +1410,6 @@ int Sector::getStoredDefenders(int epoch) const {
 }
 
 bool Sector::useShield(Building *building,int shield) {
-	//LOG("Sector::useShield(%d,%d)\n",building,shield);
 	ASSERT_SHIELD(shield);
 	if( this->stored_shields[shield] == 0 ) {
 		if( start_epoch + shield >= factory_epoch_c )
@@ -1416,7 +1422,8 @@ bool Sector::useShield(Building *building,int shield) {
 		this->stored_shields[shield]++;
 	}
 	LOG("-> Use Shield %d on building %d type %d\n", shield, building, building->getType());
-	building->addHealth( 10 * ( shield + 1 ) );
+	//building->addHealth( 10 * ( shield + 1 ) );
+	building->addHealth( 5 * ( shield + 1 ) );
 	this->stored_shields[shield]--;
 	return true;
 }
@@ -1547,8 +1554,10 @@ void Sector::doCombat() {
 					if( building != NULL ) {
 						if( b == 0 ) {
 							building->addHealth(-1);
-                            // disable as possible performance issue on mobile devices (Symbian)
-                            //LOG("Sector [%d: %d, %d] caused some damage on building %d, type %d, %d remaining\n", player, xpos, ypos, building, building->getType(), building->getHealth());
+#ifdef _DEBUG
+                            // disable in Release mode as possible performance issue on mobile devices (Symbian)
+                            LOG("Sector [%d: %d, %d] caused some damage on building %d, type %d, %d remaining\n", player, xpos, ypos, building, building->getType(), building->getHealth());
+#endif
 							if( building->getHealth() <= 0 ) {
 								// destroy building
 								/*delete building;
@@ -2463,6 +2472,25 @@ bool Sector::moveArmy(int a_player, Army *army) {
 	}
 
 	return moved_all;
+}
+
+void Sector::evacuate() {
+	for(int i=0;i<N_BUILDINGS;i++) {
+		Building *building = this->getBuilding((Type)i);
+		if( building != NULL ) {
+			for(int j=0;j<building->getNTurrets();j++) {
+				if( building->getTurretMan(j) != -1 )
+					this->returnDefender(building, j);
+			}
+		}
+	}
+	int men = this->getAvailablePopulation();
+	if( men > 0 ) {
+		this->getAssembledArmy()->add(n_epochs_c, men);
+		int n_pop = this->getPopulation() - men;
+		this->setPopulation(n_pop);
+	}
+	this->getArmy(this->getPlayer())->add(this->getAssembledArmy());
 }
 
 void Sector::printDebugInfo() const {
@@ -5839,4 +5867,3 @@ bool Design::setupDesigns() {
 
 	return true;
 }
-

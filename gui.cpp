@@ -1302,14 +1302,17 @@ void GamePanel::draw() {
 			if( gamestate->getCurrentSector()->getBuilding((Type)i) != NULL ) {
 				int width = building_health->getScaledWidth();
 				int health = gamestate->getCurrentSector()->getBuilding((Type)i)->getHealth();
+				int max_health = gamestate->getCurrentSector()->getBuilding((Type)i)->getMaxHealth();
+				//health = 50;
+				//max_health = 60;
 				int offx = offset_panel_x_c + 24;
 				/*rect.x = (short)(scale_width * ( offset_panel_x_c + 24 ));
 				rect.y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
 				rect.w = (short)(( scale_width * health ) * 0.6);
 				rect.h = (short)(scale_height * 4);*/
-				short x = (short)(scale_width * offx + ( scale_width * health * width ) / 100.0);
+				short x = (short)(scale_width * offx + ( scale_width * health * width ) / (float)max_health);
 				short y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
-				short w = (short)ceil(( scale_width * (100 - health) * width ) / 100.0);
+				short w = (short)ceil(( scale_width * (max_health - health) * width ) / (float)max_health);
 				short h = (short)(scale_height * 5);
 				building_health->draw(offx, (int)(y/scale_height), true);
 				screen->fillRect(x, y, w, h, 0, 0, 0);

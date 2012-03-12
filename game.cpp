@@ -1574,9 +1574,7 @@ bool loadImages() {
 		for(int i=0;i<3;i++)
 			icon_speeds[i] = icons->copy(272 + 16*i, 192, 16, 16); // different location and size
 
-		//building_health = icons->copy(0, 192, 41, 5); // original version for my gfx
-		building_health = icons->copy(0, 192, 48, 16);
-		dash_grey = icons->copy(144, 112, 5, 2); // original version for my gfx
+		building_health = icons->copy(0, 192, 38, 16);
 		dash_grey = icons->copy(144, 112, 16, 16);
 
 		icon_shield = icons->copy(0, 64, 16, 16);
@@ -3373,7 +3371,7 @@ void playGame(int n_args, char *args[]) {
 		SetConsoleTitleA("DEBUG:");
 	}
 	else {
-		FreeConsole(); // get rid of Visual Studio startup window
+		//FreeConsole(); // get rid of Visual Studio startup window
 	}
 #endif
 

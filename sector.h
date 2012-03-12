@@ -473,6 +473,7 @@ public:
 	void returnArmy();
 	void returnArmy(Army *army);
 	bool moveArmy(int player, Army *army);
+	void evacuate();
 
 	//void doAIUpdate();
 
