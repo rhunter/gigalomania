@@ -885,6 +885,12 @@ void Sector::destroyBuilding(Type building_type,bool silent) {
 		ASSERT(0);
 	}
 
+	// also return defenders
+	for(int j=0;j<this->buildings[(int)building_type]->getNTurrets();j++) {
+		if( this->buildings[(int)building_type]->getTurretMan(j) != -1 )
+			this->returnDefender(this->buildings[(int)building_type], j);
+	}
+
 	delete this->buildings[(int)building_type];
 	this->buildings[(int)building_type] = NULL;
 	this->built[(int)building_type] = 0;
@@ -2313,13 +2319,12 @@ int Sector::getPopulation() const {
 
 int Sector::getSparePopulation() const {
 	//LOG("Sector::getSparePopulation()\n");
-	int i;
 	int n_spare = this->population;
 	n_spare -= this->n_designers;
 	n_spare -= this->n_workers;
-	for(i=0;i<N_ID;i++)
+	for(int i=0;i<N_ID;i++)
 		n_spare -= this->n_miners[i];
-	for(i=0;i<N_BUILDINGS;i++)
+	for(int i=0;i<N_BUILDINGS;i++)
 		n_spare -= this->n_builders[i];
 	ASSERT( n_spare >= 0 );
 	ASSERT( n_spare <= this->population );
@@ -2483,13 +2488,28 @@ void Sector::evacuate() {
 					this->returnDefender(building, j);
 			}
 		}
+		this->setBuilders((Type)i, 0);
 	}
+	this->setDesigners(0);
+	this->setWorkers(0);
+	for(int i=0;i<N_ID;i++) {
+		this->n_miners[i] = 0;
+	}
+
+	for(int i=n_epochs_c-1;i>=start_epoch;i--) {
+		if( i == nuclear_epoch_c )
+			continue;
+		while( this->assembleArmy(i, 1) ) {
+		}
+	}
+
 	int men = this->getAvailablePopulation();
 	if( men > 0 ) {
 		this->getAssembledArmy()->add(n_epochs_c, men);
 		int n_pop = this->getPopulation() - men;
 		this->setPopulation(n_pop);
 	}
+
 	this->getArmy(this->getPlayer())->add(this->getAssembledArmy());
 }
 

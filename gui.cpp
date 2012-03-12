@@ -1386,12 +1386,14 @@ void GamePanel::draw() {
 			int n_elements = 0, fraction = 0;
 			gamestate->getCurrentSector()->getElementStocks(&n_elements, &fraction, element);
 			int off = 0;
+			//int ypos = offset_panel_y_c + 38 + 28 * i;
+			int ypos = offset_panel_y_c + 40 + 28 * i;
 			if( n_elements > 0 ) {
-				Image::writeNumbers(offset_panel_x_c + 72, offset_panel_y_c + 38 + 28 * i, numbers_blue, n_elements, Image::JUSTIFY_LEFT, true);
+				Image::writeNumbers(offset_panel_x_c + 72, ypos, numbers_blue, n_elements, Image::JUSTIFY_LEFT, true);
 				off += 8 * n_digits(n_elements);
 			}
 			if( fraction == 1 ) {
-				numbers_half->draw(offset_panel_x_c + 72 + off, offset_panel_y_c + 38 + 28 * i, true);
+				numbers_half->draw(offset_panel_x_c + 72 + off, ypos, true);
 			}
 			/*if( n_elements > 0 || fraction > 0 ) {
 			Image::writeNumbers(offset_panel_x_c + 72, offset_panel_y_c + 38 + 28*i, numbers_grey, n_elements, Image::JUSTIFY_CENTRE, true);
