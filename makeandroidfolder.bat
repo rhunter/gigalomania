@@ -51,8 +51,8 @@ copy %src%\qt_sound.h %dst%
 
 REM Android specific files:
 
-mkdir %dst%\android\
-copy %src%\android\ %dst%\android\
+mkdir %dst%\android
+xcopy %src%\android %dst%\android /E /Y
 
 REM also copy data folders, as Linux users won't have downloaded the Windows binary archive!
 
