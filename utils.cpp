@@ -347,7 +347,10 @@ bool log(const char *text,...) {
 		fprintf(logfile,buffer);
 	if( debugwindow )
 		printf(buffer);
-	va_end(vlist);
+#ifdef USING_QT
+        qDebug(buffer);
+#endif
+        va_end(vlist);
 	if( logfile != NULL )
 		fclose(logfile);
 	return true;

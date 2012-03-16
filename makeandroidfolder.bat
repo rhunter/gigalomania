@@ -10,6 +10,8 @@ REM Qt stuff:
 copy %src%\gigalomania.pro %dst%
 copy %src%\deployment.pri %dst%
 copy %src%\gigalomania.qrc %dst%
+copy %src%\gigalomania64.png %dst%
+copy %src%\gigalomania48.png %dst%
 
 REM General:
 
@@ -62,6 +64,10 @@ copy %src%\islands\ %dst%\islands\
 mkdir %dst%\gfx
 copy %src%\gfx\ %dst%\gfx\
 REM copy %src%\gfx_2x\ %dst%\gfx\
+
+REM faff for jpgs not supported!
+copy %src%\gfx_android_extras %dst%\gfx\
+del %dst%\gfx\*.jpg
 
 mkdir %dst%\sound
 copy %src%\sound\ %dst%\sound\

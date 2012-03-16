@@ -101,6 +101,10 @@ REM used by Symbian deployment, though has to replace gfx/ manually
 mkdir %dst%\gfx_2x
 copy %src%\gfx_2x\ %dst%\gfx_2x\
 
+REM used by Android, though has to replace gfx/ manually
+mkdir %dst%\gfx_android_extras
+copy %src%\gfx_android_extras\ %dst%\gfx_android_extras\
+
 mkdir %dst%\sound
 copy %src%\sound\ %dst%\sound\
 
@@ -109,5 +113,8 @@ copy %src%\debian\ %dst%\debian\
 
 mkdir %dst%\debian_maemo
 copy %src%\debian_maemo\ %dst%\debian_maemo\
+
+mkdir %dst%\android
+xcopy %src%\android %dst%\android /E /Y
 
 REM exit

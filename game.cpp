@@ -1247,8 +1247,13 @@ bool loadImages() {
 	// progress should go from 0 to 80%
 	bool using_new_graphics = true;
 	string gfx_dir = "gfx/";
-	//player_select = Image::loadImage("gfx/player_select.jpg");
-	player_select = Image::loadImage(gfx_dir + "player_select.jpg");
+
+#if defined(Q_OS_ANDROID)
+        player_select = Image::loadImage(gfx_dir + "player_select.png");
+#else
+        player_select = Image::loadImage(gfx_dir + "player_select.jpg");
+#endif
+
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
 #ifdef __linux
@@ -1283,8 +1288,12 @@ bool loadImages() {
 	processImage(player_select);
 
 	if( using_new_graphics )
-		background = Image::loadImage(gfx_dir + "starfield.jpg");
-	else {
+#if defined(Q_OS_ANDROID)
+            background = Image::loadImage(gfx_dir + "starfield.png");
+#else
+            background = Image::loadImage(gfx_dir + "starfield.jpg");
+#endif
+        else {
 		background = Image::loadImage("data/mlm_starfield");
 		original_background = true;
 	}
@@ -2343,9 +2352,14 @@ bool loadImages() {
 	}
 	drawProgress(70);
 
-	if( using_new_graphics )
-		background_islands = Image::loadImage(gfx_dir + "sunrise.jpg");
-	else
+        if( using_new_graphics ) {
+#if defined(Q_OS_ANDROID)
+            background_islands = Image::loadImage(gfx_dir + "sunrise.png");
+#else
+            background_islands = Image::loadImage(gfx_dir + "sunrise.jpg");
+#endif
+        }
+        else
 		background_islands = Image::loadImage("data/mlm_sunrise");
 	if( background_islands == NULL )
 		return false;
@@ -2547,11 +2561,15 @@ bool openScreen(bool fullscreen) {
 			scale_width = 2.5f;
 			LOG("scale width 2.5x\n");
 		}
-		else if( user_width >= 2*default_width_c ) {
-			scale_width = 2.0f;
-			LOG("scale width 2x\n");
-		}
-		else if( user_width >= default_width_c ) {
+                else if( user_width >= 2*default_width_c ) {
+                        scale_width = 2.0f;
+                        LOG("scale width 2x\n");
+                }
+                else if( user_width >= 1.5*default_width_c ) {
+                        scale_width = 1.5f;
+                        LOG("scale width 1.5x\n");
+                }
+                else if( user_width >= default_width_c ) {
 			scale_width = 1.0f;
 			LOG("scale width 1x\n");
 		}
@@ -2560,18 +2578,30 @@ bool openScreen(bool fullscreen) {
 			return false;
 		}
 
-		if( user_height >= 4*default_height_c ) {
-			scale_height = 4.0f;
-			LOG("scale height 4x\n");
-		}
-        else if( user_height >= 2*default_height_c ) {
-            scale_height = 2.0f;
-            LOG("scale height 2x\n");
-        }
-        else if( user_height >= 1.5*default_height_c ) {
-            scale_height = 1.5f;
-            LOG("scale height 1.5x\n");
-        }
+                if( user_height >= 4*default_height_c ) {
+                        scale_height = 4.0f;
+                        LOG("scale height 4x\n");
+                }
+                if( user_height >= 3*default_height_c ) {
+                        scale_height = 3.0f;
+                        LOG("scale height 3x\n");
+                }
+                else if( user_height >= 2.5f*default_height_c ) {
+                    scale_height = 2.5f;
+                    LOG("scale height 2.5x\n");
+                }
+                else if( user_height >= 2*default_height_c ) {
+                    scale_height = 2.0f;
+                    LOG("scale height 2x\n");
+                }
+                else if( user_height >= 1.5*default_height_c ) {
+                    scale_height = 1.5f;
+                    LOG("scale height 1.5x\n");
+                }
+                else if( user_height >= (4.0f/3.0f)*default_height_c ) {
+                    scale_height = (4.0f/3.0f);
+                    LOG("scale height 4/3x\n");
+                }
         else if( user_height >= default_height_c ) {
 			scale_height = 1.0f;
 			LOG("scale height 1x\n");

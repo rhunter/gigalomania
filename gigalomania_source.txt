@@ -83,7 +83,11 @@ sudo make uninstall_meego
 Symbian
 =======
 
-For Nokia Symbian smartphones, use the Qt SDK from Nokia: http://qt.nokia.com/ . Note that the distributed Symbian binary uses the images in gfx_2x rather than gfx (for faster startup - higher resolution not really needed on mobile devices), but to get this to work, you'll have to rename the folders, so that the images in "gfx_2x" are in "gfx".
+For Nokia Symbian smartphones, use the Qt SDK from Nokia: http://qt.nokia.com/ . Note that the distributed Symbian binary uses the images in gfx_2x rather than gfx (for faster startup - higher resolution not really needed on Symbian devices which have maximum resolution 640x480), but to get this to work, you'll have to rename the folders, so that the images in "gfx_2x" are in "gfx".
+
+On Windows, you can use the makesymbianfolder.bat script to create a folder for Symbian development, which uses the gfx_2x files.
+
+The official Symbian release is built using Qt 4.7.3, to ensure compatibility with S60 5th edition (Symbian^1) - 4.7.4 is only compatible with Symbian^3 onwards.
 
 Important: Each Symbian application should have a unique UID. If you wish to distribute your own binaries made with this source, please obtain your own UID, and edit the gigalomania.pro file with it. In particular, the one I use for distribution is provided by Nokia only for use on the Ovi store, and must not be used elsewhere. You can obtain your own UID for free from Symbian Signed ( https://www.symbiansigned.com ).
 
@@ -93,6 +97,12 @@ Android
 =======
 
 For Android devices, use Qt for Android (Necessitas): http://sourceforge.net/p/necessitas/ . Note that this is an unofficial Qt port still in alpha, but it seems to work well enough.
+
+Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/ .
+
+On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development, which also replaces the jpg images with the pngs from gfx_android_extras/.
+
+The official Android release is built using Qt 4.8, for armv5, again Android API 7.
 
 Source Control
 ==============
@@ -133,4 +143,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 11 March 2012
+Mark Harman 16 March 2012
