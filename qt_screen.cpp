@@ -19,7 +19,12 @@ bool Screen::canOpenFullscreen(int width, int height) {
 }
 
 bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
+    // n.b., fullscreen ignored for Qt
     mainWindow.setOrientation(MainWindow::ScreenOrientationLockLandscape);
+    mainWindow.setFixedSize(screen_width, screen_height);
+    int desktop_width = QApplication::desktop()->width();
+    int desktop_height = QApplication::desktop()->height();
+    mainWindow.move( (desktop_width - screen_width)/2, (desktop_height - screen_height)/2 );
     mainWindow.showExpanded();
     pixmap = QPixmap(screen_width, screen_height);
     return true;
