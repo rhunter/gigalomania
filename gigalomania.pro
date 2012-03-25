@@ -10,7 +10,7 @@
 # UID from Symbian Signed:
 #symbian:TARGET.UID3 = 0xA00131BD
 # Nokia UID for use only on Ovi Store! Not to be used anywhere else:
-symbian:TARGET.UID3 = 0x200353ef
+symbian:TARGET.UID3 = 0x2005fff6
 
 VERSION = 0.24
 
