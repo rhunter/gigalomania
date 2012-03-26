@@ -11,8 +11,6 @@ pics/
 sound/
 Debug/
 Release/
-android/res/
-android/src/
 
 *.dll
 *.lib
