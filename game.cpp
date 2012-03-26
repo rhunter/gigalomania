@@ -3382,6 +3382,8 @@ void playGame(int n_args, char *args[]) {
 	//fullscreen = true;
 #endif
 
+#if !defined(Q_OS_ANDROID)
+        // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
 	for(int i=0;i<n_args;i++) {
 		if( strcmp(args[i], "fullscreen") == 0 )
 			fullscreen = true;
@@ -3392,6 +3394,8 @@ void playGame(int n_args, char *args[]) {
 		else if( strcmp(args[i], "mobile_ui") == 0 )
 			mobile_ui = true;
 	}
+#endif
+
 #ifdef _WIN32
 	if( debugwindow ) {
 		AllocConsole();
