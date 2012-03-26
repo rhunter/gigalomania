@@ -7,6 +7,8 @@ using std::string;
 
 #include "resources.h"
 
+#include <QtGlobal> // need this to get Q_OS_ANDROID #define, which we need before we include anything else!
+
 //#include <QSound>
 #ifndef Q_OS_ANDROID
 // Phonon not supported on Qt Android?
