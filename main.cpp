@@ -48,6 +48,7 @@ bool MyApplication::event(QEvent *event) {
 int main(int argc, char *argv[])
 {
 #ifdef USING_QT
+    qDebug("Hello!");
     MyApplication app(argc, argv);
 #endif
 
