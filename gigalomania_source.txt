@@ -102,7 +102,7 @@ Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have
 
 On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development, which also replaces the jpg images with the pngs from gfx_android_extras/.
 
-The official Android release is built using Qt 4.8, for armv5, again Android API 7.
+The official Android release is built using Qt 4.8, for armv5, using Android API 7.
 
 Source Control
 ==============
