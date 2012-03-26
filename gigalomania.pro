@@ -35,11 +35,11 @@ symbian {
 # If your application uses the Qt Mobility libraries, uncomment
 # the following lines and add the respective components to the 
 # MOBILITY variable. 
-CONFIG += mobility
 android {
     # feedback and phonon not supported on Android
 }
 else {
+    CONFIG += mobility
     MOBILITY += feedback
     QT += phonon
 }
