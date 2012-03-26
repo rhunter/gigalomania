@@ -98,9 +98,9 @@ Android
 
 For Android devices, use Qt for Android (Necessitas): http://sourceforge.net/p/necessitas/ . Note that this is an unofficial Qt port still in alpha, but it seems to work well enough.
 
-Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/ .
+Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/ , and replace gigalomania.qrc with gigalomania_android.qrc (i.e., copy/renaming the file). You'll also have to rename the folders, so that the images in "gfx_2x" are in "gfx" (whilst theoretically higher resolution Android phones could justify the higher resolution graphics, this also means slower startup time; also to use the full size gfx, the files in gfx_android_extras have to be increased in size too).
 
-On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development, which also replaces the jpg images with the pngs from gfx_android_extras/.
+On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development, which also replaces the jpg images with the pngs from gfx_android_extras/ , replaces the gigalomania.qrc file, and uses the gfx_2x files.
 
 The official Android release is built using Qt 4.8, for armv5, using Android API 7.
 
@@ -143,4 +143,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 16 March 2012
+Mark Harman 26 March 2012
