@@ -37,6 +37,7 @@ REM Qt stuff:
 copy %src%\gigalomania.pro %dst%
 copy %src%\deployment.pri %dst%
 copy %src%\gigalomania.qrc %dst%
+copy %src%\gigalomania_android.qrc %dst%
 copy %src%\gigalomania.svg %dst%
 
 REM Not really needed, but just to have backup of the source for gigalomania.svg:
