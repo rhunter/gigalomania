@@ -62,12 +62,14 @@ mkdir %dst%\islands\
 copy %src%\islands\ %dst%\islands\
 
 mkdir %dst%\gfx
-copy %src%\gfx\ %dst%\gfx\
-REM copy %src%\gfx_2x\ %dst%\gfx\
+REM copy %src%\gfx\ %dst%\gfx\
+copy %src%\gfx_2x\ %dst%\gfx\
 
 REM faff for jpgs not supported!
 copy %src%\gfx_android_extras %dst%\gfx\
 del %dst%\gfx\*.jpg
+del %dst%\gigalomania.qrc
+copy %src%\gigalomania_android.qrc %dst%\gigalomania.qrc
 
 mkdir %dst%\sound
 copy %src%\sound\ %dst%\sound\
