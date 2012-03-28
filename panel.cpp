@@ -76,7 +76,6 @@ void PanelPage::init_panelpage() {
 	this->w = 0;
 	this->h = 0;
 	this->tolerance = mobile_ui ? 2 : 0;
-	//this->tolerance = 2;
 	this->enabled = true;
 	this->children = new vector<PanelPage *>();
 	this->popup_item = false;
@@ -415,7 +414,9 @@ Button::Button(int x,int y,const char *text,Image *font[]) : PanelPage(x, y) {
 	this->font = font;
 	this->w = font[0]->getScaledWidth() * this->text.length();
 	this->h = font[0]->getScaledHeight();
-	this->tolerance *= 2;
+	if( mobile_ui ) {
+		this->tolerance += 4;
+	}
 }
 
 Button::~Button() {
