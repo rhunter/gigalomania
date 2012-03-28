@@ -28,14 +28,19 @@ const int offset_map_y_c = 16;
 
 const int offset_land_x_c = 96;
 const int offset_land_y_c = 50;
+//const int offset_land_y_c = 34;
 
-const int quit_button_offset_c = 16;
+// mustn't be too low, otherwise difficult to touch on Android (Galaxy Nexus)
+//const int quit_button_offset_c = 16;
+const int quit_button_offset_c = 24;
 
 const int offset_openpitmine_x_c = 32;
 const int offset_openpitmine_y_c = 32;
 
-const int land_width_c =  300 - offset_land_x_c;
-const int land_height_c = 210 - offset_land_y_c;
+/*const int land_width_c =  300 - offset_land_x_c;
+const int land_height_c = 210 - offset_land_y_c;*/
+const int land_width_c =  204;
+const int land_height_c = 160;
 
 //const int max_soldiers_in_sector_c = 1000;
 
