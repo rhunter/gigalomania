@@ -117,6 +117,9 @@ public:
 	int getHeight() const {
 		return this->h;
 	}
+	void setTolerance(int tolerance) {
+		this->tolerance = tolerance;
+	}
 
 	virtual void free(bool free_this);
 	virtual void draw();
@@ -149,6 +152,7 @@ public:
 	ImageButton(int x,int y,const Image *image);
 	ImageButton(int x,int y,const Image *image,const char *infoLMB);
 	ImageButton(int x,int y,int w,int h,const Image *image);
+	ImageButton(int x,int y,int w,int h,const Image *image,const char *infoLMB);
 	virtual ~ImageButton();
 
 	void setImage(const Image *image) {

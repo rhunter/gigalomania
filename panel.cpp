@@ -476,6 +476,15 @@ ImageButton::ImageButton(int x,int y,int w, int h,const Image *image) : PanelPag
 	this->h = h;
 }
 
+ImageButton::ImageButton(int x,int y,int w, int h,const Image *image,const char *infoLMB) : PanelPage(x, y, infoLMB) {
+	ASSERT(image != NULL);
+	this->image = image;
+    /*this->has_alpha = false;
+    this->alpha = 255;*/
+    this->w = w;
+	this->h = h;
+}
+
 ImageButton::~ImageButton() {
 }
 
