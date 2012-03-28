@@ -942,6 +942,7 @@ void PlayingGameState::setupMapGUI() {
 					int map_x = offset_map_x_c + 16 * x;
 					int map_y = offset_map_y_c + 16 * y;
 					PanelPage *panel = new PanelPage(map_x, map_y, 16, 16);
+					panel->setTolerance(0); // since map sectors are aligned, better for touchscreens not to use the "tolerance"
 					panel->setInfoLMB("view this sector");
 					screen_page->add(panel);
 					//map->panels[x][y] = panel;
