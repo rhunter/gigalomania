@@ -178,9 +178,14 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_help);
 #endif
+#if defined(Q_OS_ANDROID)
+	// Applications don't quit on Android
+	this->button_quit = NULL;
+#else
     this->button_quit = new Button((int)(mx - 2.0*fw), cy, "QUIT", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_quit);
+#endif
 
     //this->button_nmen = new PanelPage(mx - 12, 154, 24, 12);
     this->button_nmen = new PanelPage(mx - 12, 154, 24, 32);
@@ -434,7 +439,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
             QDesktopServices::openUrl(QUrl("http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html"));
         }
 #endif
-        else if( m_left && click && this->button_quit->mouseOver(m_x, m_y) ) {
+        else if( m_left && click && this->button_quit != NULL && this->button_quit->mouseOver(m_x, m_y) ) {
             done = true;
             //quitGame();
             gamestate->requestQuit();
@@ -726,7 +731,7 @@ void GamePanel::setup() {
 	xpos += step_x;
 
 	// SHIELD
-	this->button_bigshield = new ImageButton(33, 0, panel_bigshield, "return to main screen");
+	this->button_bigshield = new ImageButton(33, 0, 32, 16, panel_bigshield, "return to main screen");
 	this->addToPanel(STATE_SHIELD, button_bigshield);
 	for(int i=0;i<n_sub_epochs;i++) {
 		this->button_deploy_shields[i] = new ImageButton(28 + 22*i, 24, icon_shields[i]);
@@ -737,7 +742,7 @@ void GamePanel::setup() {
 	this->addToPanel(STATE_SHIELD, button_shutdown);
 
 	// DEFENCE
-	this->button_bigdefence = new ImageButton(33, 0, panel_bigdefence, "return to main screen");
+	this->button_bigdefence = new ImageButton(33, 0, 32, 16, panel_bigdefence, "return to main screen");
 	this->addToPanel(STATE_DEFENCE, button_bigdefence);
 	for(int i=0;i<n_sub_epochs;i++) {
 		this->button_deploy_defences[i] = new ImageButton(28 + 22*i, 24, numbered_defences[start_epoch + i]);
@@ -747,7 +752,7 @@ void GamePanel::setup() {
 	}
 
 	// ATTACK
-	this->button_bigattack = new ImageButton(33, 0, panel_bigattack, "return to main screen");
+	this->button_bigattack = new ImageButton(33, 0, 32, 16, panel_bigattack, "return to main screen");
 	this->addToPanel(STATE_ATTACK, button_bigattack);
 	this->button_deploy_unarmedmen = new ImageButton(offset_attack_x_c, 24, 16, 28, unarmed_man);
 	//this->button_deploy_unarmedmen = new ImageButton(offset_attack_x_c, 24, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
@@ -764,7 +769,7 @@ void GamePanel::setup() {
 	this->addToPanel(STATE_ATTACK, button_return_attackers);
 
 	// DESIGN
-	this->button_bigdesign = new ImageButton(33, 0, panel_bigdesign, "return to main screen");
+	this->button_bigdesign = new ImageButton(33, 0, 32, 16, panel_bigdesign, "return to main screen");
 	this->addToPanel(STATE_DESIGN, button_bigdesign);
 	this->button_designers = new ImageButton(40, 16, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	if( onemousebutton ) {
@@ -792,7 +797,7 @@ void GamePanel::setup() {
 	}
 
 	// ELEMENTSTOCKS
-	this->button_bigelementstocks = new ImageButton(33, 0, mine_gatherable_large, "return to main screen");
+	this->button_bigelementstocks = new ImageButton(33, 0, 32, 16, mine_gatherable_large, "return to main screen");
 	this->addToPanel(STATE_ELEMENTSTOCKS, button_bigelementstocks);
 	for(int i=0;i<4;i++) {
 		if( this->element_index[i] == -1 ) {
@@ -819,7 +824,7 @@ void GamePanel::setup() {
 	}
 
 	// BUILD
-	this->button_bigbuild = new ImageButton(33, 0, panel_bigbuild, "return to main screen");
+	this->button_bigbuild = new ImageButton(33, 0, 32, 16, panel_bigbuild, "return to main screen");
 	this->addToPanel(STATE_BUILD, button_bigbuild);
 	for(int i=0;i<N_BUILDINGS;i++)
 		this->button_nbuilders2[i] = NULL;
@@ -852,7 +857,7 @@ void GamePanel::setup() {
 	this->addToPanel(STATE_BUILD, button_nbuilders2[BUILDING_LAB]);
 
 	// KNOWNDESIGNS
-	this->button_bigknowndesigns = new ImageButton(33, 0, panel_bigknowndesigns, "return to main screen");
+	this->button_bigknowndesigns = new ImageButton(33, 0, 32, 16, panel_bigknowndesigns, "return to main screen");
 	this->addToPanel(STATE_KNOWNDESIGNS, button_bigknowndesigns);
 	for(int i=0;i<n_sub_epochs;i++) {
         //int this_y = 40 + i*16;
@@ -884,7 +889,7 @@ void GamePanel::setup() {
 	this->addToPanel(STATE_DESIGNINFO, button_trashdesign);
 
 	// FACTORY
-	this->button_bigfactory = new ImageButton(33, 0, panel_bigfactory, "return to main screen");
+	this->button_bigfactory = new ImageButton(33, 0, 32, 16, panel_bigfactory, "return to main screen");
 	this->addToPanel(STATE_FACTORY, button_bigfactory);
 	//this->button_workers = new ImageButton(40, 16, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	this->button_workers = new ImageButton(40, 14, 16, 26, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
