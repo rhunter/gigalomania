@@ -249,6 +249,7 @@ GameState::GameState() {
 	//this->effects = new Vector();
 	//this->effects = new vector<TimedEffect *>();
 	this->screen_page = new PanelPage(0, 0);
+	this->screen_page->setTolerance(0);
 	this->mobile_ui_display_mouse = false;
 	this->mouse_image = NULL;
 	this->mouse_off_x = 0;
