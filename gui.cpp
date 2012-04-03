@@ -759,7 +759,8 @@ void GamePanel::setup() {
 	this->button_deploy_unarmedmen->setInfoLMB("add an unarmed man to the army");
 	this->addToPanel(STATE_ATTACK, button_deploy_unarmedmen);
 	for(int i=0;i<n_sub_epochs;i++) {
-		this->button_deploy_attackers[i] = new ImageButton(offset_attack_x_c + space_attack_x_c*i, 56, 16, 28, numbered_weapons[start_epoch + i]);
+		//this->button_deploy_attackers[i] = new ImageButton(offset_attack_x_c + space_attack_x_c*i, 56, 16, 28, numbered_weapons[start_epoch + i]);
+		this->button_deploy_attackers[i] = new ImageButton(offset_attack_x_c + space_attack_x_c*i, 56, 16, 40, numbered_weapons[start_epoch + i]);
 		sprintf(buffer, "add a %s to the army", Invention::getInvention(Invention::WEAPON, start_epoch + i)->getName());
 		this->button_deploy_attackers[i]->setInfoLMB(buffer);
 		this->addToPanel(STATE_ATTACK, button_deploy_attackers[i]);
@@ -771,7 +772,8 @@ void GamePanel::setup() {
 	// DESIGN
 	this->button_bigdesign = new ImageButton(33, 0, 32, 16, panel_bigdesign, "return to main screen");
 	this->addToPanel(STATE_DESIGN, button_bigdesign);
-	this->button_designers = new ImageButton(40, 16, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
+	//this->button_designers = new ImageButton(40, 16, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
+	this->button_designers = new ImageButton(40, 16, 16, 40, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	if( onemousebutton ) {
 		this->button_designers->setInfoLMB("change the number of designers");
 	}
@@ -828,7 +830,8 @@ void GamePanel::setup() {
 	this->addToPanel(STATE_BUILD, button_bigbuild);
 	for(int i=0;i<N_BUILDINGS;i++)
 		this->button_nbuilders2[i] = NULL;
-	this->button_nbuilders2[BUILDING_MINE] = new ImageButton(40, 20, 19, 28, panel_build[BUILDING_MINE]);
+	//this->button_nbuilders2[BUILDING_MINE] = new ImageButton(40, 20, 19, 28, panel_build[BUILDING_MINE]);
+	this->button_nbuilders2[BUILDING_MINE] = new ImageButton(40, 20, 19, build_step_y_c, panel_build[BUILDING_MINE]);
 	if( onemousebutton ) {
 		this->button_nbuilders2[BUILDING_MINE]->setInfoLMB("change the number of builders\nbuilding a mine");
 	}
@@ -837,7 +840,8 @@ void GamePanel::setup() {
 		this->button_nbuilders2[BUILDING_MINE]->setInfoRMB("increase the number of builders\nbuilding a mine");
 	}
 	this->addToPanel(STATE_BUILD, button_nbuilders2[BUILDING_MINE]);
-    this->button_nbuilders2[BUILDING_FACTORY] = new ImageButton(40, 20 + build_step_y_c, 19, 28, panel_build[BUILDING_FACTORY]);
+    //this->button_nbuilders2[BUILDING_FACTORY] = new ImageButton(40, 20 + build_step_y_c, 19, 28, panel_build[BUILDING_FACTORY]);
+    this->button_nbuilders2[BUILDING_FACTORY] = new ImageButton(40, 20 + build_step_y_c, 19, build_step_y_c, panel_build[BUILDING_FACTORY]);
     if( onemousebutton ) {
 		this->button_nbuilders2[BUILDING_FACTORY]->setInfoLMB("change the number of builders\nbuilding a factory");
 	}
@@ -846,7 +850,8 @@ void GamePanel::setup() {
 		this->button_nbuilders2[BUILDING_FACTORY]->setInfoRMB("increase the number of builders\nbuilding a factory");
 	}
 	this->addToPanel(STATE_BUILD, button_nbuilders2[BUILDING_FACTORY]);
-    this->button_nbuilders2[BUILDING_LAB] = new ImageButton(40, 20 + 2*build_step_y_c, 19, 28, panel_build[BUILDING_LAB]);
+    //this->button_nbuilders2[BUILDING_LAB] = new ImageButton(40, 20 + 2*build_step_y_c, 19, 28, panel_build[BUILDING_LAB]);
+    this->button_nbuilders2[BUILDING_LAB] = new ImageButton(40, 20 + 2*build_step_y_c, 19, build_step_y_c, panel_build[BUILDING_LAB]);
     if( onemousebutton ) {
 		this->button_nbuilders2[BUILDING_LAB]->setInfoLMB("change the number of builders\nbuilding a lab");
 	}
@@ -1415,7 +1420,8 @@ void GamePanel::draw() {
 		for(int i=0;i<N_BUILDINGS;i++)
 		{
 			if( this->button_nbuilders2[i] != NULL && this->button_nbuilders2[i]->isEnabled() ) {
-				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
+				//Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getTop() + 20, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
 				if( gamestate->getCurrentSector()->getBuilders((Type)i) > 0 ) {
 					int halfdays = 0, hours = 0;
 					gamestate->getCurrentSector()->buildingTimeLeft((Type)i, &halfdays, &hours);

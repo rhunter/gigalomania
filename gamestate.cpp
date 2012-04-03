@@ -1082,7 +1082,8 @@ void PlayingGameState::resetShieldButtons() {
 			n_sides++;
 			shield_buttons[i] = new ImageButton(offset_map_x_c + 16 * map_width_c + 4, offset_map_y_c + shield_step_y_c * i + 8, playershields[ Player::getShieldIndex(allied) ]);
 			screen_page->add(shield_buttons[i]);
-			shield_number_panels[i] = new PanelPage(offset_map_x_c + 16 * map_width_c + 4 + 16, offset_map_y_c + shield_step_y_c * i + 8, 20, 10);
+			//shield_number_panels[i] = new PanelPage(offset_map_x_c + 16 * map_width_c + 4 + 16, offset_map_y_c + shield_step_y_c * i + 8, 20, 10);
+			shield_number_panels[i] = new PanelPage(offset_map_x_c + 16 * map_width_c + 4 + 16, offset_map_y_c + shield_step_y_c * i + 8, 20, shield_step_y_c);
 			screen_page->add(shield_number_panels[i]);
 		}
 	}
