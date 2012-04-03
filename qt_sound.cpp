@@ -16,7 +16,8 @@ void Sample::play(int ch) {
 #endif
     }
     if( this->text.length() > 0 ) {
-        const int ypos = 216;
+        //const int ypos = 216;
+		const int ypos = 224;
         TextEffect *effect = new TextEffect(this->text, 160, ypos, 2000);
         //gamestate->addEffect(effect);
         //gamestate->addTextEffect(effect);
