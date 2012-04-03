@@ -1293,8 +1293,21 @@ void PlayingGameState::draw() {
 
 			if( i == BUILDING_TOWER )
 				flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c, true);
-		}
 
+			const int health_xpos = offset_land_x_c + building->getX();
+			//const int health_ypos = offset_land_y_c + building->getY() - 16;
+			const int health_ypos = offset_land_y_c + building->getY() + images[ current_sector->getBuildingEpoch() ]->getScaledHeight() + 2;
+			const int health_width = 32;
+			const int health_height = 4;
+			/*float health = (health_width-2) * ((float)building->getHealth()) / (float)building->getMaxHealth();
+			screen->fillRectWithAlpha(scale_width*health_xpos, scale_height*health_ypos, scale_width*health_width, scale_height*health_height, 255, 255, 255, 127);
+			screen->fillRectWithAlpha(scale_width*(health_xpos+1), scale_height*(health_ypos+1), scale_width*(health_width-2), scale_height*(health_height-2), 0, 0, 0, 127);
+			screen->fillRectWithAlpha(scale_width*(health_xpos+1), scale_height*(health_ypos+1), scale_width*health, scale_height*(health_height-2), 255, 0, 0, 127);*/
+			float health = (scale_width*health_width-2) * ((float)building->getHealth()) / (float)building->getMaxHealth();
+			screen->fillRect(scale_width*health_xpos, scale_height*health_ypos, scale_width*health_width, scale_height*health_height, 255, 255, 255);
+			screen->fillRect(scale_width*health_xpos+1, scale_height*health_ypos+1, scale_width*health_width-2, scale_height*health_height-2, 0, 0, 0);
+			screen->fillRect(scale_width*health_xpos+1, scale_height*health_ypos+1, health, scale_height*health_height-2, 255, 0, 0);
+		}
 	}
 	else if( current_sector->getPlayer() != -1 ) {
 		ASSERT( current_sector->isShutdown() );
