@@ -2533,23 +2533,17 @@ bool openScreen(bool fullscreen) {
 		LOG("desktop is %d x %d\n", user_width, user_height);
 #endif
 
-		/*if( user_width >= 4*default_width_c && user_height >= 4*default_height_c ) {
-			scale_width = scale_height = 4.0f;
-			LOG("scale 4x\n");
-		}
-		else if( user_width >= 2*default_width_c && user_height >= 2*default_height_c ) {
-			scale_width = scale_height = 2.0f;
-			LOG("scale 2x\n");
-		}
-		else if( user_width >= default_width_c && user_height >= default_height_c ) {
-			scale_width = scale_height = 1.0f;
-			LOG("scale 1x\n");
-		}
-		else {
-			LOG("desktop resolution too small even for 1x scale\n");
-			return false;
-		}*/
-		if( user_width >= 4*default_width_c ) {
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
+                // on these platforms, we want to run fullscreen, but we can't change the screen resolution (at least in Qt),
+                // so we run with fullscreen set to false, and instead scale to the full resolution of the desktop.
+                int screen_width = user_width;
+                int screen_height = user_height;
+                scale_width = ((float)screen_width) / (float)default_width_c;
+                scale_height = ((float)screen_height) / (float)default_height_c;
+                LOG("scale width: %f\n", scale_width);
+                LOG("scale height: %f\n", scale_height);
+#else
+                if( user_width >= 4*default_width_c ) {
 			scale_width = 4.0f;
 			LOG("scale width 4x\n");
 		}
@@ -2602,7 +2596,7 @@ bool openScreen(bool fullscreen) {
                     scale_height = (4.0f/3.0f);
                     LOG("scale height 4/3x\n");
                 }
-        else if( user_height >= default_height_c ) {
+                else if( user_height >= default_height_c ) {
 			scale_height = 1.0f;
 			LOG("scale height 1x\n");
 		}
@@ -2610,74 +2604,16 @@ bool openScreen(bool fullscreen) {
 			LOG("desktop resolution too small even for 1x scale height\n");
 			return false;
 		}
-		//scale_width = 2.0f; scale_height = 1.5f;
+
+                //scale_width = 2.0f; scale_height = 1.5f;
 		//scale_width = scale_height = 1.0f; // test
 		//scale_width = scale_height = 2.0f; // test
 		//scale_width = 2.5f;
 		//scale_height = 2.0f;
 
-		/*
-#ifdef _WIN32
-		//int user_width = GetSystemMetrics(SM_CXMAXIMIZED);
-		//int user_height = GetSystemMetrics(SM_CYSCREEN);
-		//int user_height = GetSystemMetrics(SM_CYMAXIMIZED);
-		//LOG("desktop is %d x %d\n", user_width, user_height);
-		//user_height -= GetSystemMetrics(SM_CYCAPTION);
-		//LOG("available height is %d\n", user_height);
-		RECT rect;
-		SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
-		int user_width = rect.right - rect.left;
-		int user_height = rect.bottom - rect.top;
-		LOG("desktop is %d x %d\n", user_width, user_height);
-		user_height -= GetSystemMetrics(SM_CYCAPTION);
-		LOG("available height is %d\n", user_height);
-		if( user_width >= 4*default_width_c && user_height >= 4*default_height_c ) {
-			scale_width = scale_height = 4.0f;
-			LOG("scale 4x\n");
-		}
-		else if( user_width >= 2*default_width_c && user_height >= 2*default_height_c ) {
-			scale_width = scale_height = 2.0f;
-			LOG("scale 2x\n");
-		}
-		else if( user_width >= default_width_c && user_height >= default_height_c ) {
-			scale_width = scale_height = 1.0f;
-			LOG("scale 1x\n");
-		}
-		else {
-			LOG("desktop resolution too small even for 1x scale\n");
-			return false;
-		}
-#else
-		//scale_width = scale_height = 2.0f;
-		//LOG("scale 2x\n");
-		const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
-		int user_width = videoInfo->current_w;
-		int user_height = videoInfo->current_h;
-		LOG("desktop is %d x %d\n", user_width, user_height);
-#ifdef _WIN32
-		user_height -= GetSystemMetrics(SM_CYCAPTION); // ignore start bar if not hidden
-#endif
-		LOG("available height is %d\n", user_height);
-		if( user_width >= 4*default_width_c && user_height >= 4*default_height_c ) {
-			scale_width = scale_height = 4.0f;
-			LOG("scale 4x\n");
-		}
-		else if( user_width >= 2*default_width_c && user_height >= 2*default_height_c ) {
-			scale_width = scale_height = 2.0f;
-			LOG("scale 2x\n");
-		}
-		else if( user_width >= default_width_c && user_height >= default_height_c ) {
-			scale_width = scale_height = 1.0f;
-			LOG("scale 1x\n");
-		}
-		else {
-			LOG("desktop resolution too small even for 1x scale\n");
-			return false;
-		}
-#endif
-		*/
 		int screen_width = (int)(scale_width * default_width_c);
 		int screen_height = (int)(scale_height * default_height_c);
+#endif
 
 		screen = new Screen();
 		if( !screen->open(screen_width, screen_height, fullscreen) )
@@ -2685,24 +2621,9 @@ bool openScreen(bool fullscreen) {
 
 	}
 	else {
-		/*if( Screen::canOpenFullscreen(4*default_width_c, 4*default_height_c) ) {
-		scale_width = scale_height = 4.0f;
-		LOG("scale 4x\n");
-		}
-		else if( Screen::canOpenFullscreen(2*default_width_c, 2*default_height_c) ) {
-		scale_width = scale_height = 2.0f;
-		LOG("scale 2x\n");
-		}
-		else if( Screen::canOpenFullscreen(4*default_width_c, 4*default_height_c) ) {
-		scale_width = scale_height = 1.0f;
-		LOG("scale 1x\n");
-		}
-		else {
-		LOG("can't even open screen at 1x scale\n");
-		return false;
-		}*/
 		screen = new Screen();
-		if( screen->open(4*default_width_c, 4*default_height_c, fullscreen) ) {
+
+                if( screen->open(4*default_width_c, 4*default_height_c, fullscreen) ) {
 			scale_width = scale_height = 4.0f;
 			LOG("scale 4x\n");
 		}
