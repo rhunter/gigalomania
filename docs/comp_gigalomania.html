@@ -14,11 +14,11 @@
 
 <hr>
 
-<p>Gigalomania is an open source 2D Real Time Strategy game, for Windows, Mac OS X, Linux, and
-Nokia smartphones (Symbian, Maemo and Meego).
-The gameplay consists of researching and developing new technology with which to conquer your enemies, from
-rocks and sticks to nuclear weapons and spaceships. You can advance through ten different ages,
-from the stone age to the future. There are 28 different maps to play through.</p>
+<p>Gigalomania is an open source 2D Real Time Strategy game, for Windows, Mac OS X, Linux, Nokia
+smartphones/tablets (Symbian, Maemo and Meego), and Android smartphones/tablets. The gameplay consists
+of researching and developing new technology with which to conquer your enemies, from rocks and sticks
+to nuclear weapons and spaceships. You can advance through ten different ages, from the stone age to
+the future. There are 28 different maps to play through.</p>
 
 <p><a href="http://homepage.ntlworld.com/mark.harman/glm_ss13.png">
 <img src="http://homepage.ntlworld.com/mark.harman/glm_ss13.jpg" width="323" height="268" alt="Screenshot" align="right">
@@ -57,6 +57,8 @@ For other Linux distributions, you have to compile from the source.</p></li>
 <li><p>For <b>Nokia smartphones running Meego</b>, download the
 <a href="http://launchpad.net/gigalomania/trunk/0.22/+download/gigalomania_0.22_meego_armel.deb">Meego installer</a>.</p></li>
 
+<!--<li><p><a href="https://play.google.com/store/apps/details?id=net.sourceforge.gigalomania">Download free from Google Play!</a></p></li>--><li><p>Coming soon for <b>Android</b>!</p></li>
+
 <li><p>The <a href="http://launchpad.net/gigalomania/trunk/0.23/+download/gigalomaniasrc.zip">source code is
 available</a>, released under the <a href="http://www.gnu.org/copyleft/gpl.html">GPL v2 or
 later</a>. Please see the file gigalomania_source.txt (in the source archive) for details on how to
@@ -65,8 +67,6 @@ compile.</p></li>
 <li><p>A full list of download files, including older versions, is at
 <a href="https://launchpad.net/gigalomania/+download">https://launchpad.net/gigalomania/+download</a>.
 </p></li>
-
-<li><p>Coming soon for <b>Android</b>!</p></li>
 
 </ul>
 
@@ -101,7 +101,10 @@ on the Mac version.)</p>
 
 <p>For Nokia Symbian smartphones, this requires S60 5th edition (Symbian^1) or later (e.g.,
 Nokia 5800) - the Ovi Store should let you know if it's compatible with your phone. For Maemo,
-this has been tested on the Nokia N900. For Meego, this has been tested on the Nokia N950.</p>
+this has been tested on the Nokia N900. For Meego, this has been tested on the Nokia N950.
+For Android, this requires Android 2.1, and has been tested on the Samsung Galaxy Nexus. Note that
+the Android version doesn't yet support sound (as this isn't yet supported in Qt for Android;
+there is another way I could support sound, but this would restrict it to Android 2.3 or above).</p>
 
 <p>If the game fails to run, or has problems, please try the following:<ul>
   <li>For Windows, make sure you have installed the required libraries/DLLs (see Windows download,
@@ -165,7 +168,7 @@ Nokia N900).</p>
 <p>The game can be entirely controlled with the mouse, though additional keys are: P - [un]pause game; Q - quit and return to start screen.
 There is also an option to enable a one mouse button interface, rather than requiring two mouse buttons - to enable, go to "Options" (from the screen
 where you select an Island to play), and click to change to "ONE MOUSE BUTTON UI". This allows playing on touchscreens, and may be preferable for some
-users (e.g., on touchpads). Note that this interface mode is always enabled for some platforms known to be touchscreen (Symbian, Maemo, Meego).</p>
+users (e.g., on touchpads). Note that this interface mode is always enabled for some platforms known to be touchscreen (Symbian, Maemo, Meego, Android).</p>
 
 <p><a name="gametypes"><b>Game types</b></p>
  
@@ -208,7 +211,7 @@ a measure of the current level of technology, rather than how much time has pass
     <li>"One/Two Mouse Button UI" - in two mouse button mode, the left and right mouse buttons
     are required. In one mouse button mode, only the left mouse button is required (e.g., changing
     the number of people is done by left clicking, then clicking on the left/right arrows that
-    appear). Useful for touchpads or touchscreens. (Symbian, Maemo, Meego don't have this option,
+    appear). Useful for touchpads or touchscreens. (Symbian, Maemo, Meego, Android don't have this option,
     as they are always in one mouse button mode.)</li>
     <li>"New Game" (available in "All Islands" playing mode only) - restarts the game.</li>
     <li>"Load Game" (available in "All Islands" playing mode only) - loads a previously saved
@@ -217,8 +220,8 @@ a measure of the current level of technology, rather than how much time has pass
     10 available slots to save in.</li>
   </ul></li>
   <li>"Play Island" - start playing the currently displayed island.</li>
-  <li>"Online Help" (Nokia Symbian smartphones only) - launches the browser to this web page.</li>
-  <li>"Quit" - exits the game.</li>
+  <li>"Online Help" (Nokia Symbian and Android only) - launches the browser to this web page.</li>
+  <li>"Quit" - exits the game (not available on Android, where applications never "quit").</li>
 </ul>
 </p>
 
@@ -353,7 +356,7 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <p><a name="credits"><b>Credits etc</b></p>
 
 <p><ul>
-<li><b>Mark Harman</b> - Main programming, Symbian port.</li>
+<li><b>Mark Harman</b> - Main programming, Symbian and Android ports.</li>
 <li><b>Fredrik Sörensson</b> - Linux port, and switch to using SDL_image instead of FreeImage.</li>
 <li><b>Stephen Fish</b> - Various graphics (the good graphics are done by Stephen, except for those files listed below; the rubbish graphics are placeholder graphics done by me;)</li>
 <li><b>Andreas Herzig</b> - OS X port, and features.png graphic.</li>
@@ -377,7 +380,8 @@ but in "All Islands" mode, it contributes to your final score if you complete th
       For Symbian it's located in the folder private/200353ef on the drive that you installed the
       game on.<!--The folder needs changing, if we change the UID of the game!--> Seeing this folder
       is a bit tricky, as it's hidden when viewing on the phone. You can access by connecting your
-      phone to a PC and selecting "mass storage" to view the drives.
+      phone to a PC and selecting "mass storage" to view the drives (though this may only be possible
+      if you've installed to an external SD card).
     </li>
   </ul>
   The log file is overwritten each time you run the game, so you'll have to take a copy straight
@@ -400,7 +404,8 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <li><b>Porting</b> - Feel free to port Gigalomania to other platforms supported by SDL. If you send me the files, I can integrate them into the main source.</li>
 <li><b>Tell people about it!</b> - If you like the game, then please feel free to tell other
        people about it, on your blog/Twitter/website/etc :)</li>
-<li><b>Videos</b> - videos of the gameplay (e..g, on YouTube) would be useful to have, partly to help raise awareness, and also to act as gameplay tutorials.</li>
+<li><b>Give me a nice rating :)</b> (On Nokia/Android stores, or other hosting sites...)
+<li><b>Videos</b> - videos of the gameplay (e.g., on YouTube) would be useful to have, partly to help raise awareness, and also to act as gameplay tutorials.</li>
 </ul></p>
 
 <p><a name="history"><b>History</b></p>
