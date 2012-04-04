@@ -1,5 +1,12 @@
 #pragma once
 
+#include <QtGlobal> // need this to get Q_OS_ANDROID #define, which we need before we include anything else!
+
+#ifndef Q_OS_ANDROID
+#include <QSystemScreenSaver>
+QTM_USE_NAMESPACE
+#endif
+
 #include <QtGui/QMainWindow>
 
 class MainWindow : public QMainWindow
@@ -8,6 +15,9 @@ class MainWindow : public QMainWindow
 
     int m_x, m_y;
     bool m_left;
+#ifndef Q_OS_ANDROID
+    QSystemScreenSaver *screen_saver;
+#endif
 
     virtual void keyPressEvent(QKeyEvent *event);
     //virtual void mouseMoveEvent(QMouseEvent *event);

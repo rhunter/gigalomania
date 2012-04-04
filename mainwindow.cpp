@@ -10,6 +10,12 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), m_x(0), m_y(0), m_left(false)
 {
+#ifndef Q_OS_ANDROID
+    // prevent screen dimming/blanking
+    // on Android, the screen blanking is disabled in the QtActivity.java file
+    this->screen_saver = new QSystemScreenSaver(this);
+    this->screen_saver->setScreenSaverInhibit();
+#endif
 }
 
 MainWindow::~MainWindow()

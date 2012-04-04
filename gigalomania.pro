@@ -40,7 +40,7 @@ android {
 }
 else {
     CONFIG += mobility
-    MOBILITY += feedback
+    MOBILITY += feedback + systeminfo
     QT += phonon
 }
 
