@@ -466,7 +466,7 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
     for(int i=0;i<len;i++) {
         char ch = text[i];
         if( numbers == NULL && ch == '0' ) {
-            ch = 'O'; // hack for 0hm (we don't spell it Ohm, due to alphabetical ordering)
+            ch = 'O'; // hack for 0 (we don't spell it O, due to alphabetical ordering)
         }
         if( ch == '\n' ) {
             // newline
