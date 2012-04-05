@@ -498,8 +498,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
                     done = true;
                     registerClick();
                     loadGame(i);
-					this->c_page = STATE_CHOOSEISLAND;
-					return; // hack - need to return, as loading the game destroys this class!
+					return; // hack - need to return, as loading the game destroys this class! (the gamestate will be reset - which will also switch the c_page back to STATE_CHOOSEISLAND)
 				}
 			}
 		}
