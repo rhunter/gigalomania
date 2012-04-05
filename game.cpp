@@ -2533,21 +2533,20 @@ bool openScreen(bool fullscreen) {
 		LOG("desktop is %d x %d\n", user_width, user_height);
 #endif
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
-                // on these platforms, we want to run fullscreen, but we can't change the screen resolution (at least in Qt),
-                // so we run with fullscreen set to false, and instead scale to the full resolution of the desktop.
-                int screen_width = user_width;
-                int screen_height = user_height;
-                scale_width = ((float)screen_width) / (float)default_width_c;
-                scale_height = ((float)screen_height) / (float)default_height_c;
-                LOG("scale width: %f\n", scale_width);
-                LOG("scale height: %f\n", scale_height);
-#else
+                // Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
+                // (still works, though uneven spacings).
+                // We make an exception for height of 4/3, as a fairly common low end Android resolution is 480x320, and
+                // restricting to height 240 means a significant portion of wasted screen space!
+
                 if( user_width >= 4*default_width_c ) {
 			scale_width = 4.0f;
 			LOG("scale width 4x\n");
 		}
-		else if( user_width >= 3*default_width_c ) {
+                else if( user_width >= 3.5f*default_width_c ) {
+                        scale_width = 3.5f;
+                        LOG("scale width 3.5x\n");
+                }
+                else if( user_width >= 3*default_width_c ) {
 			scale_width = 3.0f;
 			LOG("scale width 3x\n");
 		}
@@ -2576,7 +2575,11 @@ bool openScreen(bool fullscreen) {
                         scale_height = 4.0f;
                         LOG("scale height 4x\n");
                 }
-                if( user_height >= 3*default_height_c ) {
+                else if( user_height >= 3.5f*default_height_c ) {
+                    scale_height = 3.5f;
+                    LOG("scale height 3.5x\n");
+                }
+                else if( user_height >= 3*default_height_c ) {
                         scale_height = 3.0f;
                         LOG("scale height 3x\n");
                 }
@@ -2593,6 +2596,7 @@ bool openScreen(bool fullscreen) {
                     LOG("scale height 1.5x\n");
                 }
                 else if( user_height >= (4.0f/3.0f)*default_height_c ) {
+                    // see comment above
                     scale_height = (4.0f/3.0f);
                     LOG("scale height 4/3x\n");
                 }
@@ -2613,7 +2617,6 @@ bool openScreen(bool fullscreen) {
 
 		int screen_width = (int)(scale_width * default_width_c);
 		int screen_height = (int)(scale_height * default_height_c);
-#endif
 
 		screen = new Screen();
 		if( !screen->open(screen_width, screen_height, fullscreen) )
@@ -2621,6 +2624,7 @@ bool openScreen(bool fullscreen) {
 
 	}
 	else {
+            // fullscreen
 		screen = new Screen();
 
                 if( screen->open(4*default_width_c, 4*default_height_c, fullscreen) ) {
