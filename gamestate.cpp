@@ -467,6 +467,9 @@ PanelPage *PlaceMenGameState::getMapPanel(int x, int y) {
 
 void PlaceMenGameState::reset() {
     //LOG("PlaceMenGameState::reset()\n");
+	/*if( !_CrtCheckMemory() ) {
+		throw "_CrtCheckMemory FAILED";
+	}*/
 	this->screen_page->free(true);
 
 	if( this->choosemenPanel != NULL ) {
@@ -492,6 +495,9 @@ void PlaceMenGameState::reset() {
 			}
 		}
 	}
+	/*if( !_CrtCheckMemory() ) {
+		throw "_CrtCheckMemory FAILED";
+	}*/
 }
 
 void PlaceMenGameState::draw() {
