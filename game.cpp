@@ -3303,6 +3303,7 @@ void drawGame() {
 void playGame(int n_args, char *args[]) {
 	bool fullscreen = false;
 #ifdef _DEBUG
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );  // TEST!
 	debugwindow = true;
 	//fullscreen = true;
 #endif
@@ -3330,7 +3331,7 @@ void playGame(int n_args, char *args[]) {
 		SetConsoleTitleA("DEBUG:");
 	}
 	else {
-		//FreeConsole(); // get rid of Visual Studio startup window
+		FreeConsole(); // get rid of Visual Studio startup window
 	}
 #endif
 
