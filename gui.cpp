@@ -192,7 +192,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->addToPanel(STATE_CHOOSEMEN, button_nmen);
 
     cy = start_y;
-    step_y = 20;
+    step_y = 26;
     this->button_continue = new Button((int)(mx - 4.0*fw), cy, "CONTINUE", letters_large);
     cy += step_y;
     this->addToPanel(STATE_OPTIONS, button_continue);
