@@ -416,6 +416,7 @@ Button::Button(int x,int y,const char *text,Image *font[]) : PanelPage(x, y) {
 	this->h = font[0]->getScaledHeight();
 	if( mobile_ui ) {
 		this->tolerance += 4;
+		this->h += 8; // useful for Android, where touches often seem to register lower than I seem to expect
 	}
 }
 
