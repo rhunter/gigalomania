@@ -57,7 +57,8 @@ For other Linux distributions, you have to compile from the source.</p></li>
 <li><p>For <b>Nokia smartphones running Meego</b>, download the
 <a href="http://launchpad.net/gigalomania/trunk/0.22/+download/gigalomania_0.22_meego_armel.deb">Meego installer</a>.</p></li>
 
-<!--<li><p><a href="https://play.google.com/store/apps/details?id=net.sourceforge.gigalomania">Download free from Google Play!</a></p></li>--><li><p>Coming soon for <b>Android</b>!</p></li>
+<li><p>For <b>Android smartphones</b>, download from
+<a href="https://play.google.com/store/apps/details?id=net.sourceforge.gigalomania">Google Play</a>.</p></li>
 
 <li><p>The <a href="http://launchpad.net/gigalomania/trunk/0.23/+download/gigalomaniasrc.zip">source code is
 available</a>, released under the <a href="http://www.gnu.org/copyleft/gpl.html">GPL v2 or
@@ -102,9 +103,12 @@ on the Mac version.)</p>
 <p>For Nokia Symbian smartphones, this requires S60 5th edition (Symbian^1) or later (e.g.,
 Nokia 5800) - the Ovi Store should let you know if it's compatible with your phone. For Maemo,
 this has been tested on the Nokia N900. For Meego, this has been tested on the Nokia N950.
-For Android, this requires Android 2.1, and has been tested on the Samsung Galaxy Nexus. Note that
-the Android version doesn't yet support sound (as this isn't yet supported in Qt for Android;
-there is another way I could support sound, but this would restrict it to Android 2.3 or above).</p>
+For Android, this requires Android 2.1, and has been tested on the Samsung Galaxy Nexus. A
+resolution of at least 480x320 is recommended (all compatible Symbian smartphones should
+satisfy this, being at least 640x360, but the graphics quality may come out a bit poor on
+some of the lower end Android devices that still run at 320x240). Note that the Android version
+doesn't yet support sound (as this isn't yet supported in Qt for Android; there is another way
+I could support sound, but this would restrict it to Android 2.3 or above).</p>
 
 <p>If the game fails to run, or has problems, please try the following:<ul>
   <li>For Windows, make sure you have installed the required libraries/DLLs (see Windows download,
@@ -383,6 +387,13 @@ but in "All Islands" mode, it contributes to your final score if you complete th
       phone to a PC and selecting "mass storage" to view the drives (though this may only be possible
       if you've installed to an external SD card).
     </li>
+    <li>
+      For Android, it's located in the folder net.sourceforge.gigalomania/. You can view with a file
+      explorer app (such as
+      <a href="https://play.google.com/store/apps/details?id=com.estrongs.android.pop">ES File Explorer</a>),
+      or access by connecting your phone/tablet to a PC. If you can't see the folder, try rebooting your
+      phone before connecting to your PC.
+    </li>
   </ul>
   The log file is overwritten each time you run the game, so you'll have to take a copy straight
   away - although note that the last-but-one game log will be available under "log_old.txt"; in
@@ -411,7 +422,7 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <p><a name="history"><b>History</b></p>
 
 <pre>
-Version 0.24 (2012/04/04)
+Version 0.24 (2012/04/05)
 
 FIXED   Possible crash when loading save games.
 FIXED   Building health bars weren't reduced properly.
