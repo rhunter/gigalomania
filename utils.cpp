@@ -155,6 +155,9 @@ void textLines(int *n_lines,int *max_wid,const char *text) {
 }
 
 char application_name[] = "Gigalomania";
+#if defined(Q_OS_ANDROID)
+char application_package_name[] = "net.sourceforge.gigalomania";
+#endif
 
 FILE *logfile = NULL;
 
@@ -177,6 +180,12 @@ char logfilename[] = "log.txt";
 char oldlogfilename[] = "log_old.txt";
 #endif
 
+/* Returns a full path for a filename in userspace (i.e., where we'll have read/write access).
+ * For Windows, this is in %APPDATA%/application_name/
+ * For Linux (including Maemo and Meego), this is in user's home/.config/application_name/ (note the '.', to make it a hidden folder)
+ * If the folder can't be accessed (or running on a new operating system), the program folder is used.
+ * For Qt platforms, we use QDesktopServices::storageLocation(QDesktopServices::DataLocation).
+ */
 char *getApplicationFilename(const char *name) {
     // not safe to use LOG here, as logfile may not have been initialised!
     //printf("getApplicationFilename: %s\n", name);
@@ -220,15 +229,29 @@ char *getApplicationFilename(const char *name) {
 
 void initLogFile() {
     // not safe to use LOG here, as logfile not initialised!
-        /*remove("log_old.txt");
-	rename("log.txt","log_old.txt");
-	remove("log.txt");*/
-
-	// first need to establish full path, and create folder if necessary
+    // first need to establish full path, and create folder if necessary
     // Maemo/Meego treated as Linux as far as paths are concerned
 #ifdef USING_QT
-    QString pathQt (QDesktopServices::storageLocation (QDesktopServices::DataLocation));
+
+#if defined(Q_OS_ANDROID)
+    // on Android, try for the sdcard, so we can find somewhere more accessible to the user (and that I can read on my Galaxy Nexus!!!)
+    QString nativePath = QString("/sdcard/") + QString(application_package_name);
+    qDebug("try sd card: %s", nativePath.toStdString().c_str());
+    if( !QDir(nativePath).exists() ) {
+        qDebug("try creating application folder in sdcard/");
+        // folder doesn't seem to exist - try creating it
+        QDir().mkdir(nativePath);
+        if( !QDir(nativePath).exists() ) {
+            qDebug("failed to create application folder in sdcard/");
+            QString pathQt(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+            nativePath = QDir::toNativeSeparators(pathQt);
+        }
+    }
+#else
+    QString pathQt(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
     QString nativePath(QDir::toNativeSeparators(pathQt));
+#endif
+
     application_path = new char[nativePath.length()+1];
     strcpy(application_path, nativePath.toLatin1().data());
     logfilename = getApplicationFilename("log.txt");
