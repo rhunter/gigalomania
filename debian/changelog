@@ -1,3 +1,24 @@
+gigalomania (0.24) maverick; urgency=low
+
+  * Fixed possible crash when loading save games.
+  * Building health bars weren't reduced properly.
+  * In element stocks screen, positioning of number of elements was
+    sometimes slightly obscured by the element icon.
+  * Ported to Android.
+  * Boosted tower strength by 50% (not so easy to destroy, and lasts longer
+    on average than other buildings).
+  * Reduced effectiveness of shields (problem of taking ages to destroy
+    sectors when AI can keep using shields).
+  * People no longer killed if a building destroyed.
+  * Your people and armies are automatically evacuated if the tower is
+    destroyed.
+  * Health bars shown for buildings in main screen view, including for enemy
+    sectors.
+  * Improvements for touchscreen UI.
+  * Screenblanking disabled on Android/Symbian/Maemo/Meego.
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Thu, 5 Apr 2012 12:15:00 +0100
+
 gigalomania (0.23) maverick; urgency=low
 
   * Trash designs wasn't working in two mouse button mode (for Windows,
