@@ -2499,25 +2499,25 @@ bool openScreen(bool fullscreen) {
 	if( !fullscreen ) {
 		int user_width = 0, user_height = 0;
 #ifdef USING_QT
-        user_width = QApplication::desktop()->width();
-        user_height = QApplication::desktop()->height();
-        qDebug("window is %d x %d", user_width, user_height);
-        LOG("window is %d x %d\n", user_width, user_height);
-        if( mobile_ui && user_width < user_height ) {
-            // we'll be switching to landscape mode
-            qDebug("swap to landscape mode");
-            LOG("swap to landscape mode\n");
-            int dummy = user_width;
-            user_width = user_height;
-            user_height = dummy;
-        }
-        // test
-        /*user_width = 640;
-        user_height = 360;*/
-        /*user_width = 854;
-        user_height = 480;*/
+		user_width = QApplication::desktop()->width();
+		user_height = QApplication::desktop()->height();
+		qDebug("window is %d x %d", user_width, user_height);
+		LOG("window is %d x %d\n", user_width, user_height);
+		if( mobile_ui && user_width < user_height ) {
+			// we'll be switching to landscape mode
+			qDebug("swap to landscape mode");
+			LOG("swap to landscape mode\n");
+			int dummy = user_width;
+			user_width = user_height;
+			user_height = dummy;
+		}
+		// test
+		/*user_width = 640;
+		user_height = 360;*/
+		/*user_width = 854;
+		user_height = 480;*/
 #elif defined(_WIN32)
-//#if 0
+		//#if 0
 		// we do it using system calls instead of SDL, to ignore the start bar (if showing)
 		RECT rect;
 		SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
@@ -2533,20 +2533,20 @@ bool openScreen(bool fullscreen) {
 		LOG("desktop is %d x %d\n", user_width, user_height);
 #endif
 
-                // Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
-                // (still works, though uneven spacings).
-                // We make an exception for height of 4/3, as a fairly common low end Android resolution is 480x320, and
-                // restricting to height 240 means a significant portion of wasted screen space!
+		// Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
+		// (still works, though uneven spacings).
+		// We make an exception for height of 4/3, as a fairly common low end Android resolution is 480x320, and
+		// restricting to height 240 means a significant portion of wasted screen space!
 
-                if( user_width >= 4*default_width_c ) {
+		if( user_width >= 4*default_width_c ) {
 			scale_width = 4.0f;
 			LOG("scale width 4x\n");
 		}
-                else if( user_width >= 3.5f*default_width_c ) {
-                        scale_width = 3.5f;
-                        LOG("scale width 3.5x\n");
-                }
-                else if( user_width >= 3*default_width_c ) {
+		else if( user_width >= 3.5f*default_width_c ) {
+			scale_width = 3.5f;
+			LOG("scale width 3.5x\n");
+		}
+		else if( user_width >= 3*default_width_c ) {
 			scale_width = 3.0f;
 			LOG("scale width 3x\n");
 		}
@@ -2554,15 +2554,15 @@ bool openScreen(bool fullscreen) {
 			scale_width = 2.5f;
 			LOG("scale width 2.5x\n");
 		}
-                else if( user_width >= 2*default_width_c ) {
-                        scale_width = 2.0f;
-                        LOG("scale width 2x\n");
-                }
-                else if( user_width >= 1.5*default_width_c ) {
-                        scale_width = 1.5f;
-                        LOG("scale width 1.5x\n");
-                }
-                else if( user_width >= default_width_c ) {
+		else if( user_width >= 2*default_width_c ) {
+			scale_width = 2.0f;
+			LOG("scale width 2x\n");
+		}
+		else if( user_width >= 1.5*default_width_c ) {
+			scale_width = 1.5f;
+			LOG("scale width 1.5x\n");
+		}
+		else if( user_width >= default_width_c ) {
 			scale_width = 1.0f;
 			LOG("scale width 1x\n");
 		}
@@ -2571,36 +2571,36 @@ bool openScreen(bool fullscreen) {
 			return false;
 		}
 
-                if( user_height >= 4*default_height_c ) {
-                        scale_height = 4.0f;
-                        LOG("scale height 4x\n");
-                }
-                else if( user_height >= 3.5f*default_height_c ) {
-                    scale_height = 3.5f;
-                    LOG("scale height 3.5x\n");
-                }
-                else if( user_height >= 3*default_height_c ) {
-                        scale_height = 3.0f;
-                        LOG("scale height 3x\n");
-                }
-                else if( user_height >= 2.5f*default_height_c ) {
-                    scale_height = 2.5f;
-                    LOG("scale height 2.5x\n");
-                }
-                else if( user_height >= 2*default_height_c ) {
-                    scale_height = 2.0f;
-                    LOG("scale height 2x\n");
-                }
-                else if( user_height >= 1.5*default_height_c ) {
-                    scale_height = 1.5f;
-                    LOG("scale height 1.5x\n");
-                }
-                else if( user_height >= (4.0f/3.0f)*default_height_c ) {
-                    // see comment above
-                    scale_height = (4.0f/3.0f);
-                    LOG("scale height 4/3x\n");
-                }
-                else if( user_height >= default_height_c ) {
+		if( user_height >= 4*default_height_c ) {
+			scale_height = 4.0f;
+			LOG("scale height 4x\n");
+		}
+		else if( user_height >= 3.5f*default_height_c ) {
+			scale_height = 3.5f;
+			LOG("scale height 3.5x\n");
+		}
+		else if( user_height >= 3*default_height_c ) {
+			scale_height = 3.0f;
+			LOG("scale height 3x\n");
+		}
+		else if( user_height >= 2.5f*default_height_c ) {
+			scale_height = 2.5f;
+			LOG("scale height 2.5x\n");
+		}
+		else if( user_height >= 2*default_height_c ) {
+			scale_height = 2.0f;
+			LOG("scale height 2x\n");
+		}
+		else if( user_height >= 1.5*default_height_c ) {
+			scale_height = 1.5f;
+			LOG("scale height 1.5x\n");
+		}
+		else if( user_height >= (4.0f/3.0f)*default_height_c ) {
+			// see comment above
+			scale_height = (4.0f/3.0f);
+			LOG("scale height 4/3x\n");
+		}
+		else if( user_height >= default_height_c ) {
 			scale_height = 1.0f;
 			LOG("scale height 1x\n");
 		}
@@ -2609,12 +2609,12 @@ bool openScreen(bool fullscreen) {
 			return false;
 		}
 
-                //scale_width = 2.0f; scale_height = 1.5f;
+		//scale_width = 2.0f; scale_height = 1.5f;
 		//scale_width = scale_height = 1.0f; // test
 		//scale_width = scale_height = 2.0f; // test
 		//scale_width = 2.5f;
 		//scale_height = 2.0f;
-
+		
 		int screen_width = (int)(scale_width * default_width_c);
 		int screen_height = (int)(scale_height * default_height_c);
 
@@ -2624,10 +2624,10 @@ bool openScreen(bool fullscreen) {
 
 	}
 	else {
-            // fullscreen
+		// fullscreen
 		screen = new Screen();
 
-                if( screen->open(4*default_width_c, 4*default_height_c, fullscreen) ) {
+		if( screen->open(4*default_width_c, 4*default_height_c, fullscreen) ) {
 			scale_width = scale_height = 4.0f;
 			LOG("scale 4x\n");
 		}
