@@ -20,6 +20,8 @@ of researching and developing new technology with which to conquer your enemies,
 to nuclear weapons and spaceships. You can advance through ten different ages, from the stone age to
 the future. There are 28 different maps to play through.</p>
 
+<p>This game is a work in progress. The gameplay is more or less complete, but the graphics need improving :) Please <a href="#helpwanted">see below</a> if you want to help out.</p>
+
 <p><a href="http://homepage.ntlworld.com/mark.harman/glm_ss13.png">
 <img src="http://homepage.ntlworld.com/mark.harman/glm_ss13.jpg" width="323" height="268" alt="Screenshot" align="right">
 </a></p>
@@ -43,17 +45,20 @@ mode. <b>If you get an error when trying to run, you may need to install the
 For more details, see the <a href="http://www.herzig-net.de/prog/?page=prog-macgiga">Gigalomania Mac OS X port homepage</a>. <!--(Note that the latest OS X binary is version 0.23.)--></p></li>
 
 <li><p>For <b>Ubuntu/Debian</b>, download the relevant binary installation from the
-<a href="https://launchpad.net/~mark-harman/+archive/gigalomania/+packages">Ubuntu packages page</a>.
-For other Linux distributions, you have to compile from the source.</p></li>
+<a href="https://launchpad.net/~mark-harman/+archive/gigalomania/+packages">Ubuntu packages page</a>. Gigalomania is also available from the Ubuntu Software Centre (however it takes a few weeks for the latest version to appear, so please check out the packages page for the latest version). For other Linux distributions, you have to compile from the source.</p></li>
 
 <li><p>For <b>Nokia smartphones running Symbian</b>, download from
 <a href="http://store.ovi.com/content/256085">the Nokia Store</a>.</p></li>
 
-<li><p>For <b>Nokia smartphones running Maemo</b>, see the
-<a href="http://maemo.org/packages/view/gigalomania/">Maemo packages page</a>.</p></li>
+<!--<li><p>For <b>Nokia smartphones running Maemo</b>, see the
+<a href="http://maemo.org/packages/view/gigalomania/">Maemo packages page</a>.</p></li>-->
 
-<li><p>For <b>Nokia smartphones running Meego</b>, download the
-<a href="http://launchpad.net/gigalomania/trunk/0.22/+download/gigalomania_0.22_meego_armel.deb">Meego installer</a>. (Note that the latest Meego binary is version 0.22.)</p></li>
+<li><p>For <b>Nokia smartphones running Maemo</b>, this is coming soon to the Nokia Store. It is also available from maemo.org repositories.</p></li>
+
+<!--<li><p>For <b>Nokia smartphones running Meego</b>, download the
+<a href="http://launchpad.net/gigalomania/trunk/0.22/+download/gigalomania_0.22_meego_armel.deb">Meego installer</a>. (Note that the latest Meego binary is version 0.22.)</p></li>-->
+
+<li><p>For <b>Nokia smartphones running Meego</b>, this is coming soon to the Nokia Store. (Note that the latest Meego binary is version 0.22.)</p></li>
 
 <li><p>For <b>Android smartphones</b>, download from
 <a href="https://play.google.com/store/apps/details?id=net.sourceforge.gigalomania">Google Play</a>.</p></li>
@@ -97,13 +102,16 @@ on the Mac version.)</p>
 
 <p>For Nokia Symbian smartphones, this requires S60 5th edition (Symbian^1) or later (e.g.,
 Nokia 5800) - the Ovi Store should let you know if it's compatible with your phone. For Maemo,
-this has been tested on the Nokia N900. For Meego, this has been tested on the Nokia N950.
-For Android, this requires Android 2.1, and has been tested on the Samsung Galaxy Nexus. A
-resolution of at least 480x320 is recommended (all compatible Symbian smartphones should
-satisfy this, being at least 640x360, but the graphics quality may come out a bit poor on
-some of the lower end Android devices that still run at 320x240). Note that the Android version
+this has been tested on the Nokia N900. For Meego, this has been tested on the Nokia N950.</p>
+
+<p>For Android, this requires Android 2.1, and has been tested on the Samsung Galaxy Nexus.
+A resolution of at least 480x320 is recommended. Note that the Android version
 doesn't yet support sound (as this isn't yet supported in Qt for Android; there is another way
-I could support sound, but this would restrict it to Android 2.3 or above).</p>
+I could support sound, but this would restrict it to Android 2.3 or above).
+This also requires installing the app <a href="https://play.google.com/store/apps/details?id=org.kde.necessitas.ministro">Ministro</a>, which you should be prompted to do when you first run
+Gigalomania (if it's not already installed). Ministro manages the required Qt libraries on Android. These will be downloaded if required when you first run Gigalomania. If you get an error message such as "Ministro can not satisfy your application dependencies", please ensure you have enough storage space (the libraries can take up to around 25MB).</p>
+
+<p>I have had some reports of a crash on startup for Android, which unfortunately I can't reproduce on my phone. If this does happen, please <a href="#contact">let me know</a>.</p>
 
 <p>If the game fails to run, or has problems, please try the following:<ul>
   <li>For Windows, make sure you have installed the required libraries/DLLs (see Windows download,
@@ -111,6 +119,7 @@ I could support sound, but this would restrict it to Android 2.3 or above).</p>
   <li>On Linux, try running from the command line (from Terminal window, type gigalomania) to see
   if that gives any informative error message.</li>
   <li>Ensure you have the latest drivers for your graphics card.</li>
+  <li>On Android, on rare occasions Ministro may fail to download the required libraries due to network or server problems - please try again later to see if the problem still persists.</li>
   <li>Please <a href="#contact">contact me</a> to report any problems.</li>
 </ul></p>
 
@@ -366,13 +375,13 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 
 <p>Please contact me at <b>mark dot harman at ntlworld dot com</b> .</p>
 
-<p>If you are reporting a bug, please send me:<ul>
+<p>If you are reporting a bug, if possible please send me:<ul>
   <li>Any reported error messages.</li>
 	<li>The "log.txt" file. This can be found:<ul>
     <li>For Windows, in %APPDATA%\Gigalomania.</li>
     <li>
-      For Linux, Maemo and Meego, in $HOME/.config/gigalomania (in Ubuntu, go to menu Places->Home Folder, then
-      make sure View->Show Hidden Files is selected, then open the folder .config).
+      For Linux, Maemo and Meego, in $HOME/.config/gigalomania (in Ubuntu, go to menu Places->Home Folder, 
+      then make sure View->Show Hidden Files is selected, then open the folder .config).
     </li>
     <li>In OS X, in the "app" folder that the program is located</li>
     <li>
@@ -396,8 +405,9 @@ but in "All Islands" mode, it contributes to your final score if you complete th
   <li>If under Linux and no log.txt file is generated, try running gigalomania from a Terminal
   window, and note if that gives any error messages.</li>
   <li>A description of what happened, and what steps you took that resulted in the bug.</li>
-  <li>Any details of your system may also be helpful, e.g.: operating system, CPU, graphics
-  card, Direct X version if relevant.</li>
+  <li>Does the bug happen every time?</li>
+  <li>Any details of your system may also be helpful, e.g.: operating system and version, CPU, graphics
+  card, Direct X version if relevant, make/model of smartphone/tablet if relevant.</li>
 </ul>
 </p>
 
@@ -405,9 +415,9 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <p><b>Help wanted!</b></p>
 
 <p>If you would like to contribute to Gigalomania, there are various ways you can help:<ul>
-<li><b>Musicians</b> - Some music would be nice to add to the game. Note that if you place an OGG music file "gamemusic.ogg" in the main folder, it will play during the game. More sound effects would also be useful to have.</li>
+<li><b>Musicians</b> - Some music would be nice to add to the game. Note that if you place an OGG music file "gamemusic.ogg" in the main folder, it will play during the game (at least for Windows/OS X/Linux). More sound effects would also be useful to have.</li>
 <li><b>Graphics artists</b> - I have a graphics artist working on some images, though there's no reason why there couldn't be additional graphics sets for different styles, so feel free to contribute. Please contact me if you want info on the expected graphics formats, or things like additional data files (e.g., the POV Ray files for the building graphics).</li>
-<li><b>Porting</b> - Feel free to port Gigalomania to other platforms supported by SDL. If you send me the files, I can integrate them into the main source.</li>
+<li><b>Porting</b> - Feel free to port Gigalomania to other platforms - it should be easy to port to any OS that supports SDL or Qt. If you send me the files, I can integrate them into the main source. (Please check the Git repository on Sourceforge for the latest version to work with.)</li>
 <li><b>Tell people about it!</b> - If you like the game, then please feel free to tell other
        people about it, on your blog/Twitter/website/etc :)</li>
 <li><b>Give me a nice rating :)</b> (On Nokia/Android stores, or other hosting sites...)
@@ -796,7 +806,7 @@ First public release.
 <!--<li>explosion_6.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=35463">35463__jobro__Explosion_6.wav</a>, by jobro, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
 <li>bomb.wav - from <a href="http://soundbible.com/1234-Bomb.html">Bomb-SoundBible.com-891110113.wav</a>, by Mike Koenig, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported</a> (CC BY 3.0).</li>
 <!--<li>plagasul_jah.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=74">74__plagasul__JaH.wav</a>, by Plagasul, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
-<li>pain1.wav - from <a href="http://opengameart.org/content/vocal-grunts">http://opengameart.org/content/vocal-grunts</a>, by Matthew Newman, under GPL v2 or later, or <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported</a> (CC BY SA 3.0).</li>
+<li>pain1.wav - from <a href="http://opengameart.org/content/11-male-human-paindeath-sounds">http://opengameart.org/content/11-male-human-paindeath-sounds</a>, by Michel Baradari, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported</a> (CC BY 3.0).</li>
 <!--<li>pulsed808bd.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=3169">3169__jonnay__Pulsed808BD.wav</a>, by Jonnay, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
 <li>misc_menu_3.wav - from <a href="http://opengameart.org/content/gui-sound-effects">http://opengameart.org/content/gui-sound-effects</a>, by Lokif, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>woodbrk.wav - modified from <a href="http://freeciv.wikia.com/wiki/Main_Page">FreeCiv</a>, under the GPL.</li>
