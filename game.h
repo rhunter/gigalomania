@@ -240,10 +240,18 @@ extern Element *elements[];
 
 extern Player *players[];
 
+enum GameMode {
+	GAMEMODE_SINGLEPLAYER = 0,
+	GAMEMODE_MULTIPLAYER_SERVER = 1,
+	GAMEMODE_MULTIPLAYER_CLIENT = 2
+};
+extern GameMode gameMode;
+
 enum GameType {
 	GAMETYPE_SINGLEISLAND = 0,
 	GAMETYPE_ALLISLANDS = 1
 };
+extern GameType gameType;
 
 enum DifficultyLevel {
 	DIFFICULTY_EASY = 0,
@@ -252,7 +260,6 @@ enum DifficultyLevel {
 	DIFFICULTY_N_LEVELS
 };
 extern DifficultyLevel difficulty_level;
-extern GameType gameType;
 
 int getMenAvailable();
 int getNSuspended();

@@ -48,7 +48,7 @@ using std::stringstream;
 //---------------------------------------------------------------------------
 
 const int majorVersion = 0;
-const int minorVersion = 24;
+const int minorVersion = 25;
 
 // onemousebutton means UI can be used with one mouse button only
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
@@ -86,8 +86,13 @@ int offset_flag_y_c = 6;
 
 bool use_amigadata = true;
 
+GameMode gameMode = GAMEMODE_SINGLEPLAYER;
+//GameMode gameMode = GAMEMODE_MULTIPLAYER_CLIENT;
+
 GameType gameType = GAMETYPE_SINGLEISLAND;
 //GameType gameType = GAMETYPE_ALLISLANDS;
+
+DifficultyLevel difficulty_level = DIFFICULTY_EASY;
 
 Image *player_select = NULL;
 Image *background = NULL;
@@ -237,8 +242,6 @@ bool paused = false;
 int n_men_store = 0;
 int n_suspended[n_players_c];
 //int n_men_for_this_island = 0;
-
-DifficultyLevel difficulty_level = DIFFICULTY_EASY;
 
 int getMenPerEpoch() {
 	ASSERT( gameType == GAMETYPE_ALLISLANDS );
@@ -2445,24 +2448,13 @@ void setupPlayers() {
 
 	int seed = clock();
 	//seed = 72638; // test
-	/*static int count = 0;
-	count++;
-	seed = 331 + count;*/
-	//seed = 1000;
 	LOG("setupPlayers(): set random seed to %d\n", seed);
 	srand( seed );
 
-	/*for(int i=0;i<n_players_c;i++)
-	players[i] = NULL;*/
-	// Personalities:
 	//   0 - Red team
 	//   1 - Green team
 	//   2 - Yellow team
 	//   3 - Blue team
-
-	//human_player = 0;
-	//human_player = 2;
-	//enemy_player = 3;
 
 	int n_opponents = maps[start_epoch][selected_island]->getNOpponents();
 	ASSERT( n_opponents+1 <= maps[start_epoch][selected_island]->getNSquares() );
@@ -2474,24 +2466,22 @@ void setupPlayers() {
 	else {
 		n_opponents++;
 	}
-	for(int i=0;i<n_opponents && n_free > 0;i++) {
-		int indx = rand() % n_free;
-		for(int j=0;j<4;j++) {
-			if( players[j] == NULL ) {
-				if( indx == 0 ) {
-					players[j] = new Player(j);
-					n_free--;
-					break;
+
+	if( gameMode == GAMEMODE_SINGLEPLAYER ) {
+		for(int i=0;i<n_opponents && n_free > 0;i++) {
+			int indx = rand() % n_free;
+			for(int j=0;j<4;j++) {
+				if( players[j] == NULL ) {
+					if( indx == 0 ) {
+						players[j] = new Player(j);
+						n_free--;
+						break;
+					}
+					indx--;
 				}
-				indx--;
 			}
 		}
 	}
-
-	/*players[0] = new Player(0);
-	players[1] = new Player(1);
-	players[2] = new Player(2);
-	players[3] = new Player(3);*/
 
 }
 
@@ -3319,6 +3309,10 @@ void playGame(int n_args, char *args[]) {
 			onemousebutton = true;
 		else if( strcmp(args[i], "mobile_ui") == 0 )
 			mobile_ui = true;
+		else if( strcmp(args[i], "server") == 0 )
+			gameMode = GAMEMODE_MULTIPLAYER_SERVER;
+		else if( strcmp(args[i], "client") == 0 )
+			gameMode = GAMEMODE_MULTIPLAYER_CLIENT;
 	}
 #endif
 
@@ -3453,145 +3447,6 @@ void playGame(int n_args, char *args[]) {
 
     LOG("all done!\n");
 	application->runMainLoop();
-
-#if 0
-	//Uint32 elapsed_time = SDL_GetTicks();
-	int elapsed_time = application->getTicks();
-
-	lastmouseclick_time = 0;
-
-	SDL_Event event;
-	quit = false;
-	const bool print_fps = false;
-	int last_fps_time = clock();
-	const int fps_frames_c = 50;
-	//const int fps_frames_c = 1;
-	int frames = 0;
-	while(!quit) {
-		if( print_fps && frames == fps_frames_c ) {
-			int new_fps_time = clock();
-			float t = ((float)(new_fps_time - last_fps_time)) / (float)CLOCKS_PER_SEC;
-			float fps = fps_frames_c / t;
-			LOG("FPS: %f\n", fps);
-			frames = 0;
-			last_fps_time = new_fps_time;
-		}
-		frames++;
-
-		updateSound();
-
-		// draw screen
-		if( !paused )
-			gamestate->draw();
-
-		/* wait() to avoid 100% CPU - it's debatable whether we should do this,
-		 * due to risk of SDL_Delay waiting too long, but since Gigalomania
-		 * doesn't really need high frame rate, might as well avoid using full
-		 * CPU.
-		 */
-		wait();
-
-		//Uint32 new_time = SDL_GetTicks();
-		int new_time = application->getTicks();
-		if( !paused ) {
-			updateTime(new_time - elapsed_time);
-		}
-		else
-			updateTime(0);
-		elapsed_time = new_time;
-
-		// user input
-		//bool handled_mouseclick_this_frame = false;
-		//if( SDL_PollEvent(&event) == 1 ) {
-		while( SDL_PollEvent(&event) == 1 ) {
-			//bool playing_game_quit = false;
-			switch (event.type) {
-			case SDL_QUIT:
-				if( gameStateID == GAMESTATEID_PLAYING ) {
-					/*if( !state_changed )
-					playing_game_quit = true;*/
-					static_cast<PlayingGameState *>(gamestate)->requestQuit();
-				}
-				else
-					quit = true;
-				break;
-			case SDL_KEYDOWN:
-				{
-					SDL_keysym key = event.key.keysym;
-					if( key.sym == SDLK_ESCAPE ) {
-						keypressEscape();
-					}
-					else if( key.sym == SDLK_p ) {
-						keypressP();
-					}
-					else if( key.sym == SDLK_q ) {
-						keypressQ();
-					}
-					break;
-				}
-			case SDL_MOUSEBUTTONDOWN:
-				{
-					// We need code here (including the "hack"), as well as below, to catch cases where the mouse button
-					// went down and up before we reach the code below (seems to be more a problem on Linux).
-					// Really need to switch to handling mouse clicks versus presses separately...
-					if( paused ) {
-						// click automatically unpaused (needed to work without keyboard!)
-						paused = false;
-					}
-					else {
-						bool m_left = false, m_middle = false, m_right = false;
-						Uint8 button = event.button.button;
-						if( button == SDL_BUTTON_LEFT ) {
-							m_left = true;
-						}
-						else if( button == SDL_BUTTON_MIDDLE ) {
-							m_middle = true;
-						}
-						else if( button == SDL_BUTTON_RIGHT ) {
-							m_right = true;
-						}
-						int m_x = 0, m_y = 0;
-						screen->getMouseCoords(&m_x, &m_y);
-						if( m_left || m_middle || m_right ) {
-							/*if( getRealTime() - lastmouseclick_time >= mouseclick_delay )
-							{
-								//LOG("ping\n");
-								lastmouseclick_time = getRealTime();
-								gamestate->mouseClick(m_x, m_y, m_left, m_middle, m_right);
-							}*/
-							mouseClick(m_x, m_y, m_left, m_middle, m_right);
-						}
-						/*int m_x = 0, m_y = 0;
-						Uint8 m_b = SDL_GetMouseState(&m_x,&m_y);
-						// hack! to avoid missing button presses... (but we can't solely use the event, as we need to pick up both mouse buttons being pressed, so still need SDL_GetMouseState()!
-						Uint8 button = event.button.button;
-						if( button == SDL_BUTTON_LEFT ) {
-							m_b = m_b | SDL_BUTTON(1);
-						}
-						else if( button == SDL_BUTTON_MIDDLE ) {
-							m_b = m_b | SDL_BUTTON(2);
-						}
-						else if( button == SDL_BUTTON_RIGHT ) {
-							m_b = m_b | SDL_BUTTON(3);
-						}
-						if( m_b != 0 && getRealTime() - lastmouseclick_time >= mouseclick_delay ) {
-							lastmouseclick_time = getRealTime();
-							bool m_left = ( m_b & SDL_BUTTON(1) ) != 0;
-							bool m_middle = ( m_b & SDL_BUTTON(2) ) != 0;
-							bool m_right = ( m_b & SDL_BUTTON(3) ) != 0;
-							gamestate->mouseClick(m_x, m_y, m_left, m_middle, m_right);
-							//handled_mouseclick_this_frame = true;
-						}*/
-					}
-					break;
-				}
-			}
-		}
-		SDL_PumpEvents();
-
-		updateGame();
-	}
-#endif
 
 	cleanup();
 	LOG("exiting..\n");

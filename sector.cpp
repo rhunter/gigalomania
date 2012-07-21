@@ -1458,7 +1458,6 @@ int Sector::getDefenceStrength() const {
 
 void Sector::doCombat() {
 	//LOG("Sector::doCombat()\n");
-	int i;
 	int looptime = getLoopTime();
 
 	/*int army_strengths[n_players_c];
@@ -1474,7 +1473,7 @@ void Sector::doCombat() {
 	}*/
 	bool died[n_players_c];
 	//int random = rand () % RAND_MAX;
-	for(i=0;i<n_players_c;i++) {
+	for(int i=0;i<n_players_c;i++) {
 		died[i] = false;
 		Army *army = this->getArmy(i);
 		int this_strength = army->getStrength();
@@ -1514,7 +1513,7 @@ void Sector::doCombat() {
 			}
 		}
 	}
-	for(i=0;i<n_players_c;i++) {
+	for(int i=0;i<n_players_c;i++) {
 		if( died[i] ) {
 			Army *army = this->getArmy(i);
 			int this_total = army->getTotal();
@@ -1535,7 +1534,7 @@ void Sector::doCombat() {
 	// damage to buildings
 	if( this->player != -1 ) {
 		int bombard = 0;
-		for(i=0;i<n_players_c;i++) {
+		for(int i=0;i<n_players_c;i++) {
 			if( this->player != i && !Player::isAlliance(this->player, i) ) {
 				bombard += this->getArmy(i)->getBombardStrength();
 			}
@@ -1549,13 +1548,13 @@ void Sector::doCombat() {
 			if( random <= prob ) {
 				// caused some damage
 				int n_buildings = 0;
-				for(i=0;i<N_BUILDINGS;i++) {
+				for(int i=0;i<N_BUILDINGS;i++) {
 					if( this->buildings[i] != NULL )
 						n_buildings++;
 				}
 				ASSERT( n_buildings > 0 );
 				int b = rand() % n_buildings;
-				for(i=0;i<N_BUILDINGS;i++) {
+				for(int i=0;i<N_BUILDINGS;i++) {
 					Building *building = this->buildings[i];
 					if( building != NULL ) {
 						if( b == 0 ) {
@@ -1588,6 +1587,15 @@ void Sector::doCombat() {
 void Sector::doPlayer() {
 	//LOG("Sector::doPlayer()\n");
 	// stuff for sectors owned by a player
+
+	if( this->getParticleSystem() != NULL ) {
+		this->getParticleSystem()->update();
+	}
+
+	if( gameMode == GAMEMODE_MULTIPLAYER_CLIENT ) {
+		// rest of function is for game logic done by server
+		return;
+	}
 
 	int time = getGameTime();
 	int looptime = getLoopTime();
@@ -1848,44 +1856,15 @@ void Sector::doPlayer() {
 
 void Sector::update() {
 	//LOG("Sector::update()\n");
-
-	this->doCombat();
-
-	// TEST
-	/*{
-		if( this->player == human_player ) {
-			Building *building = this->getBuilding(BUILDING_MINE);
-			if( building != NULL ) {
-				building->addHealth(-1);
-				if( building->getHealth() <= 0 ) {
-					// destroy building
-					destroyBuilding(BUILDING_MINE);
-				}
-			}
-			building = this->getBuilding(BUILDING_FACTORY);
-			if( building != NULL ) {
-				building->addHealth(-1);
-				if( building->getHealth() <= 0 ) {
-					// destroy building
-					destroyBuilding(BUILDING_FACTORY);
-				}
-			}
-			building = this->getBuilding(BUILDING_LAB);
-			if( building != NULL ) {
-				building->addHealth(-1);
-				if( building->getHealth() <= 0 ) {
-					// destroy building
-					destroyBuilding(BUILDING_LAB);
-				}
-			}
-		}
-	}*/
+	if( gameMode != GAMEMODE_MULTIPLAYER_CLIENT ) {
+		this->doCombat();
+	}
 
 	if( this->player != -1 ) {
 		if( !this->is_shutdown )
-			this->doPlayer();
+			this->doPlayer(); // still call for clients, to update particle system
 	}
-	else {
+	else if( gameMode != GAMEMODE_MULTIPLAYER_CLIENT ) {
 		int time = getGameTime();
 		int n_players_in_sector = 0;
 		int player_in_sector = -1;
@@ -1923,6 +1902,11 @@ void Sector::update() {
 			}
 		}
 	}
+
+	if( gameMode != GAMEMODE_MULTIPLAYER_CLIENT ) {
+		return;
+	}
+	// rest of function is done by server
 
 	if( this->nuke_by_player != -1 ) {
 		ASSERT( this->nuke_time != -1 );
@@ -1983,10 +1967,6 @@ void Sector::update() {
 			this->nuke_by_player = -1;
 			this->nuke_time = -1;
 		}
-	}
-
-	if( this->getParticleSystem() != NULL ) {
-		this->getParticleSystem()->update();
 	}
 }
 
