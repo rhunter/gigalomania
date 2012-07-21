@@ -1673,16 +1673,6 @@ void PlayingGameState::update() {
 			}
 		}
 	}
-
-	/*if( smokeParticleSystem != NULL ) {
-		smokeParticleSystem->update();
-	}
-	if( smokeParticleSystem_busy != NULL ) {
-		smokeParticleSystem_busy->update();
-	}*/
-	/*if( current_sector->getParticleSystem() != NULL ) {
-		current_sector->getParticleSystem()->update();
-	}*/
 }
 
 bool PlayingGameState::buildingMouseClick(int s_m_x,int s_m_y,bool m_left,bool m_right,Building *building) {
