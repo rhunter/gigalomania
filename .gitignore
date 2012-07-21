@@ -24,8 +24,9 @@ Release/
 *.sdf
 *.opensdf
 
-*.svg
-*.png
+*.ico
 *.ogg
+*.png
+*.svg
 
 gpl.txt
