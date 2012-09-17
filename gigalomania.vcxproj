@@ -204,10 +204,8 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs\comp_gigalomania.html">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="docs\todo.txt" />
+    <None Include="readme.html" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

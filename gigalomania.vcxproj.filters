@@ -103,10 +103,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="docs\comp_gigalomania.html">
+    <None Include="docs\todo.txt">
       <Filter>Docs</Filter>
     </None>
-    <None Include="docs\todo.txt">
+    <None Include="readme.html">
       <Filter>Docs</Filter>
     </None>
   </ItemGroup>
