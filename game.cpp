@@ -94,7 +94,7 @@ GameType gameType = GAMETYPE_SINGLEISLAND;
 
 DifficultyLevel difficulty_level = DIFFICULTY_EASY;
 
-Image *player_select = NULL;
+//Image *player_select = NULL;
 Image *background = NULL;
 Image *land[MAP_N_COLOURS];
 Image *fortress[n_epochs_c];
@@ -1243,15 +1243,12 @@ void processImage(Image *image) {
 	image->setScale(scale_width, scale_height);
 }
 
-bool original_background = false;
-
 bool loadImages() {
     //int time_s = clock();
 	// progress should go from 0 to 80%
-	bool using_new_graphics = true;
 	string gfx_dir = "gfx/";
 
-#if defined(Q_OS_ANDROID)
+/*#if defined(Q_OS_ANDROID)
         player_select = Image::loadImage(gfx_dir + "player_select.png");
 #else
         player_select = Image::loadImage(gfx_dir + "player_select.jpg");
@@ -1267,113 +1264,70 @@ bool loadImages() {
 	}
 #endif
 #endif
-    if( player_select == NULL ) {
-		using_new_graphics = false;
-		player_select = Image::loadImage(use_amigadata ? "data/mlm_select" : "Mega Lo Mania/");
-	}
 	drawProgress(10);
-	if( using_new_graphics ) {
-		LOG("using new graphics\n");
-	}
-	else {
-		LOG("using old graphics\n");
-	}
+
 	if( player_select == NULL )
 		return false;
+
 	//scale_factor = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
 	//LOG("scale factor for images = %f\n", scale_factor);
 	scale_factor_w = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
 	scale_factor_h = ((float)(scale_height*default_height_c))/(float)player_select->getHeight();
 	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
 	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
-	/*player_select->scale(scale_factor, scale_factor);
-	player_select->setScale(scale_width, scale_height);*/
 	processImage(player_select);
+	*/
 
-	if( using_new_graphics )
 #if defined(Q_OS_ANDROID)
-            background = Image::loadImage(gfx_dir + "starfield.png");
+	background = Image::loadImage(gfx_dir + "starfield.png");
 #else
-            background = Image::loadImage(gfx_dir + "starfield.jpg");
+	background = Image::loadImage(gfx_dir + "starfield.jpg");
 #endif
-        else {
-		background = Image::loadImage("data/mlm_starfield");
-		original_background = true;
+#ifndef USING_QT
+    // if using Qt, we use resources even on Linux
+#ifdef __linux
+	if( background == NULL ) {
+		gfx_dir = "/usr/share/gigalomania/" + gfx_dir;
+		LOG("look in %s for gfx\n", gfx_dir.c_str());
+		background = Image::loadImage(gfx_dir + "starfield.jpg");
 	}
+#endif
+#endif
 	if( background == NULL )
 		return false;
 	drawProgress(20);
-	/*background->scale(scale_factor, scale_factor);
-	background->setScale(scale_width, scale_height);*/
+	//scale_factor = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
+	//LOG("scale factor for images = %f\n", scale_factor);
+	scale_factor_w = ((float)(scale_width*default_width_c))/(float)background->getWidth();
+	scale_factor_h = ((float)(scale_height*default_height_c))/(float)background->getHeight();
+	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
+	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
 	processImage(background);
 
 	Image *image_slabs = NULL;
-	if( using_new_graphics )
-		image_slabs = Image::loadImage(gfx_dir + "slabs.png");
-	else {
-		image_slabs = Image::loadImage("data/mlm_slabs");
-		//copy_palette = true;
-	}
+	image_slabs = Image::loadImage(gfx_dir + "slabs.png");
 	if( image_slabs == NULL )
 		return false;
 	drawProgress(30);
-	if( using_new_graphics ) {
-		for(int i=0;i<MAP_N_COLOURS;i++) {
-			land[i] = image_slabs->copy();
-			processImage(land[i]);
-			//land[i]->setMaskColor(255, 0, 255); // need to set the mask colour now, to stop it being multiplied!
-		}
-		/*land[MAP_ORANGE]->brighten(240.0f/255.0f, 112.0f/255.0f, 16.0f/255.0f, true);
-		land[MAP_GREEN]->brighten(0.0f/255.0f, 192.0f/255.0f, 0.0f/255.0f, true);
-		land[MAP_BROWN]->brighten(160.0f/255.0f, 64.0f/255.0f, 0.0f/255.0f, true);
-		land[MAP_WHITE]->brighten(240.0f/255.0f, 240.0f/255.0f, 240.0f/255.0f, true);
-		land[MAP_DBROWN]->brighten(112.0f/255.0f, 36.0f/255.0f, 16.0f/255.0f, true);
-		land[MAP_DGREEN]->brighten(0/255.0f, 96.0f/255.0f, 0.0f/255.0f, true);
-		land[MAP_GREY]->brighten(112.0f/255.0f, 112.0f/255.0f, 112.0f/255.0f, true);*/
-		land[MAP_ORANGE]->brighten(187.5f/255.0f, 96.0f/255.0f, 42.0f/255.0f);
-		land[MAP_GREEN]->brighten(52.0f/255.0f, 163.5f/255.0f, 52.0f/255.0f);
-		land[MAP_BROWN]->brighten(116.0f/255.0f, 72.0f/255.0f, 36.0f/255.0f);
-		land[MAP_WHITE]->brighten(163.5f/255.0f, 163.5f/255.0f, 163.5f/255.0f);
-		land[MAP_DBROWN]->brighten(120.0f/255.0f, 76.0f/255.0f, 58.0f/255.0f);
-		land[MAP_DGREEN]->brighten(26/255.0f, 120.0f/255.0f, 26.0f/255.0f);
-		land[MAP_GREY]->brighten(94.0f/255.0f, 94.0f/255.0f, 94.0f/255.0f);
+	for(int i=0;i<MAP_N_COLOURS;i++) {
+		land[i] = image_slabs->copy();
+		processImage(land[i]);
+		//land[i]->setMaskColor(255, 0, 255); // need to set the mask colour now, to stop it being multiplied!
 	}
-	else {
-		for(int i=0;i<MAP_N_COLOURS;i++) {
-			land[i] = image_slabs->copy();
-			//land[i]->scale(scale_factor, scale_factor); // also forces to 8bit (since should be paletted)
-			land[i]->scale(scale_factor_w, scale_factor_h); // also forces to 8bit (since should be paletted)
-			land[i]->setScale(scale_width, scale_height);
-			if( !land[i]->isPaletted() ) {
-				LOG("land slabs should be paletted\n");
-				return false;
-			}
-			else if( land[i]->getNColors() < 16 ) { // should be 256 by now anyway, due to scaling
-				LOG("land slabs should have at least 16 colours\n");
-				return false;
-			}
-			else {
-				// 1, 2, 3, 4, 5, 6, 7, 8, 12, 14, 15
-				land[i]->setColor(0, 255, 0, 255);
-				land[i]->setColor(1, 176, 176, 176);
-				land[i]->setColor(2, 240, 240, 240);
-				land[i]->setColor(3, 0, 0, 0);
-				land[i]->setColor(4, 64, 64, 64);
-				land[i]->setColor(5, 112, 112, 112);
-				land[i]->setColor(6, 160, 64, 0);
-				land[i]->setColor(7, 0, 96, 0);
-				land[i]->setColor(8, 112, 36, 16);
-				land[i]->setColor(12, 0, 192, 0);
-				land[i]->setColor(14, 240, 112, 16);
-				land[i]->setColor(15, 240, 240, 0);
-			}
-			if( !remapLand(land[i], (MapColour)i) ) {
-				LOG("failed to remap land\n");
-				return false;
-			}
-			convertToHiColor(land[i]);
-		}
-	}
+	/*land[MAP_ORANGE]->brighten(240.0f/255.0f, 112.0f/255.0f, 16.0f/255.0f, true);
+	land[MAP_GREEN]->brighten(0.0f/255.0f, 192.0f/255.0f, 0.0f/255.0f, true);
+	land[MAP_BROWN]->brighten(160.0f/255.0f, 64.0f/255.0f, 0.0f/255.0f, true);
+	land[MAP_WHITE]->brighten(240.0f/255.0f, 240.0f/255.0f, 240.0f/255.0f, true);
+	land[MAP_DBROWN]->brighten(112.0f/255.0f, 36.0f/255.0f, 16.0f/255.0f, true);
+	land[MAP_DGREEN]->brighten(0/255.0f, 96.0f/255.0f, 0.0f/255.0f, true);
+	land[MAP_GREY]->brighten(112.0f/255.0f, 112.0f/255.0f, 112.0f/255.0f, true);*/
+	land[MAP_ORANGE]->brighten(187.5f/255.0f, 96.0f/255.0f, 42.0f/255.0f);
+	land[MAP_GREEN]->brighten(52.0f/255.0f, 163.5f/255.0f, 52.0f/255.0f);
+	land[MAP_BROWN]->brighten(116.0f/255.0f, 72.0f/255.0f, 36.0f/255.0f);
+	land[MAP_WHITE]->brighten(163.5f/255.0f, 163.5f/255.0f, 163.5f/255.0f);
+	land[MAP_DBROWN]->brighten(120.0f/255.0f, 76.0f/255.0f, 58.0f/255.0f);
+	land[MAP_DGREEN]->brighten(26/255.0f, 120.0f/255.0f, 26.0f/255.0f);
+	land[MAP_GREY]->brighten(94.0f/255.0f, 94.0f/255.0f, 94.0f/255.0f);
 	delete image_slabs;
 	image_slabs = NULL;
 
@@ -1396,582 +1350,309 @@ bool loadImages() {
 		mine[i] = NULL;
 		factory[i] = NULL;
 	}
-	if( using_new_graphics ) {
-		for(int i=0;i<n_epochs_c;i++) {
-			stringstream filename;
-			filename << gfx_dir << "building_tower_" << i << ".png";
-			Image *temp = Image::loadImage(filename.str().c_str());
-			if( temp == NULL ) {
-				return false;
-			}
-			processImage(temp);
-			//delete fortress[i];
-			//fortress[i] = temp->copy(29, 9, 62, 51);
-			fortress[i] = temp->copy(27, 9, 64, 51);
-			delete temp;
-		}
-		for(int i=mine_epoch_c;i<n_epochs_c-1;i++) {
-			stringstream filename;
-			filename << gfx_dir << "building_mine_" << i << ".png";
-			Image *temp = Image::loadImage(filename.str().c_str());
-			if( temp == NULL ) {
-				return false;
-			}
-			processImage(temp);
-			mine[i] = temp->copy(28, 12, 66, 51);
-			delete temp;
-		}
-		for(int i=factory_epoch_c;i<n_epochs_c-1;i++) {
-			stringstream filename;
-			filename << gfx_dir << "building_factory_" << i << ".png";
-			Image *temp = Image::loadImage(filename.str().c_str());
-			if( temp == NULL ) {
-				return false;
-			}
-			processImage(temp);
-			//factory[i] = temp->copy(24, 1, 70, 62);
-			factory[i] = temp->copy(25, 1, 68, 62);
-			delete temp;
-		}
-		for(int i=lab_epoch_c;i<n_epochs_c-1;i++) {
-			stringstream filename;
-			filename << gfx_dir << "building_lab_" << i << ".png";
-			Image *temp = Image::loadImage(filename.str().c_str());
-			if( temp == NULL ) {
-				return false;
-			}
-			processImage(temp);
-			//lab[i] = temp->copy(28, 12, 66, 51);
-			lab[i] = temp->copy(31, 12, 52, 51);
-			delete temp;
-		}
-
-		buildings_shadow = false; // done using alpha channel
-		offset_flag_y_c = 3; // correct placement of flag on tower for new graphics
-	}
-	else {
-		Image *buildings = Image::loadImage("data/mlm_buildings");
-		if( buildings == NULL )
+	for(int i=0;i<n_epochs_c;i++) {
+		stringstream filename;
+		filename << gfx_dir << "building_tower_" << i << ".png";
+		Image *temp = Image::loadImage(filename.str().c_str());
+		if( temp == NULL ) {
 			return false;
-		buildings_shadow = buildings->isPaletted() && buildings->getNColors() == 16;
-		buildings->setColor(0, 255, 0, 255);
-		processImage(buildings);
-
-		for(int i=0;i<n_epochs_c;i++) {
-			fortress[i] = buildings->copy( 0, 60*i, 58, 60);
-			mine[i] = buildings->copy( 64, 60*i, 58, 60);
-			factory[i] = buildings->copy( 192, 60*i, 58, 60);
-			lab[i] = buildings->copy( 128, 60*i, 58, 60);
 		}
-		delete buildings;
+		processImage(temp);
+		//delete fortress[i];
+		//fortress[i] = temp->copy(29, 9, 62, 51);
+		fortress[i] = temp->copy(27, 9, 64, 51);
+		delete temp;
 	}
+	for(int i=mine_epoch_c;i<n_epochs_c-1;i++) {
+		stringstream filename;
+		filename << gfx_dir << "building_mine_" << i << ".png";
+		Image *temp = Image::loadImage(filename.str().c_str());
+		if( temp == NULL ) {
+			return false;
+		}
+		processImage(temp);
+		mine[i] = temp->copy(28, 12, 66, 51);
+		delete temp;
+	}
+	for(int i=factory_epoch_c;i<n_epochs_c-1;i++) {
+		stringstream filename;
+		filename << gfx_dir << "building_factory_" << i << ".png";
+		Image *temp = Image::loadImage(filename.str().c_str());
+		if( temp == NULL ) {
+			return false;
+		}
+		processImage(temp);
+		//factory[i] = temp->copy(24, 1, 70, 62);
+		factory[i] = temp->copy(25, 1, 68, 62);
+		delete temp;
+	}
+	for(int i=lab_epoch_c;i<n_epochs_c-1;i++) {
+		stringstream filename;
+		filename << gfx_dir << "building_lab_" << i << ".png";
+		Image *temp = Image::loadImage(filename.str().c_str());
+		if( temp == NULL ) {
+			return false;
+		}
+		processImage(temp);
+		//lab[i] = temp->copy(28, 12, 66, 51);
+		lab[i] = temp->copy(31, 12, 52, 51);
+		delete temp;
+	}
+
+	buildings_shadow = false; // done using alpha channel
+	offset_flag_y_c = 3; // correct placement of flag on tower for new graphics
 	drawProgress(40);
 
-	if( using_new_graphics ) {
-		Image *icons = Image::loadImage(gfx_dir + "icons.png");
-		if( icons == NULL )
-			return false;
-		/*if( !icons->scaleTo(scale_width*default_width_c) )
-		return false;*/
+	Image *icons = Image::loadImage(gfx_dir + "icons.png");
+	if( icons == NULL )
+		return false;
+	/*if( !icons->scaleTo(scale_width*default_width_c) )
+	return false;*/
 
-        // need to do flags beforehand, due to colour remapping
-        icons->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
-        for(int i=0;i<n_players_c;i++) { // different locations
-            for(int j=0;j<3;j++)
-                flags[i][j] = icons->copy(160 + 16*j, 144, 16, 16);
-            flags[i][3] = icons->copy(160 + 16*1, 144, 16, 16);
-            for(int j=0;j<n_flag_frames_c;j++) {
-                int r = 0, g = 0, b = 0, col = 0;
-                PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
-                flags[i][j]->remap(240, 0, 0, r, g, b);
-                processImage(flags[i][j]);
-            }
+    // need to do flags beforehand, due to colour remapping
+    icons->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
+    for(int i=0;i<n_players_c;i++) { // different locations
+        for(int j=0;j<3;j++)
+            flags[i][j] = icons->copy(160 + 16*j, 144, 16, 16);
+        flags[i][3] = icons->copy(160 + 16*1, 144, 16, 16);
+        for(int j=0;j<n_flag_frames_c;j++) {
+            int r = 0, g = 0, b = 0, col = 0;
+            PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
+            flags[i][j]->remap(240, 0, 0, r, g, b);
+            processImage(flags[i][j]);
         }
+    }
 
-        processImage(icons);
+    processImage(icons);
 
-		for(int i=0;i<n_epochs_c;i++)
-			men[i] = icons->copy(16*i, 0, 16, 16);
+	for(int i=0;i<n_epochs_c;i++)
+		men[i] = icons->copy(16*i, 0, 16, 16);
 
-		unarmed_man = icons->copy(80, 32, 16, 16);
+	unarmed_man = icons->copy(80, 32, 16, 16);
 
-		panel_design = icons->copy(304, 0, 16, 16);
-		//panel_design_dark = panel_design->copy();
-		panel_lab = icons->copy(16, 33, 16, 16);
-		panel_shield = icons->copy(240, 0, 16, 16);
-		panel_defence = icons->copy(256, 0, 16, 16);
-		panel_attack = icons->copy(272, 0, 16, 16);
-		panel_knowndesigns = icons->copy(240, 16, 16, 16);
-		panel_factory = icons->copy(48, 33, 16, 16);
-		panel_bloody_attack = icons->copy(240, 32, 16, 16);
+	panel_design = icons->copy(304, 0, 16, 16);
+	//panel_design_dark = panel_design->copy();
+	panel_lab = icons->copy(16, 33, 16, 16);
+	panel_shield = icons->copy(240, 0, 16, 16);
+	panel_defence = icons->copy(256, 0, 16, 16);
+	panel_attack = icons->copy(272, 0, 16, 16);
+	panel_knowndesigns = icons->copy(240, 16, 16, 16);
+	panel_factory = icons->copy(48, 33, 16, 16);
+	panel_bloody_attack = icons->copy(240, 32, 16, 16);
 
-		mine_gatherable_small = icons->copy(160, 0, 16, 16);
+	mine_gatherable_small = icons->copy(160, 0, 16, 16);
 
-		//panel_build[BUILDING_TOWER] = icons->copy(224, 63, 16, 16); // different size // not yet used
-		panel_build[BUILDING_MINE] = icons->copy(256, 63, 16, 16); // different size
-		panel_build[BUILDING_FACTORY] = icons->copy(288, 63, 16, 16); // different size
-		panel_build[BUILDING_LAB] = icons->copy(192, 63, 16, 16); // different size
+	//panel_build[BUILDING_TOWER] = icons->copy(224, 63, 16, 16); // different size // not yet used
+	panel_build[BUILDING_MINE] = icons->copy(256, 63, 16, 16); // different size
+	panel_build[BUILDING_FACTORY] = icons->copy(288, 63, 16, 16); // different size
+	panel_build[BUILDING_LAB] = icons->copy(192, 63, 16, 16); // different size
 
-		panel_building[BUILDING_TOWER] = icons->copy(0, 33, 16, 16); // different size
-		panel_building[BUILDING_MINE] = icons->copy(32, 33, 16, 16); // different size
-		panel_building[BUILDING_FACTORY] = panel_factory;
-		panel_building[BUILDING_LAB] = panel_lab;
+	panel_building[BUILDING_TOWER] = icons->copy(0, 33, 16, 16); // different size
+	panel_building[BUILDING_MINE] = icons->copy(32, 33, 16, 16); // different size
+	panel_building[BUILDING_FACTORY] = panel_factory;
+	panel_building[BUILDING_LAB] = panel_lab;
 
-		mine_gatherable_large = mine_gatherable_small;
-		panel_bigdesign = panel_design;
-		panel_biglab = panel_lab;
-		panel_bigfactory = panel_factory;
-		panel_bigshield = panel_shield;
-		panel_bigdefence = panel_defence;
-		panel_bigattack = panel_attack;
-		panel_bigbuild = icons->copy(48, 48, 16, 16);
-		panel_bigknowndesigns = panel_knowndesigns;
-		panel_twoattack = panel_attack;
+	mine_gatherable_large = mine_gatherable_small;
+	panel_bigdesign = panel_design;
+	panel_biglab = panel_lab;
+	panel_bigfactory = panel_factory;
+	panel_bigshield = panel_shield;
+	panel_bigdefence = panel_defence;
+	panel_bigattack = panel_attack;
+	panel_bigbuild = icons->copy(48, 48, 16, 16);
+	panel_bigknowndesigns = panel_knowndesigns;
+	panel_twoattack = panel_attack;
 
-		for(int i=0;i<n_players_c;i++)
-			mouse_pointers[i] = icons->copy(176 + 16*i, 0, 16, 16);
+	for(int i=0;i<n_players_c;i++)
+		mouse_pointers[i] = icons->copy(176 + 16*i, 0, 16, 16);
 
-		for(int i=0;i<13;i++)
-			icon_clocks[i] = icons->copy(16*i, 16, 16, 16);
+	for(int i=0;i<13;i++)
+		icon_clocks[i] = icons->copy(16*i, 16, 16, 16);
 
-		/*for(int i=0;i<3;i++)
-			icon_mice[i] = icons->copy(256 + 16*i, 16, 16, 16); // smaller size*/
-		for(int i=0;i<2;i++)
-			icon_mice[i] = icons->copy(256 + 16*i, 16, 16, 16); // smaller size
+	/*for(int i=0;i<3;i++)
+		icon_mice[i] = icons->copy(256 + 16*i, 16, 16, 16); // smaller size*/
+	for(int i=0;i<2;i++)
+		icon_mice[i] = icons->copy(256 + 16*i, 16, 16, 16); // smaller size
 
-		for(int i=0;i<n_death_flashes_c;i++)
-			death_flashes[i] = icons->copy(256 + 16*i, 32, 16, 16); // different location and smaller size
+	for(int i=0;i<n_death_flashes_c;i++)
+		death_flashes[i] = icons->copy(256 + 16*i, 32, 16, 16); // different location and smaller size
 
-		for(int i=0;i<7;i++)
-			blue_flashes[i] = icons->copy(208 + 16*i, 144, 16, 16); // different location (and size for i = 5, 6)
+	for(int i=0;i<7;i++)
+		blue_flashes[i] = icons->copy(208 + 16*i, 144, 16, 16); // different location (and size for i = 5, 6)
 
-		for(int i=0;i<n_players_c;i++) {
-			icon_towers[i] = icons->copy(160 + 16*i, 81, 6, 6);
-			icon_armies[i] = icons->copy(160 + 16*i, 87, 4, 4);
-		}
-
-		for(int i=0;i<N_ID;i++)
-			icon_elements[i] = icons->copy(16*i, 128, 16, 16); // different location
-
-        /*for(int i=0;i<n_players_c;i++) { // different locations
-			for(int j=0;j<3;j++)
-				flags[i][j] = icons->copy(160 + 16*j, 144, 16, 16);
-			flags[i][3] = flags[i][1];
-			for(int j=0;j<n_flag_frames_c;j++) {
-				int r = 0, g = 0, b = 0, col = 0;
-				PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
-				flags[i][j]->remap(240, 0, 0, r, g, b);
-			}
-        }*/
-
-		for(int i=0;i<n_playershields_c;i++) {
-			//playershields[i] = icons->copy(16*i, 176, 16, 14); // different location // original version for my gfx
-			playershields[i] = icons->copy(16*i, 176, 16, 16); // different location
-			//playershields[i] = icons->copy(16*i, 177, 16, 14); // different location
-		}
-
-		for(int i=0;i<n_shields_c;i++)
-			icon_shields[i] = icons->copy(112 + 16*i, 32, 16, 16);
-		for(int i=0;i<n_epochs_c;i++)
-			icon_defences[i] = icons->copy(16*i, 240, 16, 16); // different location
-		for(int i=0;i<n_epochs_c;i++)
-			icon_weapons[i] = icons->copy(16*i, 224, 16, 16); // different location
-		for(int i=0;i<n_epochs_c;i++)
-			//numbered_defences[i] = icons->copy(16*i, 173, 16, 16);
-			numbered_defences[i] = icon_defences[i]; // todo:
-		for(int i=0;i<n_epochs_c;i++)
-			//numbered_weapons[i] = icons->copy(16*i, 157, 16, 16);
-			numbered_weapons[i] = icon_weapons[i]; // todo:
-
-		for(int i=0;i<3;i++)
-			icon_speeds[i] = icons->copy(272 + 16*i, 192, 16, 16); // different location and size
-
-		building_health = icons->copy(0, 192, 38, 16);
-		dash_grey = icons->copy(144, 112, 16, 16);
-
-		icon_shield = icons->copy(0, 64, 16, 16);
-		icon_defence = icons->copy(16, 64, 16, 16);
-		icon_weapon = icons->copy(32, 64, 16, 16);
-
-		/*icon_infinity = icons->copy(128, 112, 12, 8); // original versions for my gfx
-		icon_bc = icons->copy(224, 15, 12, 8);
-		icon_ad = icons->copy(208, 16, 12, 8);
-		icon_ad_shiny = icons->copy(208, 16, 12, 8);*/
-		icon_infinity = icons->copy(128, 112, 16, 16);
-		icon_bc = icons->copy(224, 15, 16, 16);
-		icon_ad = icons->copy(208, 16, 16, 16);
-		icon_ad_shiny = icons->copy(208, 16, 16, 16);
-
-		icon_nuke_hole = icons->copy(288, 96, 16, 16);
-
-		icon_ergo = icons->copy(176, 112, 16, 16);
-		icon_trash = icons->copy(192, 112, 16, 16);
-
-		icons = Image::loadImage(gfx_dir + "icons64.png");
-		if( icons == NULL )
-			return false;
-		// replace with new large icons
-		/*if( !icons->scaleTo(scale_width*128) ) // may need to update width as more icons added!
-		return false;*/
-		processImage(icons);
-
-		mapsquare = icons->copy(0, 0, 17, 17);
-		flashingmapsquare = icons->copy(32, 0, 17, 17);
-		arrow_left = icons->copy(64, 0, 32, 32);
-		arrow_left->scaleAlpha(0.625f);
-		arrow_right = icons->copy(96, 0, 32, 32);
-		arrow_right->scaleAlpha(0.625f);
-
-		icons = Image::loadImage(gfx_dir + "font.png");
-		if( icons == NULL )
-			return false;
-		processImage(icons);
-        //const int number_h_c = 8;
-        const int number_h_c = 10;
-        for(int i=0;i<10;i++) {
-            numbers_blue[i] = icons->copy(8*i, 0, 6, number_h_c);
-            numbers_grey[i] = icons->copy(8*i, 0, 6, number_h_c);
-            numbers_white[i] = icons->copy(8*i, 0, 6, number_h_c);
-            numbers_orange[i] = icons->copy(8*i, 0, 6, number_h_c);
-            numbers_yellow[i] = icons->copy(8*i, 0, 6, number_h_c);
-            numbers_largegrey[i] = icons->copy(8*i, 0, 6, number_h_c); // should be 6x15
-            numbers_largeshiny[i] = icons->copy(8*i, 0, 6, number_h_c); // should be 6x15
-			for(int j=0;j<4;j++) {
-                numbers_small[j][i] = icons->copy(8*i, 32, 6, number_h_c);
-				// todo: remap to dark player colours too
-				/*int r=0, g=0, b=0;
-				PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)j);
-				numbers_small[j][i]->remap(240, 0, 0, r, g, b);
-				numbers_small[j][i]->remap(112, 32, 16, r, g, b);*/
-			}
-			numbers_small[1][i]->reshadeRGB(0, false, true, false);
-			numbers_small[2][i]->reshadeRGB(0, true, true, false);
-			numbers_small[3][i]->reshadeRGB(0, false, false, true);
-		}
-		for(int i=0;i<26;i++) {
-            letters_small[i] = icons->copy(80 + 8*i, 16, 6, number_h_c);
-            letters_large[i] = icons->copy(80 + 8*i, 16, 6, number_h_c); // should be 6x15
-		}
-        numbers_half = icons->copy(288, 16, 6, number_h_c);
-
-		delete icons;
+	for(int i=0;i<n_players_c;i++) {
+		icon_towers[i] = icons->copy(160 + 16*i, 81, 6, 6);
+		icon_armies[i] = icons->copy(160 + 16*i, 87, 4, 4);
 	}
-	else {
-		Image *icons = Image::loadImage("data/mlm_icons");
-		if( icons == NULL )
-			return false;
-		if( !icons->scaleTo((int)(scale_width*default_width_c)) ) // must use this method, as still using alongside the new gfx images
-			return false;
-		//icons->scale(scale_factor, scale_factor);
-		icons->setScale(scale_width, scale_height);
-		icons->setColor(0, 255, 0, 255);
-		convertToHiColor(icons);
 
-		for(int i=0;i<n_epochs_c;i++)
-			men[i] = icons->copy(16*i, 0, 16, 16);
+	for(int i=0;i<N_ID;i++)
+		icon_elements[i] = icons->copy(16*i, 128, 16, 16); // different location
 
-		unarmed_man = icons->copy(80, 32, 16, 16);
-
-		panel_design = icons->copy(304, 0, 16, 16);
-		//panel_design_dark = panel_design->copy();
-		panel_lab = icons->copy(16, 33, 16, 16);
-		panel_shield = icons->copy(240, 0, 16, 16);
-		panel_defence = icons->copy(256, 0, 16, 16);
-		panel_attack = icons->copy(272, 0, 16, 16);
-		panel_knowndesigns = icons->copy(240, 16, 16, 16);
-		panel_factory = icons->copy(48, 33, 16, 16);
-		panel_bloody_attack = icons->copy(240, 32, 16, 16);
-
-		mine_gatherable_small = icons->copy(160, 0, 16, 16);
-
-		//panel_build[BUILDING_TOWER] = icons->copy(224, 63, 19, 16); // not yet used
-		panel_build[BUILDING_MINE] = icons->copy(256, 63, 19, 16);
-		panel_build[BUILDING_FACTORY] = icons->copy(288, 63, 19, 16);
-		panel_build[BUILDING_LAB] = icons->copy(192, 63, 19, 16);
-
-		panel_building[BUILDING_TOWER] = icons->copy(0, 33, 16, 14);
-		panel_building[BUILDING_MINE] = icons->copy(32, 33, 16, 14);
-		//panel_building[BUILDING_FACTORY] = icons->copy(48, 33, 16, 14);
-		//panel_building[BUILDING_LAB] = icons->copy(16, 33, 16, 14);
-		panel_building[BUILDING_FACTORY] = panel_factory;
-		panel_building[BUILDING_LAB] = panel_lab;
-
-		mine_gatherable_large = icons->copy(160, 64, 32, 16);
-
-		panel_bigdesign = icons->copy(256, 48, 32, 15);
-		panel_biglab = icons->copy(96, 48, 32, 16);
-		panel_bigfactory = icons->copy(128, 48, 32, 16);
-		panel_bigshield = icons->copy(160, 48, 32, 15);
-		panel_bigdefence = icons->copy(192, 48, 32, 15);
-		panel_bigattack = icons->copy(224, 48, 32, 15);
-		panel_bigbuild = icons->copy(32, 49, 32, 15);
-		panel_bigknowndesigns = icons->copy(288, 48, 32, 15);
-		panel_twoattack = icons->copy(64, 33, 15, 15);
-
-		for(int i=0;i<10;i++)
-			numbers_blue[i] = icons->copy(16*i, 64, 6, 8);
-		for(int i=0;i<10;i++)
-			numbers_grey[i] = icons->copy(16*i, 72, 6, 8);
-		for(int i=0;i<10;i++)
-			numbers_white[i] = icons->copy(16*i, 80, 6, 8);
-		for(int i=0;i<10;i++)
-			numbers_orange[i] = icons->copy(16*i, 88, 6, 8);
-		for(int i=0;i<10;i++)
-			numbers_yellow[i] = icons->copy(16*i, 119, 6, 8);
-		for(int i=0;i<3;i++)
-			numbers_largeshiny[i] = icons->copy(16*i, 269, 6, 15);
-		for(int i=3;i<10;i++)
-			numbers_largeshiny[i] = NULL; // not used
-		for(int i=0;i<10;i++)
-			numbers_largegrey[i] = icons->copy(64 + 16*i, 269, 6, 15);
-		for(int i=0;i<10;i++)
-			numbers_small[0][i] = icons->copy(16*i, 126, 5, 7);
-		for(int i=0;i<10;i++)
-			numbers_small[1][i] = icons->copy(16*i, 134, 5, 7);
-		for(int i=0;i<10;i++)
-			numbers_small[2][i] = icons->copy(160 + 16*i, 126, 5, 7);
-		for(int i=0;i<10;i++)
-			numbers_small[3][i] = icons->copy(160 + 16*i, 134, 5, 7);
-		numbers_half = icons->copy(160, 119, 6, 8);
-
-		for(int i=0;i<4;i++)
-			letters_large[i] = icons->copy(256 + 16*i, 269, 6, 15);
-		for(int i=0;i<20;i++)
-			letters_large[4+i] = icons->copy(16*i, 284, 6, 15);
-		for(int i=0;i<2;i++)
-			letters_large[24+i] = icons->copy(16*i, 299, 6, 15);
-
-		for(int i=0;i<15;i++)
-			letters_small[i] = icons->copy(80 + 16*i, 299, 6, 8);
-		for(int i=0;i<11;i++)
-			letters_small[15+i] = icons->copy(80 + 16*i, 307, 6, 8);
-
-		for(int i=0;i<n_players_c;i++)
-			mouse_pointers[i] = icons->copy(176 + 16*i, 0, 16, 16);
-
-		for(int i=0;i<13;i++)
-			icon_clocks[i] = icons->copy(16*i, 16, 16, 16);
-
-		/*for(int i=0;i<3;i++)
-			icon_mice[i] = icons->copy(256 + 16*i, 16, 16, 19);*/
-		for(int i=0;i<2;i++)
-			icon_mice[i] = icons->copy(256 + 16*i, 16, 16, 19);
-
-		for(int i=0;i<n_death_flashes_c;i++)
-			death_flashes[i] = icons->copy(272 + 16*i, 346, 16, 19);
-
-		for(int i=0;i<5;i++)
-			blue_flashes[i] = icons->copy(225 + 16*i, 173, 16, 16);
-		blue_flashes[5] = icons->copy(305, 165, 15, 19);
-		blue_flashes[6] = icons->copy(305, 184, 15, 17);
-
-		for(int i=0;i<n_players_c;i++) {
-			icon_towers[i] = icons->copy(160 + 16*i, 81, 6, 6);
-			icon_armies[i] = icons->copy(160 + 16*i, 87, 4, 4);
+    /*for(int i=0;i<n_players_c;i++) { // different locations
+		for(int j=0;j<3;j++)
+			flags[i][j] = icons->copy(160 + 16*j, 144, 16, 16);
+		flags[i][3] = flags[i][1];
+		for(int j=0;j<n_flag_frames_c;j++) {
+			int r = 0, g = 0, b = 0, col = 0;
+			PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
+			flags[i][j]->remap(240, 0, 0, r, g, b);
 		}
+    }*/
 
-		for(int i=0;i<N_ID;i++)
-			icon_elements[i] = icons->copy(16*i, 141, 16, 16);
-
-		for(int i=0;i<n_players_c;i++)
-			flags[i][0] = icons->copy(160 + 16*i, 157, 16, 15);
-		for(int i=0;i<n_players_c;i++)
-			flags[i][1] = icons->copy(224 + 16*i, 157, 16, 15);
-		for(int i=0;i<n_players_c;i++)
-			flags[i][2] = icons->copy(160 + 16*i, 172, 16, 15);
-		for(int i=0;i<n_players_c;i++)
-			flags[i][3] = flags[i][1];
-
-		for(int i=0;i<n_playershields_c;i++)
-			playershields[i] = icons->copy(16*i, 189, 16, 14);
-
-		for(int i=0;i<n_shields_c;i++)
-			icon_shields[i] = icons->copy(112 + 16*i, 32, 16, 16);
-		for(int i=0;i<n_epochs_c;i++)
-			icon_defences[i] = icons->copy(16*i, 253, 16, 16);
-		for(int i=0;i<n_epochs_c;i++)
-			icon_weapons[i] = icons->copy(16*i, 237, 16, 16);
-		for(int i=0;i<n_epochs_c;i++)
-			numbered_defences[i] = icons->copy(16*i, 173, 16, 16);
-		for(int i=0;i<n_epochs_c;i++)
-			numbered_weapons[i] = icons->copy(16*i, 157, 16, 16);
-
-		for(int i=0;i<3;i++)
-			icon_speeds[i] = icons->copy(272 + 16*i, 204, 16, 18);
-
-		building_health = icons->copy(0, 203, 41, 5);
-		dash_grey = icons->copy(144, 114, 5, 2);
-		icon_shield = icons->copy(272, 315, 16, 16);
-		icon_defence = icons->copy(288, 315, 16, 16);
-		icon_weapon = icons->copy(304, 315, 16, 16);
-
-		icon_infinity = icons->copy(112, 104, 12, 8);
-
-		icon_bc = icons->copy(240, 276, 12, 8);
-		icon_ad = icons->copy(224, 276, 12, 8);
-		icon_ad_shiny = icons->copy(48, 276, 12, 8);
-
-		icon_nuke_hole = icons->copy(288, 99, 9, 9);
-
-		icon_ergo = icons->copy(176, 111, 16, 16);
-		icon_trash = icons->copy(192, 111, 16, 16);
-
-		mapsquare = icons->copy(288, 81, 17, 17);
-		flashingmapsquare = icons->copy(192, 92, 17, 17);
-
-		delete icons;
+	for(int i=0;i<n_playershields_c;i++) {
+		//playershields[i] = icons->copy(16*i, 176, 16, 14); // different location // original version for my gfx
+		playershields[i] = icons->copy(16*i, 176, 16, 16); // different location
+		//playershields[i] = icons->copy(16*i, 177, 16, 14); // different location
 	}
+
+	for(int i=0;i<n_shields_c;i++)
+		icon_shields[i] = icons->copy(112 + 16*i, 32, 16, 16);
+	for(int i=0;i<n_epochs_c;i++)
+		icon_defences[i] = icons->copy(16*i, 240, 16, 16); // different location
+	for(int i=0;i<n_epochs_c;i++)
+		icon_weapons[i] = icons->copy(16*i, 224, 16, 16); // different location
+	for(int i=0;i<n_epochs_c;i++)
+		//numbered_defences[i] = icons->copy(16*i, 173, 16, 16);
+		numbered_defences[i] = icon_defences[i]; // todo:
+	for(int i=0;i<n_epochs_c;i++)
+		//numbered_weapons[i] = icons->copy(16*i, 157, 16, 16);
+		numbered_weapons[i] = icon_weapons[i]; // todo:
+
+	for(int i=0;i<3;i++)
+		icon_speeds[i] = icons->copy(272 + 16*i, 192, 16, 16); // different location and size
+
+	building_health = icons->copy(0, 192, 38, 16);
+	dash_grey = icons->copy(144, 112, 16, 16);
+
+	icon_shield = icons->copy(0, 64, 16, 16);
+	icon_defence = icons->copy(16, 64, 16, 16);
+	icon_weapon = icons->copy(32, 64, 16, 16);
+
+	/*icon_infinity = icons->copy(128, 112, 12, 8); // original versions for my gfx
+	icon_bc = icons->copy(224, 15, 12, 8);
+	icon_ad = icons->copy(208, 16, 12, 8);
+	icon_ad_shiny = icons->copy(208, 16, 12, 8);*/
+	icon_infinity = icons->copy(128, 112, 16, 16);
+	icon_bc = icons->copy(224, 15, 16, 16);
+	icon_ad = icons->copy(208, 16, 16, 16);
+	icon_ad_shiny = icons->copy(208, 16, 16, 16);
+
+	icon_nuke_hole = icons->copy(288, 96, 16, 16);
+
+	icon_ergo = icons->copy(176, 112, 16, 16);
+	icon_trash = icons->copy(192, 112, 16, 16);
+
+	icons = Image::loadImage(gfx_dir + "icons64.png");
+	if( icons == NULL )
+		return false;
+	// replace with new large icons
+	/*if( !icons->scaleTo(scale_width*128) ) // may need to update width as more icons added!
+	return false;*/
+	processImage(icons);
+
+	mapsquare = icons->copy(0, 0, 17, 17);
+	flashingmapsquare = icons->copy(32, 0, 17, 17);
+	arrow_left = icons->copy(64, 0, 32, 32);
+	arrow_left->scaleAlpha(0.625f);
+	arrow_right = icons->copy(96, 0, 32, 32);
+	arrow_right->scaleAlpha(0.625f);
+
+	icons = Image::loadImage(gfx_dir + "font.png");
+	if( icons == NULL )
+		return false;
+	processImage(icons);
+    //const int number_h_c = 8;
+    const int number_h_c = 10;
+    for(int i=0;i<10;i++) {
+        numbers_blue[i] = icons->copy(8*i, 0, 6, number_h_c);
+        numbers_grey[i] = icons->copy(8*i, 0, 6, number_h_c);
+        numbers_white[i] = icons->copy(8*i, 0, 6, number_h_c);
+        numbers_orange[i] = icons->copy(8*i, 0, 6, number_h_c);
+        numbers_yellow[i] = icons->copy(8*i, 0, 6, number_h_c);
+        numbers_largegrey[i] = icons->copy(8*i, 0, 6, number_h_c); // should be 6x15
+        numbers_largeshiny[i] = icons->copy(8*i, 0, 6, number_h_c); // should be 6x15
+		for(int j=0;j<4;j++) {
+            numbers_small[j][i] = icons->copy(8*i, 32, 6, number_h_c);
+			// todo: remap to dark player colours too
+			/*int r=0, g=0, b=0;
+			PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)j);
+			numbers_small[j][i]->remap(240, 0, 0, r, g, b);
+			numbers_small[j][i]->remap(112, 32, 16, r, g, b);*/
+		}
+		numbers_small[1][i]->reshadeRGB(0, false, true, false);
+		numbers_small[2][i]->reshadeRGB(0, true, true, false);
+		numbers_small[3][i]->reshadeRGB(0, false, false, true);
+	}
+	for(int i=0;i<26;i++) {
+        letters_small[i] = icons->copy(80 + 8*i, 16, 6, number_h_c);
+        letters_large[i] = icons->copy(80 + 8*i, 16, 6, number_h_c); // should be 6x15
+	}
+    numbers_half = icons->copy(288, 16, 6, number_h_c);
+
+	delete icons;
 	drawProgress(50);
 
-	if( using_new_graphics ) {
-        smoke_image = Image::createRadial(scale_width * 16, scale_height * 16, 0.5f);
-		processImage(smoke_image);
-	}
+    smoke_image = Image::createRadial(scale_width * 16, scale_height * 16, 0.5f);
+	processImage(smoke_image);
 
 	for(int i=0;i<n_coast_c;i++)
 		coast_icons[i] = NULL;
-	if( using_new_graphics ) {
-		map_sq_offset = 0;
-		map_sq_coast_offset = 3;
-        int map_width = scale_width * 16;
-        int map_height = scale_height * 16;
-        {
-			unsigned char filter_max[3] = {255, 192, 84};
-			unsigned char filter_min[3] = {120, 0, 0};
-            map_sq[MAP_ORANGE][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		{
-			unsigned char filter_max[3] = {104, 255, 104};
-			unsigned char filter_min[3] = {0, 72, 0};
-            map_sq[MAP_GREEN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		{
-			unsigned char filter_max[3] = {216, 144, 72};
-			unsigned char filter_min[3] = {16, 0, 0};
-            map_sq[MAP_BROWN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		{
-			unsigned char filter_max[3] = {255, 255, 255};
-			unsigned char filter_min[3] = {72, 72, 72};
-            map_sq[MAP_WHITE][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		{
-			unsigned char filter_max[3] = {224, 152, 116};
-			unsigned char filter_min[3] = {16, 0, 0};
-            map_sq[MAP_DBROWN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		{
-			unsigned char filter_max[3] = {52, 232, 52};
-			unsigned char filter_min[3] = {0, 8, 0};
-            map_sq[MAP_DGREEN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		{
-			unsigned char filter_max[3] = {188, 188, 188};
-			unsigned char filter_min[3] = {0, 0, 0};
-            map_sq[MAP_GREY][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
-		}
-		for(int i=0;i<MAP_N_COLOURS;i++) {
-            convertToHiColor(map_sq[i][0]);
-            map_sq[i][0]->setScale(scale_width, scale_height);
-            for(int j=1;j<n_map_sq_c;j++) {
-				map_sq[i][j] = map_sq[i][0]->copy(0, 0, 16, 16);
-			}
-        }
-
-		Image *smallmap_coast = Image::loadImage(gfx_dir + "smallmap_coast.png");
-		if( smallmap_coast != NULL ) {
-			/*if( !smallmap_coast->scaleTo(scale_width*616) )
-			return false;*/
-			processImage(smallmap_coast);
-			for(int i=0;i<n_coast_c;i++)
-				coast_icons[i] = smallmap_coast->copy(22*i, 0, 22, 22);
-		}
-		delete smallmap_coast;
+	map_sq_offset = 0;
+	map_sq_coast_offset = 3;
+    int map_width = scale_width * 16;
+    int map_height = scale_height * 16;
+    {
+		unsigned char filter_max[3] = {255, 192, 84};
+		unsigned char filter_min[3] = {120, 0, 0};
+        map_sq[MAP_ORANGE][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
 	}
-	else {
-		Image *smallmap = Image::loadImage("data/mlm_smallmap");
-		if( smallmap == NULL )
-			return false;
-		smallmap->setColor(0, 255, 0, 255);
-		processImage(smallmap);
-		map_sq_offset = 3;
-		map_sq_coast_offset = 3;
-
-		for(int i=0;i<MAP_N_COLOURS;i++) {
-			for(int j=0;j<n_map_sq_c;j++)
-				map_sq[i][j] = NULL;
-		}
-
-		map_sq[MAP_ORANGE][14] = smallmap->copy(0, 0, 22, 22);
-		map_sq[MAP_ORANGE][7] = smallmap->copy(32, 0, 22, 22);
-		map_sq[MAP_ORANGE][11] = smallmap->copy(64, 0, 22, 22);
-		map_sq[MAP_ORANGE][4] = smallmap->copy(96, 0, 22, 22);
-		map_sq[MAP_ORANGE][5] = smallmap->copy(128, 0, 22, 22);
-		map_sq[MAP_ORANGE][1] = smallmap->copy(160, 0, 22, 22);
-		map_sq[MAP_ORANGE][2] = smallmap->copy(192, 0, 22, 22);
-		map_sq[MAP_ORANGE][8] = smallmap->copy(224, 0, 22, 22);
-
-		map_sq[MAP_GREEN][6] = smallmap->copy(256, 0, 22, 22);
-		map_sq[MAP_GREEN][12] = smallmap->copy(288, 0, 22, 22);
-		map_sq[MAP_GREEN][3] = smallmap->copy(0, 22, 22, 22);
-		map_sq[MAP_GREEN][9] = smallmap->copy(32, 22, 22, 22);
-		map_sq[MAP_GREEN][5] = smallmap->copy(64, 22, 22, 22);
-		map_sq[MAP_GREEN][10] = smallmap->copy(96, 22, 22, 22);
-
-		map_sq[MAP_BROWN][6] = smallmap->copy(128, 22, 22, 22);
-		map_sq[MAP_BROWN][4] = smallmap->copy(160, 22, 22, 22);
-		map_sq[MAP_BROWN][1] = smallmap->copy(192, 22, 22, 22);
-		map_sq[MAP_BROWN][8] = smallmap->copy(224, 22, 22, 22);
-		map_sq[MAP_BROWN][0] = smallmap->copy(256, 22, 22, 22);
-
-		map_sq[MAP_DBROWN][6] = smallmap->copy(32, 66, 22, 22);
-		map_sq[MAP_DBROWN][12] = smallmap->copy(64, 66, 22, 22);
-		map_sq[MAP_DBROWN][7] = smallmap->copy(96, 66, 22, 22);
-		map_sq[MAP_DBROWN][13] = smallmap->copy(128, 66, 22, 22);
-		map_sq[MAP_DBROWN][3] = smallmap->copy(160, 66, 22, 22);
-		map_sq[MAP_DBROWN][11] = smallmap->copy(192, 66, 22, 22);
-		map_sq[MAP_DBROWN][9] = smallmap->copy(224, 66, 22, 22);
-		map_sq[MAP_DBROWN][4] = smallmap->copy(256, 66, 22, 22);
-		map_sq[MAP_DBROWN][5] = smallmap->copy(288, 66, 22, 22);
-		map_sq[MAP_DBROWN][1] = smallmap->copy(0, 88, 22, 22);
-		map_sq[MAP_DBROWN][2] = smallmap->copy(32, 88, 22, 22);
-		map_sq[MAP_DBROWN][10] = smallmap->copy(64, 88, 22, 22);
-
-		map_sq[MAP_WHITE][1] = smallmap->copy(224, 44, 22, 22);
-		map_sq[MAP_WHITE][2] = smallmap->copy(256, 44, 22, 22);
-		map_sq[MAP_WHITE][3] = smallmap->copy(96, 44, 22, 22);
-		map_sq[MAP_WHITE][4] = smallmap->copy(192, 44, 22, 22);
-		map_sq[MAP_WHITE][6] = smallmap->copy(288, 22, 22, 22);
-		map_sq[MAP_WHITE][8] = smallmap->copy(0, 66, 22, 22);
-		map_sq[MAP_WHITE][9] = smallmap->copy(160, 44, 22, 22);
-		map_sq[MAP_WHITE][10] = smallmap->copy(288, 44, 22, 22);
-		map_sq[MAP_WHITE][11] = smallmap->copy(128, 44, 22, 22);
-		map_sq[MAP_WHITE][12] = smallmap->copy(32, 44, 22, 22);
-		map_sq[MAP_WHITE][14] = smallmap->copy(0, 44, 22, 22);
-		map_sq[MAP_WHITE][15] = smallmap->copy(64, 44, 22, 22);
-
-		map_sq[MAP_DGREEN][6] = smallmap->copy(96, 88, 22, 22);
-		map_sq[MAP_DGREEN][14] = smallmap->copy(128, 88, 22, 22);
-		map_sq[MAP_DGREEN][12] = smallmap->copy(160, 88, 22, 22);
-		map_sq[MAP_DGREEN][7] = smallmap->copy(192, 88, 22, 22);
-		map_sq[MAP_DGREEN][15] = smallmap->copy(224, 88, 22, 22);
-		map_sq[MAP_DGREEN][13] = smallmap->copy(256, 88, 22, 22);
-		map_sq[MAP_DGREEN][3] = smallmap->copy(288, 88, 22, 22);
-		map_sq[MAP_DGREEN][11] = smallmap->copy(0, 110, 22, 22);
-		map_sq[MAP_DGREEN][9] = smallmap->copy(32, 110, 22, 22);
-
-		map_sq[MAP_GREY][0] = smallmap->copy(0, 132, 22, 22);
-		map_sq[MAP_GREY][1] = smallmap->copy(192, 110, 22, 22);
-		map_sq[MAP_GREY][2] = smallmap->copy(224, 110, 22, 22);
-		map_sq[MAP_GREY][4] = smallmap->copy(128, 110, 22, 22);
-		map_sq[MAP_GREY][5] = smallmap->copy(160, 110, 22, 22);
-		map_sq[MAP_GREY][8] = smallmap->copy(288, 110, 22, 22);
-		map_sq[MAP_GREY][10] = smallmap->copy(256, 110, 22, 22);
-		map_sq[MAP_GREY][12] = smallmap->copy(64, 110, 22, 22);
-		map_sq[MAP_GREY][15] = smallmap->copy(96, 110, 22, 22);
-
-		delete smallmap;
+	{
+		unsigned char filter_max[3] = {104, 255, 104};
+		unsigned char filter_min[3] = {0, 72, 0};
+        map_sq[MAP_GREEN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
 	}
+	{
+		unsigned char filter_max[3] = {216, 144, 72};
+		unsigned char filter_min[3] = {16, 0, 0};
+        map_sq[MAP_BROWN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
+	}
+	{
+		unsigned char filter_max[3] = {255, 255, 255};
+		unsigned char filter_min[3] = {72, 72, 72};
+        map_sq[MAP_WHITE][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
+	}
+	{
+		unsigned char filter_max[3] = {224, 152, 116};
+		unsigned char filter_min[3] = {16, 0, 0};
+        map_sq[MAP_DBROWN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
+	}
+	{
+		unsigned char filter_max[3] = {52, 232, 52};
+		unsigned char filter_min[3] = {0, 8, 0};
+        map_sq[MAP_DGREEN][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
+	}
+	{
+		unsigned char filter_max[3] = {188, 188, 188};
+		unsigned char filter_min[3] = {0, 0, 0};
+        map_sq[MAP_GREY][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
+	}
+	for(int i=0;i<MAP_N_COLOURS;i++) {
+        convertToHiColor(map_sq[i][0]);
+        map_sq[i][0]->setScale(scale_width, scale_height);
+        for(int j=1;j<n_map_sq_c;j++) {
+			map_sq[i][j] = map_sq[i][0]->copy(0, 0, 16, 16);
+		}
+    }
+
+	Image *smallmap_coast = Image::loadImage(gfx_dir + "smallmap_coast.png");
+	if( smallmap_coast != NULL ) {
+		/*if( !smallmap_coast->scaleTo(scale_width*616) )
+		return false;*/
+		processImage(smallmap_coast);
+		for(int i=0;i<n_coast_c;i++)
+			coast_icons[i] = smallmap_coast->copy(22*i, 0, 22, 22);
+	}
+	delete smallmap_coast;
 	drawProgress(60);
 
 	bool attackers_shadow = false;
@@ -1986,259 +1667,124 @@ bool loadImages() {
 			for(int j=0;j<N_ATTACKER_AMMO_DIRS;j++)
 				attackers_ammo[i][j] = NULL;
 
-		if( using_new_graphics ) {
-			Image *gfx_def_image = Image::loadImage(gfx_dir + "defenders.png");
-			if( gfx_def_image == NULL )
-				return false;
-			/*if( !gfx_def_image->scaleTo(scale_width*default_width_c) )
-			return false;*/
-            //processImage(gfx_def_image);
-            gfx_def_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
-            for(int k=0;k<n_players_c;k++) {
-                int r = 0, g = 0, b = 0, col = 0;
-                PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
-                for(int i=0;i<n_epochs_c;i++) {
-					for(int j=0;j<n_defender_frames_c;j++) {
-						defenders[k][i][j] = gfx_def_image->copy(16*i, 0, 16, 16);
-                        defenders[k][i][j]->remap(240, 0, 0, r, g, b);
-                        processImage(defenders[k][i][j]);
-                    }
-				}
+		Image *gfx_def_image = Image::loadImage(gfx_dir + "defenders.png");
+		if( gfx_def_image == NULL )
+			return false;
+		/*if( !gfx_def_image->scaleTo(scale_width*default_width_c) )
+		return false;*/
+        //processImage(gfx_def_image);
+        gfx_def_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
+        for(int k=0;k<n_players_c;k++) {
+            int r = 0, g = 0, b = 0, col = 0;
+            PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
+            for(int i=0;i<n_epochs_c;i++) {
+				for(int j=0;j<n_defender_frames_c;j++) {
+					defenders[k][i][j] = gfx_def_image->copy(16*i, 0, 16, 16);
+                    defenders[k][i][j]->remap(240, 0, 0, r, g, b);
+                    processImage(defenders[k][i][j]);
+                }
 			}
+		}
 
-			for(int i=0;i<=5;i++) {
-				char filename[300] = "";
-				sprintf(filename, "attacker_walking_%d.png", i);
-				Image *gfx_image = Image::loadImage(gfx_dir + filename);
-				if( gfx_image == NULL )
-					return false;
-                //processImage(gfx_image);
-                gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
-                for(int j=0;j<n_attacker_frames_c;j++) {
-					for(int k=0;k<n_players_c;k++) {
-						if( j % 4 > 2 )
-                            attackers_walking[k][i][j] = gfx_image->copy(0, 0, 16, 16);
-						else
-							attackers_walking[k][i][j] = gfx_image->copy(16*(j % 4), 0, 16, 16);
-                        int r = 0, g = 0, b = 0, col = 0;
-                        PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
-                        attackers_walking[k][i][j]->remap(240, 0, 0, r, g, b);
-                        processImage(attackers_walking[k][i][j]);
-                    }
-				}
-				delete gfx_image;
-			}
-
-			//Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_base.png");
-			//Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_1.png");
-			Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_10.png");
+		for(int i=0;i<=5;i++) {
+			char filename[300] = "";
+			sprintf(filename, "attacker_walking_%d.png", i);
+			Image *gfx_image = Image::loadImage(gfx_dir + filename);
 			if( gfx_image == NULL )
 				return false;
-			/*if( !gfx_image->scaleTo(scale_width*default_width_c) )
-			return false;*/
             //processImage(gfx_image);
             gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
             for(int j=0;j<n_attacker_frames_c;j++) {
 				for(int k=0;k<n_players_c;k++) {
 					if( j % 4 > 2 )
-                        attackers_walking[k][10][j] = gfx_image->copy(0, 0, 16, 16);
-					/*else if( j / 4 == ATTACKER_AMMO_LEFT ) {
-					attackers_walking[k][10][j] = attackers_walking[k][10][ATTACKER_AMMO_RIGHT*4+(j%4)]->copy(0, 0, 16, 16);
-					attackers_walking[k][10][j]->flipX();
-					}*/
+                        attackers_walking[k][i][j] = gfx_image->copy(0, 0, 16, 16);
 					else
-						attackers_walking[k][10][j] = gfx_image->copy(16*(j % 4), 0, 16, 16);
+						attackers_walking[k][i][j] = gfx_image->copy(16*(j % 4), 0, 16, 16);
                     int r = 0, g = 0, b = 0, col = 0;
                     PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
-                    attackers_walking[k][10][j]->remap(240, 0, 0, r, g, b);
-                    processImage(attackers_walking[k][10][j]);
+                    attackers_walking[k][i][j]->remap(240, 0, 0, r, g, b);
+                    processImage(attackers_walking[k][i][j]);
                 }
 			}
-
-			Image *gfx_planes = Image::loadImage(gfx_dir + "attacker_flying.png");
-			if( gfx_planes == NULL )
-				return false;
-			/*if( !gfx_planes->scaleTo(scale_width*default_width_c) )
-			return false;*/
-            gfx_planes->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
-            // do remapping before scaling
-            for(int i=0;i<n_players_c;i++) {
-                int r = 0, g = 0, b = 0, col = 0;
-                PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
-                for(int j=0;j<n_saucer_frames_c;j++) {
-                    saucers[i][j] = gfx_planes->copy(32*j, 64, 32, 32);
-                    saucers[i][j]->remap(240, 0, 0, r, g, b);
-                    processImage(saucers[i][j]);
-                }
-            }
-            processImage(gfx_planes);
-			for(int i=0;i<n_players_c;i++) {
-				for(int j=0;j<n_epochs_c;j++)
-					planes[i][j] = NULL;
-				planes[i][6] = gfx_planes->copy(32*i, 0, 32, 32);
-				planes[i][7] = gfx_planes->copy(128+32*i, 0, 32, 32);
-			}
-
-			for(int i=0;i<n_players_c;i++) {
-				nukes[i][0] = gfx_planes->copy(64*i, 32, 32, 32);
-				nukes[i][1] = gfx_planes->copy(64*i+32, 32, 32, 32);
-			}
-
-			Image *gfx_ammo = Image::loadImage(gfx_dir + "attacker_ammo.png");
-			if( gfx_ammo == NULL )
-				return false;
-			attackers_shadow = false;
-			/*if( !gfx_ammo->scaleTo(scale_width*default_width_c) )
-			return false;*/
-			processImage(gfx_ammo);
-			for(int i=0;i<6;i++) {
-				attackers_ammo[i][ATTACKER_AMMO_RIGHT] = gfx_ammo->copy(0, 16*i, 16, 16);
-				attackers_ammo[i][ATTACKER_AMMO_LEFT] = gfx_ammo->copy(16, 16*i, 16, 16);
-				attackers_ammo[i][ATTACKER_AMMO_UP] = gfx_ammo->copy(32, 16*i, 16, 16);
-				attackers_ammo[i][ATTACKER_AMMO_DOWN] = gfx_ammo->copy(48, 16*i, 16, 16);
-			}
-			// bombs
-			//attackers_ammo[6][ATTACKER_AMMO_BOMB] = armies->copy(304, 208, 16, 16);
-			attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 16, 16); // different size
-
-			delete gfx_def_image;
 			delete gfx_image;
-			delete gfx_planes;
-			delete gfx_ammo;
 		}
-		else {
-			Image *armies = Image::loadImage("data/mlm_armies");
-			if( armies == NULL ) {
-				return false;
-			}
-			attackers_shadow = armies->isPaletted() && armies->getNColors() == 16;
-			armies->setColor(0, 255, 0, 255);
-			processImage(armies);
 
-			for(int i=0;i<=5;i++) {
-				for(int j=0;j<n_defender_frames_c;j++) {
-					for(int k=0;k<n_players_c;k++)
-						defenders[k][i][j] = armies->copy(16*j, 16 + 32*i, 16, 16);
-				}
-			}
-			for(int j=0;j<n_defender_frames_c;j++) {
-				for(int k=0;k<n_players_c;k++)
-					defenders[k][6][j] = armies->copy(128 + 16*j, 192, 16, 16);
-			}
-			for(int j=0;j<2;j++) {
-				for(int k=0;k<n_players_c;k++)
-					defenders[k][7][j] = armies->copy(224 + 16*j, 240, 16, 16);
-			}
-			for(int j=2;j<4;j++) {
-				for(int k=0;k<n_players_c;k++)
-					defenders[k][7][j] = armies->copy(288 + 16*(j-2), 224, 16, 16);
-			}
-			for(int j=4;j<6;j++) {
-				for(int k=0;k<n_players_c;k++)
-					defenders[k][7][j] = armies->copy(256 + 16*(j-4), 240, 16, 16);
-			}
-			for(int j=6;j<8;j++) {
-				for(int k=0;k<n_players_c;k++)
-					defenders[k][7][j] = armies->copy(288 + 16*(j-6), 240, 16, 16);
-			}
-			for(int j=0;j<n_defender_frames_c;j++) {
-				defenders[0][8][j] = armies->copy(192, 256, 16, 16);
-				defenders[1][8][j] = armies->copy(192, 272, 16, 16);
-				defenders[2][8][j] = armies->copy(208, 256, 16, 16);
-				defenders[3][8][j] = armies->copy(208, 272, 16, 16);
-			}
+		//Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_base.png");
+		//Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_1.png");
+		Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_10.png");
+		if( gfx_image == NULL )
+			return false;
+		/*if( !gfx_image->scaleTo(scale_width*default_width_c) )
+		return false;*/
+        //processImage(gfx_image);
+        gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
+        for(int j=0;j<n_attacker_frames_c;j++) {
 			for(int k=0;k<n_players_c;k++) {
-				int kx = k / 2;
-				int ky = k % 2;
-				for(int j=0;j<n_defender_frames_c;j++) {
-					int j2 = j % 4;
-					if( j2 == 0 )
-						j2 = 1;
-					else if( j2 == 1 )
-						j2 = 0;
-					defenders[k][9][j] = armies->copy(192 + kx * 64 + j2 * 16, 288 + ky * 13, 16, 13);
-				}
-			}
-
-
-			for(int i=0;i<=5;i++) {
-				for(int j=0;j<n_attacker_frames_c;j++) {
-					for(int k=0;k<n_players_c;k++) {
-						attackers_walking[k][i][j] = armies->copy(16*j, 32*i, 16, 16);
-					}
-				}
-			}
-
-			for(int j=0;j<n_attacker_frames_c;j++) {
-				for(int k=0;k<n_players_c;k++) {
-					attackers_walking[k][10][j] = armies->copy(16*j, 320, 16, 16);
-				}
-			}
-
-			for(int i=0;i<n_players_c;i++) {
-				for(int j=0;j<n_epochs_c;j++)
-					planes[i][j] = NULL;
-				planes[i][6] = armies->copy(32*i, 192, 32, 32);
-				planes[i][7] = armies->copy(32*i, 232, 32, 24);
-			}
-
-			for(int i=0;i<n_players_c;i++) {
-				nukes[i][0] = armies->copy(48*i, 256, 16, 32);
-				nukes[i][1] = armies->copy(48*i+16, 256, 32, 32);
-			}
-			for(int i=0;i<n_players_c;i++) {
-				for(int j=0;j<n_saucer_frames_c;j++) {
-					saucers[i][j] = armies->copy(32*j, 288, 32, 21);
-				}
-			}
-
-			// ammo:
-			// rock
-			attackers_ammo[0][ATTACKER_AMMO_RIGHT] = armies->copy(272, 24, 16, 8);
-			attackers_ammo[0][ATTACKER_AMMO_LEFT] = armies->copy(288, 24, 16, 8);
-			attackers_ammo[0][ATTACKER_AMMO_UP] = armies->copy(288, 16, 16, 8);
-			attackers_ammo[0][ATTACKER_AMMO_DOWN] = armies->copy(272, 16, 16, 8);
-			// catapult/sword
-			attackers_ammo[1][ATTACKER_AMMO_RIGHT] = armies->copy(272, 24, 16, 8);
-			attackers_ammo[1][ATTACKER_AMMO_LEFT] = armies->copy(288, 24, 16, 8);
-			attackers_ammo[1][ATTACKER_AMMO_UP] = armies->copy(288, 16, 16, 8);
-			attackers_ammo[1][ATTACKER_AMMO_DOWN] = armies->copy(272, 16, 16, 8);
-			/* spear
-			attackers_ammo[1][ATTACKER_AMMO_RIGHT] = armies->copy(272, 32, 16, 8);
-			attackers_ammo[1][ATTACKER_AMMO_LEFT] = armies->copy(272, 40, 16, 8);
-			attackers_ammo[1][ATTACKER_AMMO_UP] = armies->copy(288, 32, 16, 16);
-			attackers_ammo[1][ATTACKER_AMMO_DOWN] = armies->copy(304, 32, 16, 16);*/
-			// pike
-			attackers_ammo[2][ATTACKER_AMMO_RIGHT] = armies->copy(272, 64, 16, 8);
-			attackers_ammo[2][ATTACKER_AMMO_LEFT] = armies->copy(272, 72, 16, 8);
-			attackers_ammo[2][ATTACKER_AMMO_UP] = armies->copy(288, 64, 16, 16);
-			attackers_ammo[2][ATTACKER_AMMO_DOWN] = armies->copy(304, 64, 16, 16);
-			/* bow and arrow
-			attackers_ammo[2][ATTACKER_AMMO_RIGHT] = armies->copy(272, 80, 16, 8);
-			attackers_ammo[2][ATTACKER_AMMO_LEFT] = armies->copy(272, 88, 16, 8);
-			attackers_ammo[2][ATTACKER_AMMO_UP] = armies->copy(288, 80, 16, 16);
-			attackers_ammo[2][ATTACKER_AMMO_DOWN] = armies->copy(304, 80, 16, 16);*/
-			// longbow
-			attackers_ammo[3][ATTACKER_AMMO_RIGHT] = armies->copy(272, 96, 16, 8);
-			attackers_ammo[3][ATTACKER_AMMO_LEFT] = armies->copy(272, 104, 16, 8);
-			attackers_ammo[3][ATTACKER_AMMO_UP] = armies->copy(288, 96, 16, 16);
-			attackers_ammo[3][ATTACKER_AMMO_DOWN] = armies->copy(304, 96, 16, 16);
-			// trebuchet
-			attackers_ammo[4][ATTACKER_AMMO_RIGHT] = armies->copy(256, 144, 16, 8);
-			attackers_ammo[4][ATTACKER_AMMO_LEFT] = armies->copy(256, 144, 16, 8);
-			attackers_ammo[4][ATTACKER_AMMO_UP] = armies->copy(256, 144, 16, 16);
-			attackers_ammo[4][ATTACKER_AMMO_DOWN] = armies->copy(256, 144, 16, 16);
-			// cannon
-			attackers_ammo[5][ATTACKER_AMMO_RIGHT] = armies->copy(272, 160, 10, 9);
-			attackers_ammo[5][ATTACKER_AMMO_LEFT] = armies->copy(272, 160, 10, 9);
-			attackers_ammo[5][ATTACKER_AMMO_UP] = armies->copy(272, 160, 10, 9);
-			attackers_ammo[5][ATTACKER_AMMO_DOWN] = armies->copy(272, 160, 10, 9);
-			// bombs
-			//attackers_ammo[6][ATTACKER_AMMO_BOMB] = armies->copy(304, 208, 16, 16);
-			attackers_ammo[6][ATTACKER_AMMO_BOMB] = armies->copy(288, 206, 12, 12);
-
-			delete armies;
+				if( j % 4 > 2 )
+                    attackers_walking[k][10][j] = gfx_image->copy(0, 0, 16, 16);
+				/*else if( j / 4 == ATTACKER_AMMO_LEFT ) {
+				attackers_walking[k][10][j] = attackers_walking[k][10][ATTACKER_AMMO_RIGHT*4+(j%4)]->copy(0, 0, 16, 16);
+				attackers_walking[k][10][j]->flipX();
+				}*/
+				else
+					attackers_walking[k][10][j] = gfx_image->copy(16*(j % 4), 0, 16, 16);
+                int r = 0, g = 0, b = 0, col = 0;
+                PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
+                attackers_walking[k][10][j]->remap(240, 0, 0, r, g, b);
+                processImage(attackers_walking[k][10][j]);
+            }
 		}
+
+		Image *gfx_planes = Image::loadImage(gfx_dir + "attacker_flying.png");
+		if( gfx_planes == NULL )
+			return false;
+		/*if( !gfx_planes->scaleTo(scale_width*default_width_c) )
+		return false;*/
+        gfx_planes->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
+        // do remapping before scaling
+        for(int i=0;i<n_players_c;i++) {
+            int r = 0, g = 0, b = 0, col = 0;
+            PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
+            for(int j=0;j<n_saucer_frames_c;j++) {
+                saucers[i][j] = gfx_planes->copy(32*j, 64, 32, 32);
+                saucers[i][j]->remap(240, 0, 0, r, g, b);
+                processImage(saucers[i][j]);
+            }
+        }
+        processImage(gfx_planes);
+		for(int i=0;i<n_players_c;i++) {
+			for(int j=0;j<n_epochs_c;j++)
+				planes[i][j] = NULL;
+			planes[i][6] = gfx_planes->copy(32*i, 0, 32, 32);
+			planes[i][7] = gfx_planes->copy(128+32*i, 0, 32, 32);
+		}
+
+		for(int i=0;i<n_players_c;i++) {
+			nukes[i][0] = gfx_planes->copy(64*i, 32, 32, 32);
+			nukes[i][1] = gfx_planes->copy(64*i+32, 32, 32, 32);
+		}
+
+		Image *gfx_ammo = Image::loadImage(gfx_dir + "attacker_ammo.png");
+		if( gfx_ammo == NULL )
+			return false;
+		attackers_shadow = false;
+		/*if( !gfx_ammo->scaleTo(scale_width*default_width_c) )
+		return false;*/
+		processImage(gfx_ammo);
+		for(int i=0;i<6;i++) {
+			attackers_ammo[i][ATTACKER_AMMO_RIGHT] = gfx_ammo->copy(0, 16*i, 16, 16);
+			attackers_ammo[i][ATTACKER_AMMO_LEFT] = gfx_ammo->copy(16, 16*i, 16, 16);
+			attackers_ammo[i][ATTACKER_AMMO_UP] = gfx_ammo->copy(32, 16*i, 16, 16);
+			attackers_ammo[i][ATTACKER_AMMO_DOWN] = gfx_ammo->copy(48, 16*i, 16, 16);
+		}
+		// bombs
+		//attackers_ammo[6][ATTACKER_AMMO_BOMB] = armies->copy(304, 208, 16, 16);
+		attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 16, 16); // different size
+
+		delete gfx_def_image;
+		delete gfx_image;
+		delete gfx_planes;
+		delete gfx_ammo;
 
 		/*nuke_defences[0] = armies->copy(192, 256, 16, 16);
 		nuke_defences[1] = armies->copy(208, 256, 16, 16);
@@ -2284,86 +1830,58 @@ bool loadImages() {
 	drawProgress(65);
 
 	// features
-	if( using_new_graphics ) {
-		Image *gfx_features = Image::loadImage(gfx_dir + "features.png");
-		if( gfx_features == NULL )
-			return false;
-		/*if( !gfx_features->scaleTo(scale_width*default_width_c) )
-		return false;*/
-		processImage(gfx_features);
-		icon_openpitmine = gfx_features->copy(0, 0, 47, 24);
+	Image *gfx_features = Image::loadImage(gfx_dir + "features.png");
+	if( gfx_features == NULL )
+		return false;
+	/*if( !gfx_features->scaleTo(scale_width*default_width_c) )
+	return false;*/
+	processImage(gfx_features);
+	icon_openpitmine = gfx_features->copy(0, 0, 47, 24);
 
-		icon_trees[0][0] = Image::loadImage(gfx_dir + "tree2_00.png");
-		icon_trees[0][1] = Image::loadImage(gfx_dir + "tree2_01.png");
-		icon_trees[0][2] = Image::loadImage(gfx_dir + "tree2_02.png");
-		icon_trees[0][3] = Image::loadImage(gfx_dir + "tree2_03.png");
+	icon_trees[0][0] = Image::loadImage(gfx_dir + "tree2_00.png");
+	icon_trees[0][1] = Image::loadImage(gfx_dir + "tree2_01.png");
+	icon_trees[0][2] = Image::loadImage(gfx_dir + "tree2_02.png");
+	icon_trees[0][3] = Image::loadImage(gfx_dir + "tree2_03.png");
 
-		icon_trees[1][0] = Image::loadImage(gfx_dir + "tree3_00.png");
-		icon_trees[1][1] = Image::loadImage(gfx_dir + "tree3_01.png");
-		icon_trees[1][2] = Image::loadImage(gfx_dir + "tree3_02.png");
-		icon_trees[1][3] = Image::loadImage(gfx_dir + "tree3_03.png");
+	icon_trees[1][0] = Image::loadImage(gfx_dir + "tree3_00.png");
+	icon_trees[1][1] = Image::loadImage(gfx_dir + "tree3_01.png");
+	icon_trees[1][2] = Image::loadImage(gfx_dir + "tree3_02.png");
+	icon_trees[1][3] = Image::loadImage(gfx_dir + "tree3_03.png");
 
-		// [2][] is the nuked tree image
-		icon_trees[2][0] = Image::loadImage(gfx_dir + "deadtree1_00.png");
-		for(int j=1;j<n_tree_frames_c;j++) {
-			icon_trees[2][j] = icon_trees[2][0]->copy(); // no animation for nuked tree
-		}
+	// [2][] is the nuked tree image
+	icon_trees[2][0] = Image::loadImage(gfx_dir + "deadtree1_00.png");
+	for(int j=1;j<n_tree_frames_c;j++) {
+		icon_trees[2][j] = icon_trees[2][0]->copy(); // no animation for nuked tree
+	}
 
-		icon_trees[3][0] = Image::loadImage(gfx_dir + "tree5_00.png");
-		icon_trees[3][1] = Image::loadImage(gfx_dir + "tree5_01.png");
-		icon_trees[3][2] = Image::loadImage(gfx_dir + "tree5_02.png");
-		icon_trees[3][3] = Image::loadImage(gfx_dir + "tree5_03.png");
+	icon_trees[3][0] = Image::loadImage(gfx_dir + "tree5_00.png");
+	icon_trees[3][1] = Image::loadImage(gfx_dir + "tree5_01.png");
+	icon_trees[3][2] = Image::loadImage(gfx_dir + "tree5_02.png");
+	icon_trees[3][3] = Image::loadImage(gfx_dir + "tree5_03.png");
 
-		for(int i=0;i<n_trees_c;i++) {
-			for(int j=0;j<n_tree_frames_c;j++) {
-				if( icon_trees[i][j] == NULL )
-					return false;
-				processImage(icon_trees[i][j]);
-			}
-		}
-
-		icon_clutter[0] = Image::loadImage(gfx_dir + "rock0.png");
-		icon_clutter[1] = Image::loadImage(gfx_dir + "rock1.png");
-		icon_clutter[2] = Image::loadImage(gfx_dir + "log0.png");
-		for(int i=0;i<n_clutter_c;i++) {
-			if( icon_clutter[i] == NULL )
+	for(int i=0;i<n_trees_c;i++) {
+		for(int j=0;j<n_tree_frames_c;j++) {
+			if( icon_trees[i][j] == NULL )
 				return false;
-			processImage(icon_clutter[i]);
+			processImage(icon_trees[i][j]);
 		}
 	}
-	else {
-		Image *features = Image::loadImage("data/mlm_features");
-		if( features == NULL )
+
+	icon_clutter[0] = Image::loadImage(gfx_dir + "rock0.png");
+	icon_clutter[1] = Image::loadImage(gfx_dir + "rock1.png");
+	icon_clutter[2] = Image::loadImage(gfx_dir + "log0.png");
+	for(int i=0;i<n_clutter_c;i++) {
+		if( icon_clutter[i] == NULL )
 			return false;
-		features->setColor(0, 255, 0, 255);
-		processImage(features);
-
-		icon_openpitmine = features->copy(256, 118, 47, 24);
-
-		for(int i=0;i<4;i++) {
-			icon_trees[i][0] = features->copy(96 + 32*i, 114, 24, 28);
-			for(int j=1;j<n_tree_frames_c;j++) {
-				icon_trees[i][j] = icon_trees[i][0]; // no animation for old data available
-			}
-		}
-
-		delete features;
-
-		for(int i=0;i<n_clutter_c;i++) {
-			icon_clutter[i] = NULL;
-		}
+		processImage(icon_clutter[i]);
 	}
 	drawProgress(70);
 
-        if( using_new_graphics ) {
 #if defined(Q_OS_ANDROID)
-            background_islands = Image::loadImage(gfx_dir + "sunrise.png");
+        background_islands = Image::loadImage(gfx_dir + "sunrise.png");
 #else
-            background_islands = Image::loadImage(gfx_dir + "sunrise.jpg");
+        background_islands = Image::loadImage(gfx_dir + "sunrise.jpg");
 #endif
-        }
-        else
-		background_islands = Image::loadImage("data/mlm_sunrise");
 	if( background_islands == NULL )
 		return false;
 	processImage(background_islands);

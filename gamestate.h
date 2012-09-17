@@ -227,10 +227,15 @@ public:
 };
 
 class ChoosePlayerGameState : public GameState {
+	Button *button_red;
+	Button *button_yellow;
+	Button *button_green;
+	Button *button_blue;
 public:
 	ChoosePlayerGameState();
 	virtual ~ChoosePlayerGameState();
 
+	virtual void reset();
 	virtual void draw();
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
 };

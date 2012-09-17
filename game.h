@@ -113,7 +113,7 @@ enum MapColour {
 	MAP_N_COLOURS
 };
 
-extern Image *player_select;
+//extern Image *player_select;
 extern Image *background;
 extern Image *land[];
 extern Image *fortress[];

@@ -348,7 +348,8 @@ void ChooseGameTypeGameState::reset() {
 }
 
 void ChooseGameTypeGameState::draw() {
-	screen->clear();
+	//screen->clear();
+	background->draw(0, 0, false);
 
 	this->choosegametypePanel->draw();
 
@@ -395,7 +396,8 @@ void ChooseDifficultyGameState::reset() {
 }
 
 void ChooseDifficultyGameState::draw() {
-	screen->clear();
+	//screen->clear();
+	background->draw(0, 0, false);
 
 	this->choosedifficultyPanel->draw();
 
@@ -416,14 +418,43 @@ void ChooseDifficultyGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_mi
 	this->choosedifficultyPanel->input(m_x, m_y, m_left, m_middle, m_right, click);
 }
 
-ChoosePlayerGameState::ChoosePlayerGameState() {
+ChoosePlayerGameState::ChoosePlayerGameState() : button_red(NULL), button_yellow(NULL), button_green(NULL), button_blue(NULL) {
 }
 
 ChoosePlayerGameState::~ChoosePlayerGameState() {
 }
 
+void ChoosePlayerGameState::reset() {
+	this->screen_page->free(true);
+
+	const int xpos = 64;
+	int ypos = 64;
+	const int ydiff = 48;
+
+	button_red = new Button(xpos, ypos, "CONTROLLER OF THE RED PEOPLE", letters_large);
+	ypos += ydiff;
+	screen_page->add(button_red);
+
+	button_yellow = new Button(xpos, ypos, "CONTROLLER OF THE YELLOW PEOPLE", letters_large);
+	ypos += ydiff;
+	screen_page->add(button_yellow);
+
+	button_green = new Button(xpos, ypos, "CONTROLLER OF THE GREEN PEOPLE", letters_large);
+	ypos += ydiff;
+	screen_page->add(button_green);
+
+	button_blue = new Button(xpos, ypos, "CONTROLLER OF THE BLUE PEOPLE", letters_large);
+	ypos += ydiff;
+	screen_page->add(button_blue);
+}
+
 void ChoosePlayerGameState::draw() {
-	player_select->draw(0, 0, false);
+	//player_select->draw(0, 0, false);
+	//screen->clear();
+	background->draw(0, 0, false);
+    Image::writeMixedCase(160, 16, letters_large, letters_small, NULL, "Select a Player", Image::JUSTIFY_CENTRE, true);
+
+	this->screen_page->draw();
 
 	if( human_player == PLAYER_DEMO )
 		mouse_image = mouse_pointers[0];
@@ -1767,7 +1798,7 @@ void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 	GameState::mouseClick(m_x, m_y, m_left, m_middle, m_right, click);
 
 	//bool m_left = mouse_left(m_b);
-	int s_m_y = (int)(m_y / scale_height);
+	/*int s_m_y = (int)(m_y / scale_height);
 	if( m_left && click ) {
 		human_player = -1;
 		if( s_m_y >= 55 && s_m_y < 99 )
@@ -1785,6 +1816,27 @@ void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 			newGame();
 			//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
 		}
+	}*/
+	int player = -1;
+    if( m_left && click && button_red->mouseOver(m_x, m_y) ) {
+		player = 0;
+	}
+    else if( m_left && click && button_yellow->mouseOver(m_x, m_y) ) {
+		player = 2;
+	}
+    else if( m_left && click && button_green->mouseOver(m_x, m_y) ) {
+		player = 1;
+	}
+    else if( m_left && click && button_blue->mouseOver(m_x, m_y) ) {
+		player = 3;
+	}
+
+	if( player != -1 ) {
+		human_player = player;
+		//human_player = PLAYER_DEMO; // force demo mode
+		setGameStateID(GAMESTATEID_PLACEMEN);
+		newGame();
+		//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
 	}
 }
 
