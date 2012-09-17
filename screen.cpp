@@ -302,6 +302,17 @@ void Application::runMainLoop() {
 						m_right_pressed = false;
 					break;
 				}*/
+			case SDL_ACTIVEEVENT:
+				if( (event.active.state & SDL_APPINPUTFOCUS) != 0 || (event.active.state & SDL_APPACTIVE) != 0 ) {
+					if( event.active.gain == 1 ) {
+						// activate
+					}
+					else if( event.active.gain == 0 ) {
+						// inactive
+						keypressP(); // automatically pause when application goes inactive
+					}
+				}
+				break;
 			}
 		}
 		SDL_PumpEvents();
