@@ -4,15 +4,11 @@ mkdir c:\temp\gigalomania\
 
 REM set src="c:\documents and settings\mark.DESKTOP\work\programming\megalomania"
 set src="."
-REM set docsrc="c:\documents and settings\mark.DESKTOP\work\webpages\homepage"
-REM set docsrc="..\..\webpages\homepage"
-set docsrc="docs\"
 set dst="c:\temp\gigalomania"
 
-REM copy %src%\main_borland.exe %src%\gigalomania.exe
 copy %src%\Release\gigalomania.exe %src%\gigalomania.exe
 copy %src%\gigalomania.exe %dst%\gigalomania.exe
-copy %docsrc%\comp_gigalomania.html %dst%\readme.html
+copy %src%\readme.html %dst%
 copy %src%\gigalomania_debugwindow.bat %dst%
 copy %src%\gigalomania_fullscreen.bat %dst%
 copy %src%\gpl.txt %dst%

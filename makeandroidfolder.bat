@@ -12,6 +12,7 @@ copy %src%\deployment.pri %dst%
 copy %src%\gigalomania.qrc %dst%
 copy %src%\gigalomania64.png %dst%
 copy %src%\gigalomania48.png %dst%
+copy %src%\readme.html %dst%
 
 REM General:
 

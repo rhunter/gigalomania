@@ -3,7 +3,6 @@ rd /S /Q c:\temp\gigalomaniasrc\
 mkdir c:\temp\gigalomaniasrc\
 
 set src="."
-set docsrc="docs\"
 set dst="c:\temp\gigalomaniasrc"
 
 copy %src%\makearchive.bat %dst%
@@ -11,7 +10,7 @@ copy %src%\makesrcarchive.bat %dst%
 copy %src%\makesymbianfolder.bat %dst%
 copy %src%\makeandroidfolder.bat %dst%
 copy %src%\gigalomania_source.txt %dst%
-copy %docsrc%\comp_gigalomania.html %dst%\readme.html
+copy %src%\readme.html %dst%
 
 REM Windows Visual C++ stuff:
 
