@@ -77,6 +77,8 @@
         <file>gfx/rock1.png</file>
         <file>gfx/slabs.png</file>
         <file>gfx/smallmap_coast.png</file>
+        <file>gfx/starfield.jpg</file>
+        <file>gfx/sunrise.jpg</file>
         <file>gfx/tree2_00.png</file>
         <file>gfx/tree2_01.png</file>
         <file>gfx/tree2_02.png</file>
@@ -89,7 +91,5 @@
         <file>gfx/tree5_01.png</file>
         <file>gfx/tree5_02.png</file>
         <file>gfx/tree5_03.png</file>
-        <file>gfx/starfield.png</file>
-        <file>gfx/sunrise.png</file>
     </qresource>
 </RCC>
