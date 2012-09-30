@@ -89,7 +89,6 @@
         <file>gfx/tree5_01.png</file>
         <file>gfx/tree5_02.png</file>
         <file>gfx/tree5_03.png</file>
-        <file>gfx/player_select.png</file>
         <file>gfx/starfield.png</file>
         <file>gfx/sunrise.png</file>
     </qresource>
