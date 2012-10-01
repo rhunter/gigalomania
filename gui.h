@@ -100,7 +100,7 @@ public:
 	/*bool musicOn() const {
 		return ( button_music->getActive() == 0 );
 	}*/
-    bool onemousebuttonOn() const;
+    //bool onemousebuttonOn() const;
 };
 
 class GamePanel : public MultiPanel {

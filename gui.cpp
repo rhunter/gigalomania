@@ -6,6 +6,9 @@
 #include <cstdlib> // n.b., needed on Linux at least (for abs)
 #include <cstdio> // n.b., needed on Linux at least
 
+#include <sstream>
+using std::stringstream;
+
 #include "gui.h"
 #include "sector.h"
 #include "player.h"
@@ -39,7 +42,7 @@ void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, P
 		panel->add(oneMouseButtonPanel);
 		oneMouseButtonPanel->setModal();
 	}
-    else if( !click ) {
+	else if( !onemousebutton && !click ) {
 		//buttonNMenClick(panel, m_left, m_middle, m_right);
 		//(*clickFunc)(panel, arg, m_left, m_middle, m_right);
 		(*clickFunc)(data, arg, m_left, m_middle, m_right);
@@ -197,12 +200,17 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     cy += step_y;
     this->addToPanel(STATE_OPTIONS, button_continue);
 
+#if defined(Q_OS_ANDROID)
+	// sound not available on Android
+	this->button_music = NULL;
+#else
     //char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
     char *music_texts[] = { "SOUND ON", "SOUND OFF" };
     this->button_music = new CycleButton((int)(mx - 4.5*fw), cy, music_texts, 2, letters_large);
     cy += step_y;
     this->button_music->setActive( play_music ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_music);
+#endif
 
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
     this->button_onemousebutton = NULL;
@@ -388,8 +396,14 @@ void ChooseMenPanel::buttonNMenClick(void *data, int arg, bool m_left, bool m_mi
 void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click) {
 	MultiPanel::input(m_x, m_y, m_left, m_middle, m_right, click);
 
-	// update music
-	play_music = button_music->getActive() == 0;
+	// update from options
+	if( button_music != NULL ) {
+		play_music = button_music->getActive() == 0;
+	}
+    //onemousebutton = this->onemousebuttonOn();
+	if( button_onemousebutton != NULL ) {
+		onemousebutton = button_onemousebutton->getActive() == 0;
+	}
 
 	if( this->hasModal() ) {
 		return;
@@ -424,7 +438,6 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
         else if( m_left && click && this->button_play->mouseOver(m_x, m_y) ) {
             done = true;
             registerClick();
-            onemousebutton = this->onemousebuttonOn();
             this->setInfoText();
             this->c_page = STATE_CHOOSEMEN;
             setupPlayers();
@@ -527,11 +540,11 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	}
 }
 
-bool ChooseMenPanel::onemousebuttonOn() const {
+/*bool ChooseMenPanel::onemousebuttonOn() const {
     if( button_onemousebutton == NULL )
         return onemousebutton;
     return ( button_onemousebutton->getActive() == 0 );
-}
+}*/
 
 GamePanel::GamePanel(PlayingGameState *gamestate) : MultiPanel(GamePanel::N_STATES, offset_panel_x_c, offset_panel_y_c), gamestate(gamestate) {
 	//this->state = STATE_SECTORCONTROL;
@@ -1844,6 +1857,11 @@ x		}*/
                     done = true;
                     Design *design = gamestate->getCurrentSector()->bestDesign(Invention::SHIELD, start_epoch + i);
 					gamestate->getCurrentSector()->setCurrentDesign( design );
+					{
+						stringstream str;
+						str << "start designing a " << design->getInvention()->getName();
+						addTextEffect(new TextEffect(str.str(), help_x_c, help_y_c, help_delay_c));
+					}
 			}
 			else if( m_left && this->button_defences[i]->mouseOver(m_x,m_y)
 				&& ( gamestate->getCurrentSector()->getCurrentDesign() == NULL
@@ -1852,6 +1870,11 @@ x		}*/
                     done = true;
                     Design *design = gamestate->getCurrentSector()->bestDesign(Invention::DEFENCE, start_epoch + i);
 					gamestate->getCurrentSector()->setCurrentDesign( design );
+					{
+						stringstream str;
+						str << "start designing a " << design->getInvention()->getName();
+						addTextEffect(new TextEffect(str.str(), help_x_c, help_y_c, help_delay_c));
+					}
 			}
 			else if( m_left && this->button_weapons[i]->mouseOver(m_x,m_y)
 				&& ( gamestate->getCurrentSector()->getCurrentDesign() == NULL
@@ -1860,6 +1883,11 @@ x		}*/
                     done = true;
                     Design *design = gamestate->getCurrentSector()->bestDesign(Invention::WEAPON, start_epoch + i);
 					gamestate->getCurrentSector()->setCurrentDesign( design );
+					{
+						stringstream str;
+						str << "start designing a " << design->getInvention()->getName();
+						addTextEffect(new TextEffect(str.str(), help_x_c, help_y_c, help_delay_c));
+					}
 			}
 		}
         if( ( m_left || m_right ) && !done && this->button_designers->mouseOver(m_x,m_y) ) {
@@ -2098,6 +2126,11 @@ x		}*/
                     done = true;
                     Design *design = gamestate->getCurrentSector()->knownDesign(Invention::SHIELD, start_epoch + i);
 					gamestate->getCurrentSector()->setCurrentManufacture( design );
+					{
+						stringstream str;
+						str << "start manufacturing a " << design->getInvention()->getName();
+						addTextEffect(new TextEffect(str.str(), help_x_c, help_y_c, help_delay_c));
+					}
 			}
 			else if( m_left && this->button_fdefences[i]->mouseOver(m_x,m_y)
 				&& ( gamestate->getCurrentSector()->getCurrentManufacture() == NULL
@@ -2106,6 +2139,11 @@ x		}*/
                     done = true;
                     Design *design = gamestate->getCurrentSector()->knownDesign(Invention::DEFENCE, start_epoch + i);
 					gamestate->getCurrentSector()->setCurrentManufacture( design );
+					{
+						stringstream str;
+						str << "start manufacturing a " << design->getInvention()->getName();
+						addTextEffect(new TextEffect(str.str(), help_x_c, help_y_c, help_delay_c));
+					}
 			}
 			else if( m_left && this->button_fweapons[i]->mouseOver(m_x,m_y)
 				&& ( gamestate->getCurrentSector()->getCurrentManufacture() == NULL
@@ -2114,6 +2152,11 @@ x		}*/
                     done = true;
                     Design *design = gamestate->getCurrentSector()->knownDesign(Invention::WEAPON, start_epoch + i);
 					gamestate->getCurrentSector()->setCurrentManufacture( design );
+					{
+						stringstream str;
+						str << "start manufacturing a " << design->getInvention()->getName();
+						addTextEffect(new TextEffect(str.str(), help_x_c, help_y_c, help_delay_c));
+					}
 			}
 		}
         if( ( m_left || m_right ) && !done && this->button_workers->mouseOver(m_x,m_y) ) {
