@@ -803,19 +803,23 @@ void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
 						sector->setPopulation( n_population - n_unarmed );
 					}
 			}
-			assembled_strength = sector->getAssembledArmy()->getStrength();
 
-			if( strength + assembled_strength >= min_req || enemiesPresentWithBombardment ) {
-				ASSERT( !target_sector->isNuked() );
-				if( target_sector->getPlayer() == human_player && !target_sector->getArmy(this->index)->any(true) ) {
-					time_rate = 1; // auto-slow if attacking a player sector (but not if already being attacked by this player)
-					gamestate->refreshTimeRate();
+			if( sector->getAssembledArmy()->any(true) ) {
+				assembled_strength = sector->getAssembledArmy()->getStrength();
+
+				if( strength + assembled_strength >= min_req || enemiesPresentWithBombardment ) {
+					ASSERT( !target_sector->isNuked() );
+					if( target_sector->getPlayer() == human_player && !target_sector->getArmy(this->index)->any(true) ) {
+						time_rate = 1; // auto-slow if attacking a player sector (but not if already being attacked by this player)
+						gamestate->refreshTimeRate();
+					}
+					bool moved_all = target_sector->moveArmy(sector->getPlayer(), sector->getAssembledArmy());
+					ASSERT(moved_all);
 				}
-				bool moved_all = target_sector->moveArmy(sector->getPlayer(), sector->getAssembledArmy());
-				ASSERT(moved_all);
+				else {
+					sector->returnAssembledArmy();
+				}
 			}
-			else
-				sector->returnAssembledArmy();
 		}
 	}
 }
