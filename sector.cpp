@@ -1903,7 +1903,7 @@ void Sector::update() {
 		}
 	}
 
-	if( gameMode != GAMEMODE_MULTIPLAYER_CLIENT ) {
+	if( gameMode == GAMEMODE_MULTIPLAYER_CLIENT ) {
 		return;
 	}
 	// rest of function is done by server
