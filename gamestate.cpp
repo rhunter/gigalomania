@@ -558,9 +558,18 @@ void PlaceMenGameState::draw() {
 	Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, buffer, Image::JUSTIFY_CENTRE, true);
     cy += l_h + 2;
 
+	int year = epoch_dates[start_epoch];
+	bool shiny = start_epoch == n_epochs_c-1;
+	Image::writeNumbers(cx+8, cy, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT, true);
+	Image *era = ( year < 0 ) ? icon_bc :
+		shiny ? icon_ad_shiny : icon_ad;
+	era->draw(cx+8, cy, true);
+    cy += l_h + 2;
+
     if( human_player != PLAYER_DEMO && gameType == GAMETYPE_ALLISLANDS ) {
 		int n_suspended = getNSuspended();
-        if( n_suspended > 0 ) {
+        if( n_suspended > 0 )
+		{
 			sprintf(buffer, "Saved Men %d", n_suspended);
             Image::writeMixedCase(cx, cy, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE, true);
 		}
@@ -1331,10 +1340,10 @@ void PlayingGameState::draw() {
 			if( i == BUILDING_TOWER )
 				flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c, true);
 
-			const int health_xpos = offset_land_x_c + building->getX();
+			const int health_xpos = offset_land_x_c + building->getX() + 4;
 			//const int health_ypos = offset_land_y_c + building->getY() - 16;
 			const int health_ypos = offset_land_y_c + building->getY() + images[ current_sector->getBuildingEpoch() ]->getScaledHeight() + 2;
-			const int health_width = 32;
+			const int health_width = 36;
 			const int health_height = 4;
 			/*float health = (health_width-2) * ((float)building->getHealth()) / (float)building->getMaxHealth();
 			screen->fillRectWithAlpha(scale_width*health_xpos, scale_height*health_ypos, scale_width*health_width, scale_height*health_height, 255, 255, 255, 127);
