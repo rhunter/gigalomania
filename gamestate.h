@@ -170,6 +170,12 @@ protected:
 	bool mobile_ui_display_mouse; // if mobile_ui is true, should we display the mouse icon?
 	Image *mouse_image;
 	int mouse_off_x, mouse_off_y;
+	enum ConfirmType {
+		CONFIRMTYPE_UNKNOWN = -1,
+		CONFIRMTYPE_NEWGAME = 0,
+		CONFIRMTYPE_QUITGAME = 1
+	};
+	ConfirmType confirm_type;
     PanelPage *confirm_window;
     Button *confirm_yes_button;
     Button *confirm_no_button;
@@ -266,6 +272,7 @@ public:
 	int getStartMapY() const {
 		return this->start_map_y;
 	}
+	void requestNewGame();
 };
 
 class PlayingGameState : public GameState {

@@ -483,9 +483,10 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 		else if( m_left && click && this->button_new != NULL && this->button_new->mouseOver(m_x, m_y) ) {
             done = true;
             registerClick();
-			newGame();
+			//newGame();
 			// this panel is now destroyed, need to exit immediately!
-			return;
+			//return;
+			this->gamestate->requestNewGame();
 		}
 		else if( m_left && click && this->button_load != NULL && this->button_load->mouseOver(m_x, m_y) ) {
             done = true;

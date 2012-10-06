@@ -254,6 +254,7 @@ GameState::GameState() {
 	this->mouse_image = NULL;
 	this->mouse_off_x = 0;
 	this->mouse_off_y = 0;
+	this->confirm_type = CONFIRMTYPE_UNKNOWN;
     this->confirm_window = NULL;
     this->confirm_yes_button = NULL;
     this->confirm_no_button = NULL;
@@ -628,6 +629,21 @@ void PlaceMenGameState::draw() {
 	GameState::draw();
 }
 
+void PlaceMenGameState::requestNewGame() {
+	if( confirm_window != NULL ) {
+		this->closeConfirmWindow();
+	}
+	confirm_window = new PanelPage(120, 120, 64, 32);
+	confirm_type = CONFIRMTYPE_NEWGAME;
+	Button *text_button = new Button(0, 0, "NEW GAME", letters_small);
+	confirm_window->add(text_button);
+	confirm_yes_button = new Button(0, 16, "YES", letters_small);
+	confirm_window->add(confirm_yes_button);
+	confirm_no_button = new Button(32, 16, "NO", letters_small);
+	confirm_window->add(confirm_no_button);
+	this->screen_page->add(confirm_window);
+}
+
 PlayingGameState::PlayingGameState() : GameState() {
 	this->current_sector = NULL;
 	this->flag_frame_step = 0;
@@ -660,9 +676,6 @@ PlayingGameState::PlayingGameState() : GameState() {
 	this->land_panel = NULL;
 	this->pause_button = NULL;
 	this->quit_button = NULL;
-    /*this->confirm_window = NULL;
-	this->confirm_yes_button = NULL;
-    this->confirm_no_button = NULL;*/
 	this->gamePanel = NULL;
 	this->selected_army = NULL;
 	this->map_display = MAPDISPLAY_MAP;
@@ -1013,6 +1026,7 @@ void PlayingGameState::reset() {
 			map_panels[x][y] = NULL;
 		}
 	}
+	confirm_type = CONFIRMTYPE_UNKNOWN;
 	confirm_window = NULL;
 	confirm_yes_button = NULL;
 	confirm_no_button = NULL;
@@ -1864,7 +1878,15 @@ void PlaceMenGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,boo
         registerClick();
         ASSERT( confirm_window != NULL );
         this->closeConfirmWindow();
-        application->setQuit();
+		if( confirm_type == CONFIRMTYPE_NEWGAME ) {
+			newGame();
+		}
+		else if( confirm_type == CONFIRMTYPE_QUITGAME ) {
+	        application->setQuit();
+		}
+		else {
+			T_ASSERT(false);
+		}
     }
     else if( !done && m_left && click && confirm_no_button != NULL && confirm_no_button->mouseOver(m_x, m_y) ) {
         LOG("confirm no clicked\n");
@@ -2075,6 +2097,7 @@ void PlayingGameState::cancelPlayerAskingAlliance() {
 //void PlayingGameState::requestQuit() {
 void GameState::requestQuit() {
     if( confirm_window == NULL /*&& gameResult != GAMERESULT_QUIT*/ && fade == NULL ) {
+		confirm_type = CONFIRMTYPE_QUITGAME;
 		confirm_window = new PanelPage(120, 120, 64, 32);
 		Button *text_button = new Button(0, 0, "REALLY QUIT", letters_small);
 		confirm_window->add(text_button);
