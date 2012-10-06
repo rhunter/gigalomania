@@ -423,17 +423,30 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <li><b>Videos</b> - videos of the gameplay (e.g., on YouTube) would be useful to have, partly to help raise awareness, and also to act as gameplay tutorials.</li>
 </ul></p>
 
+<p>Please note that for me to use any graphics/sounds etc, it must be supplied under a "Free"/Open Source compatible
+licence, e.g., <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</p>
+
 <p><a name="history"><b>History</b></p>
 
 <pre>
 Version 0.25 (Work in progress)
 
+FIXED   Auto-slow sometimes activated when player wasn't being attacked.
 FIXED   Clicking on Player Select screen, but not on one of the choices, caused
         the mouse cursor to disappear.
+FIXED   One mouse button option got reset, if changed to a new island or age
+        before playing.
+FIXED   Minor issue with one mouse button UI (sometimes incorrectly registered
+        a click when changing to a new panel).
+ADDED   Display start date for each epoch when choosing island to play.
+ADDED   More help text.
+UPDATED Improved some graphics.
 UPDATED Updated player select screen.
 UPDATED Automatically pause game when window is deactivated (was already doing
         this for Symbian, but not other platforms; still not supported for
         Android).
+UPDATED Improved alignment/width of the health bars in the main viewing area.
+UPDATED Remove Sound option for Android (sound not available yet).
 
 Version 0.24 (2012/04/05)
 
@@ -814,30 +827,48 @@ First public release.
 <!--<li>explosion_6.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=35463">35463__jobro__Explosion_6.wav</a>, by jobro, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
 <li>bomb.wav - from <a href="http://soundbible.com/1234-Bomb.html">Bomb-SoundBible.com-891110113.wav</a>, by Mike Koenig, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported</a> (CC BY 3.0).</li>
 <!--<li>plagasul_jah.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=74">74__plagasul__JaH.wav</a>, by Plagasul, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
-<li>pain1.wav - from <a href="http://opengameart.org/content/11-male-human-paindeath-sounds">http://opengameart.org/content/11-male-human-paindeath-sounds</a>, by Michel Baradari, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported</a> (CC BY 3.0).</li>
+<li>pain1.wav - from <a href="http://opengameart.org/content/11-male-human-paindeath-sounds">http://opengameart.org/content/11-male-human-paindeath-sounds</a>, by Michel Baradari, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
 <!--<li>pulsed808bd.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=3169">3169__jonnay__Pulsed808BD.wav</a>, by Jonnay, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
 <li>misc_menu_3.wav - from <a href="http://opengameart.org/content/gui-sound-effects">http://opengameart.org/content/gui-sound-effects</a>, by Lokif, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>woodbrk.wav - modified from <a href="http://freeciv.wikia.com/wiki/Main_Page">FreeCiv</a>, under the GPL.</li>
 <li>deadtree1_00.png - modified from <a href="http://opengameart.org/content/widelands-dead-trees">http://opengameart.org/content/widelands-dead-trees</a>, taken from <a href="http://wl.widelands.org/">Widelands</a>, under the GPL v2.</li>
 <li>tree*_*.png and "wood" element icon - modified from <a href="http://opengameart.org/content/widelands-trees-greenland">http://opengameart.org/content/widelands-trees-greenland</a>, taken from <a href="http://wl.widelands.org/">Widelands</a>, under the GPL v2.</li>
-<li>rock*.png, log0.png and "rock" element icon - modified from <a href="http://opengameart.org/content/isometric-64x64-outside-tileset">http://opengameart.org/content/isometric-64x64-outside-tileset</a>, by Yar, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0</a>.</li>
+<li>rock*.png, log0.png and "rock" element icon - modified from <a href="http://opengameart.org/content/isometric-64x64-outside-tileset">http://opengameart.org/content/isometric-64x64-outside-tileset</a>, by Yar, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
 <li>"lightbulb" icon - modified from Crystal_Clear_app_ktip.png - from <a href="http://commons.wikimedia.org/wiki/File:Crystal_Clear_app_ktip.png">http://commons.wikimedia.org/wiki/File:Crystal_Clear_app_ktip.png</a>, by Everaldo Coelho and YellowIcon under the LGPL.</li>
-<li>"lab" icon - modified from Potion_icon.jpg - from <a href="http://commons.wikimedia.org/wiki/File:Potion_icon.jpg">http://commons.wikimedia.org/wiki/File:Potion_icon.jpg</a>, by Tanemori, under <a href="http://creativecommons.org/licenses/by/2.1/jp/deed.en">Creative Commons Attribution 2.1 Japan</a>.</li>
+<li>"lab" icon - modified from Potion_icon.jpg - from <a href="http://commons.wikimedia.org/wiki/File:Potion_icon.jpg">http://commons.wikimedia.org/wiki/File:Potion_icon.jpg</a>, by Tanemori, under <a href="http://creativecommons.org/licenses/by/2.1/jp/deed.en">CC BY 2.1 Japan</a>.</li>
 <li>"bone" element icon - modified from femur.png - from <a href="http://opengameart.org/content/pixel-art-femur">http://opengameart.org/content/pixel-art-femur</a>, by bart, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>"gold", "silver", "red gem" element icons - modified from <a href="http://opengameart.org/content/loot">http://opengameart.org/content/loot</a>, by sunburn, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
 <li>"bricks" element icon - modified from <a href="http://opengameart.org/content/16x16-tiles">http://opengameart.org/content/16x16-tiles</a>, by Ogrebane, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>"moon", "leaves", "fire", "green gem" element icons - modified from <a href="http://opengameart.org/content/skill-item-and-spell-icons">http://opengameart.org/content/skill-item-and-spell-icons</a>, by Paulius Jurgelevičius, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>"star" element icon - modified from <a href="http://opengameart.org/content/star">http://opengameart.org/content/star </a>, by Écrivain, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>"alien" element icon - modified from <a href="http://opengameart.org/content/faces-0">http://opengameart.org/content/faces-0</a>, by Paulius Jurgelevičius, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
+<li>"Mine" icon - from <a href="http://opengameart.org/content/tools-icons">http://opengameart.org/content/tools-icons</a>, by MrBeast, under the GPL v2 or later, LGPL v2.1 or later, or <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0 or later</a>.</li>
+<li>"Rock" weapon icon, "Slate" element icon - from <a href="http://opengameart.org/content/rocks">http://opengameart.org/content/rocks</a>, by Écrivain, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
+<li>"Sword", "Pike", "Longbow" weapon icons - from <a href="http://opengameart.org/content/weapons-icons">http://opengameart.org/content/weapons-icons</a>, by elerya, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0 or later</a>.</li>
+<li>"Trebuchet", "Cannon" weapon icons - from <a href="http://freeciv.wikia.com/wiki/Main_Page">FreeCiv</a>, under GPL v2 or later.</li>
+<li>"Biplanes" weapon icon - from <a href="http://commons.wikimedia.org/wiki/File:Biplane_landing.png">http://commons.wikimedia.org/wiki/File:Biplane_landing.png</a>, by Dr. Wessmann, under <a href="http://creativecommons.org/licenses/by-sa/2.0/deed.en">CC BY-SA 2.0</a>.</li>
+<li>"Jet" weapon icon - from <a href="http://opengameart.org/content/fighter-planes-ww2-theme">http://opengameart.org/content/fighter-planes-ww2-theme</a>, by Nick, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0 or later</a>.</li>
+<li>"Nuke" weapon icon - from <a href=" http://commons.wikimedia.org/wiki/File:Castle_Romeo.jpg">http://commons.wikimedia.org/wiki/File:Castle_Romeo.jpg</a>, public domain.</li>
+<li>"Stick", "Spear" defence icons - from <a href="http://opengameart.org/content/weapon-icons-32x32px-painterly">http://opengameart.org/content/weapon-icons-32x32px-painterly</a>, by Scrittl, under the GPL v3 or later, or <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0 or later</a>.</li>
+<li>"Shortbow" defence icon - from <a href="http://opengameart.org/content/osare-weapon-icons">http://opengameart.org/content/osare-weapon-icons</a>, by Blarumyrran, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
+<li>"Crossbow" defence icon - from <a href="http://opengameart.org/content/low-poly-crossbow">http://opengameart.org/content/low-poly-crossbow</a>, by Lamoot, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0 or later</a>.</li>
+<li>"Rifle" weapon icon - from <a href="http://www.flickr.com/photos/36224933@N07/3347657196">http://www.flickr.com/photos/36224933@N07/3347657196</a>, by Antique Military Rifles, under <a href="http://creativecommons.org/licenses/by-sa/2.0/deed.en">CC BY-SA 2.0</a>.</li>
+<li>"Machine gun" defence icon - from <a href="http://commons.wikimedia.org/wiki/File:Machine_gun_Type_96_1.jpg">http://commons.wikimedia.org/wiki/File:Machine_gun_Type_96_1.jpg</a>, public domain.</li>
+<li>"Rocket" defence icon - from <a href="http://commons.wikimedia.org/wiki/File:Bazookasmithsonian.jpg">http://commons.wikimedia.org/wiki/File:Bazookasmithsonian.jpg</a>, by Carl Malamud, under <a href="http://creativecommons.org/licenses/by/2.0/deed.en">CC BY 2.0</a>.</li>
+<li>"Bloody sword" icon - from <a href="http://opengameart.org/content/flare-item-variation-60x60-only">http://opengameart.org/content/flare-item-variation-60x60-only</a>, by Mumu, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
+<li>"Flag" icons - from <a href="http://commons.wikimedia.org/wiki/File:Animated-Flag-Denmark.gif">http://commons.wikimedia.org/wiki/File:Animated-Flag-Denmark.gif</a>, by Dave Johnston, public domain.</li>
+<li>"Tick" icon - from <a href="http://opengameart.org/content/gui-items">http://opengameart.org/content/gui-items</a>, by Scribe, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0 or later</a>.</li>
+<li>"Trash" icon - from <a href="http://commons.wikimedia.org/wiki/File:Gnome-edit-delete.svg">http://commons.wikimedia.org/wiki/File:Gnome-edit-delete.svg</a>, by GNOME icon artists, under the GPL v2 or later.</li>
 <li>The rendered building graphics use texture maps from:<ul>
 <li>Tileable5.png, Tileable9.png, Tileable10.png - from <a href="http://opengameart.org/content/117-stone-wall-tilable-textures-in-8-themes">http://opengameart.org/content/117-stone-wall-tilable-textures-in-8-themes</a>, by p0ss, under the GPL 2.</li>
-<li>"Fence Panel" - from <a href="http://www.lovetextures.com">http://www.lovetextures.com</a> under <a href="http://creativecommons.org/licenses/by/2.0/uk/">Creative Commons Attribution 2.0</a>.</li>
-<li>2010-09-04_11-56-46.jpg, 2010-09-04_08-32-36.jpg - from <a href="http://opengameart.org/content/45-high-res-ground-texture-photos">http://opengameart.org/content/45-high-res-ground-texture-photos</a>, by bart, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0</a>.</li>
-<li>bricks2.jpg - from <a href="http://opengameart.org/content/brick-texture">http://opengameart.org/content/brick-texture</a>, by Bart K, under the GPL v2, GPL v3, and <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share Alike 3.0</a>.</li>
-<li>brick_seier.jpg - from <a href="http://www.flickr.com/photos/seier/4340689010/">http://www.flickr.com/photos/seier/4340689010/</a> by "seier+seier" under <a href="http://creativecommons.org/licenses/by/2.0/">Creative Commons Attribution 2.0</a>.</li>
-<li>Shingle.png - from <a href="http://opengameart.org/content/dims-enviromental-and-architectural-textures">http://opengameart.org/content/dims-enviromental-and-architectural-textures</a>, by Dim, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0</a>.</li>
+<li>"Fence Panel" - from <a href="http://www.lovetextures.com">http://www.lovetextures.com</a> under <a href="http://creativecommons.org/licenses/by/2.0/uk/">CC BY 2.0</a>.</li>
+<li>2010-09-04_11-56-46.jpg, 2010-09-04_08-32-36.jpg - from <a href="http://opengameart.org/content/45-high-res-ground-texture-photos">http://opengameart.org/content/45-high-res-ground-texture-photos</a>, by bart, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
+<li>bricks2.jpg - from <a href="http://opengameart.org/content/brick-texture">http://opengameart.org/content/brick-texture</a>, by Bart K, under the GPL v2, GPL v3, and <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</li>
+<li>brick_seier.jpg - from <a href="http://www.flickr.com/photos/seier/4340689010/">http://www.flickr.com/photos/seier/4340689010/</a> by "seier+seier" under <a href="http://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>.</li>
+<li>Shingle.png - from <a href="http://opengameart.org/content/dims-enviromental-and-architectural-textures">http://opengameart.org/content/dims-enviromental-and-architectural-textures</a>, by Dim, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
 </ul></li>
-<li>Public domain images: <a href="http://en.wikipedia.org/wiki/File:Florida_Sunrise_099.JPG">http://en.wikipedia.org/wiki/File:Florida_Sunrise_099.JPG</a>, <a href="http://en.wikipedia.org/wiki/File:Pleiades_large.jpg">http://en.wikipedia.org/wiki/File:Pleiades_large.jpg</a>.</li>
+<li>starfield.jpg - from <a href="http://opengameart.org/content/solar-system">http://opengameart.org/content/solar-system</a>, by ac3raven, under <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</li>
+<li>sunrise.jpg - from <a href="http://en.wikipedia.org/wiki/File:Florida_Sunrise_099.JPG">http://en.wikipedia.org/wiki/File:Florida_Sunrise_099.JPG</a>, public domain.</li>
 <li><a href="http://www.libsdl.org/">SDL</a>, <a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a> and <a href="http://www.libsdl.org/projects/SDL_mixer/">SDL_mixer</a>, all under the LGPL.</li>
 </ul></p>
 
