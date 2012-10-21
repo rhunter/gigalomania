@@ -90,7 +90,9 @@ const int n_shields_c = 4;
 const int n_playershields_c = 16;
 const int n_flag_frames_c = 4;
 const int n_defender_frames_c = 8;
-const int n_attacker_frames_c = 16;
+//const int n_attacker_frames_c = 16;
+const int n_attacker_directions_c = 4;
+const int max_attacker_frames_c = 8;
 const int n_trees_c = 4;
 const int n_clutter_c = 3;
 const int n_tree_frames_c = 4;
@@ -183,7 +185,9 @@ extern Image *coast_icons[n_coast_c];
 extern Image *map_sq[MAP_N_COLOURS][n_map_sq_c];
 extern Image *defenders[n_players_c][n_epochs_c][n_defender_frames_c];
 extern Image *nuke_defences[]; // epoch 8
-extern Image *attackers_walking[n_players_c][n_epochs_c+1][n_attacker_frames_c]; // epochs 6-9 are special case!
+//extern Image *attackers_walking[n_players_c][n_epochs_c+1][n_attacker_frames_c]; // epochs 6-9 are special case!
+extern int n_attacker_frames[n_epochs_c+1][n_attacker_directions_c];
+extern Image *attackers_walking[n_players_c][n_epochs_c+1][n_attacker_directions_c][max_attacker_frames_c]; // epochs 6-9 are special case!
 extern Image *planes[n_players_c][n_epochs_c]; // epochs 6,7 only
 extern Image *nukes[n_players_c][n_nuke_frames_c]; // epoch 8
 extern Image *saucers[n_players_c][n_saucer_frames_c]; // epoch 9

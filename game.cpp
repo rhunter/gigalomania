@@ -165,7 +165,9 @@ int map_sq_offset = 0, map_sq_coast_offset = 0;
 Image *map_sq[MAP_N_COLOURS][n_map_sq_c];
 Image *defenders[n_players_c][n_epochs_c][n_defender_frames_c];
 Image *nuke_defences[n_players_c];
-Image *attackers_walking[n_players_c][n_epochs_c+1][n_attacker_frames_c];
+//Image *attackers_walking[n_players_c][n_epochs_c+1][n_attacker_frames_c];
+int n_attacker_frames[n_epochs_c+1][n_attacker_directions_c];
+Image *attackers_walking[n_players_c][n_epochs_c+1][n_attacker_directions_c][max_attacker_frames_c]; // epochs 6-9 are special case!
 Image *planes[n_players_c][n_epochs_c];
 Image *nukes[n_players_c][n_nuke_frames_c];
 Image *saucers[n_players_c][n_saucer_frames_c];
@@ -1243,6 +1245,58 @@ void processImage(Image *image) {
 	image->setScale(scale_width, scale_height);
 }
 
+bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
+	char filename[300] = "";
+	sprintf(filename, "attacker_walking_%d.png", epoch);
+	Image *gfx_image = Image::loadImage(gfx_dir + filename);
+	// if NULL, look for direction specific graphics
+	if( gfx_image != NULL ) {
+	    gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
+	}
+	for(int dir=0;dir<n_attacker_directions_c;dir++) {
+		bool direction_specific = false;
+		if( gfx_image == NULL ) {
+			// load direction specific image
+			//LOG("try loading direction specific images for epoch %d dir %d\n", epoch, dir);
+			direction_specific = true;
+			sprintf(filename, "attacker_walking_%d_%d.png", epoch, dir);
+			gfx_image = Image::loadImage(gfx_dir + filename);
+			if( gfx_image == NULL ) {
+				LOG("failed to load attacker walking image for epoch %d dir %d\n", epoch, dir);
+				return false;
+			}
+		    gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
+		}
+		if( direction_specific ) {
+			n_attacker_frames[epoch][dir] = (dir==ATTACKER_AMMO_DOWN || dir==ATTACKER_AMMO_UP) ? 4 : 8;
+		}
+		else {
+			n_attacker_frames[epoch][dir] = 3;
+		}
+		//LOG("epoch %d, direction %d has %d frames\n", epoch, dir, n_attacker_frames[epoch][dir]);
+		// need to update max_attacker_frames_c if we ever want to allow more frames!
+		ASSERT( n_attacker_frames[epoch][dir] <= max_attacker_frames_c );
+		for(int player=0;player<n_players_c;player++) {
+			int n_frames = n_attacker_frames[epoch][dir];
+			for(int frame=0;frame<n_frames;frame++) {
+				attackers_walking[player][epoch][dir][frame] = gfx_image->copy(16*frame, 0, 16, 16);
+				int r = 0, g = 0, b = 0, col = 0;
+				PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)player);
+				attackers_walking[player][epoch][dir][frame]->remap(240, 0, 0, r, g, b);
+				processImage(attackers_walking[player][epoch][dir][frame]);
+			}
+		}
+		if( direction_specific ) {
+			delete gfx_image;
+			gfx_image = NULL;
+		}
+	}
+	if( gfx_image != NULL ) {
+		delete gfx_image;
+	}
+	return true;
+}
+
 bool loadImages() {
     //int time_s = clock();
 	// progress should go from 0 to 80%
@@ -1662,10 +1716,19 @@ bool loadImages() {
 
 	bool attackers_shadow = false;
 	{
-		for(int i=0;i<=n_epochs_c;i++) {
-			for(int j=0;j<n_attacker_frames_c;j++) {
-				for(int k=0;k<n_players_c;k++)
-					attackers_walking[k][i][j] = NULL;
+		// initialise
+		for(int i=0;i<n_players_c;i++) {
+			for(int j=0;j<=n_epochs_c;j++) {
+				for(int k=0;k<n_attacker_directions_c;k++) {
+					for(int l=0;l<max_attacker_frames_c;l++) {
+						attackers_walking[k][i][j][l] = NULL;
+					}
+				}
+			}
+		}
+		for(int j=0;j<=n_epochs_c;j++) {
+			for(int k=0;k<n_attacker_directions_c;k++) {
+				n_attacker_frames[j][k] = 0;
 			}
 		}
 		for(int i=0;i<n_epochs_c;i++)
@@ -1692,52 +1755,13 @@ bool loadImages() {
 		}
 
 		for(int i=0;i<=5;i++) {
-			char filename[300] = "";
-			sprintf(filename, "attacker_walking_%d.png", i);
-			Image *gfx_image = Image::loadImage(gfx_dir + filename);
-			if( gfx_image == NULL )
+			if( !loadAttackersWalkingImages(gfx_dir, i) ) {
 				return false;
-            //processImage(gfx_image);
-            gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
-            for(int j=0;j<n_attacker_frames_c;j++) {
-				for(int k=0;k<n_players_c;k++) {
-					if( j % 4 > 2 )
-                        attackers_walking[k][i][j] = gfx_image->copy(0, 0, 16, 16);
-					else
-						attackers_walking[k][i][j] = gfx_image->copy(16*(j % 4), 0, 16, 16);
-                    int r = 0, g = 0, b = 0, col = 0;
-                    PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
-                    attackers_walking[k][i][j]->remap(240, 0, 0, r, g, b);
-                    processImage(attackers_walking[k][i][j]);
-                }
 			}
-			delete gfx_image;
 		}
 
-		//Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_base.png");
-		//Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_1.png");
-		Image *gfx_image = Image::loadImage(gfx_dir + "attacker_walking_10.png");
-		if( gfx_image == NULL )
+		if( !loadAttackersWalkingImages(gfx_dir, n_epochs_c) ) {
 			return false;
-		/*if( !gfx_image->scaleTo(scale_width*default_width_c) )
-		return false;*/
-        //processImage(gfx_image);
-        gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
-        for(int j=0;j<n_attacker_frames_c;j++) {
-			for(int k=0;k<n_players_c;k++) {
-				if( j % 4 > 2 )
-                    attackers_walking[k][10][j] = gfx_image->copy(0, 0, 16, 16);
-				/*else if( j / 4 == ATTACKER_AMMO_LEFT ) {
-				attackers_walking[k][10][j] = attackers_walking[k][10][ATTACKER_AMMO_RIGHT*4+(j%4)]->copy(0, 0, 16, 16);
-				attackers_walking[k][10][j]->flipX();
-				}*/
-				else
-					attackers_walking[k][10][j] = gfx_image->copy(16*(j % 4), 0, 16, 16);
-                int r = 0, g = 0, b = 0, col = 0;
-                PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
-                attackers_walking[k][10][j]->remap(240, 0, 0, r, g, b);
-                processImage(attackers_walking[k][10][j]);
-            }
 		}
 
 		Image *gfx_planes = Image::loadImage(gfx_dir + "attacker_flying.png");
@@ -1787,7 +1811,6 @@ bool loadImages() {
 		attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 16, 16); // different size
 
 		delete gfx_def_image;
-		delete gfx_image;
 		delete gfx_planes;
 		delete gfx_ammo;
 
@@ -1805,13 +1828,17 @@ bool loadImages() {
         for(int i=0;i<=n_epochs_c;i++) {
             if( i == 6 || i == 7 || i == 8 || i == 9 )
                 continue;
-            for(int j=0;j<n_attacker_frames_c;j++) {
-                for(int k=0;k<4;k++) {
-                    int r = 0, g = 0, b = 0, col = 0;
-                    PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
-                    attackers_walking[k][i][j]->remap(240, 0, 0, r, g, b);
-                }
-            }
+			for(int player=0;player<n_players_c;player++) {
+				for(int dir=0;dir<n_attacker_directions_c;dir++) {
+					int n_frames = n_attacker_frames[i][dir];
+					for(int frame=0;frame<n_frames;frame++) {
+						int r = 0, g = 0, b = 0, col = 0;
+						PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)player);
+						ASSERT(attackers_walking[player][i][dir][frame] != NULL);
+						attackers_walking[player][i][dir][frame]->remap(240, 0, 0, r, g, b);
+					}
+				}
+			}
         }
         for(int i=0;i<n_saucer_frames_c;i++) {
             for(int k=0;k<4;k++) {

@@ -1403,8 +1403,10 @@ void PlayingGameState::draw() {
 		Soldier *soldier = soldier_list[i];
 		ASSERT(soldier->epoch != nuclear_epoch_c);
 		if( !isAirUnit(soldier->epoch) ) {
-			int frame = soldier->dir * 4 + ( frame_counter % 3 );
-			Image *image = attackers_walking[soldier->player][soldier->epoch][frame];
+			//int frame = soldier->dir * 4 + ( frame_counter % 3 );
+			//Image *image = attackers_walking[soldier->player][soldier->epoch][frame];
+			int n_frames = n_attacker_frames[soldier->epoch][soldier->dir];
+			Image *image = attackers_walking[soldier->player][soldier->epoch][soldier->dir][frame_counter % n_frames];
 			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
 		}
 	}
@@ -2431,8 +2433,10 @@ bool PlayingGameState::validSoldierLocation(int epoch,int xpos,int ypos) {
 	if( epoch == 6 || epoch == 7 || epoch == 9 )
 		return true;
 
-	int size_x = attackers_walking[0][ epoch ][0]->getScaledWidth();
-	int size_y = attackers_walking[0][ epoch ][0]->getScaledHeight();
+	//int size_x = attackers_walking[0][ epoch ][0]->getScaledWidth();
+	//int size_y = attackers_walking[0][ epoch ][0]->getScaledHeight();
+	int size_x = attackers_walking[0][ epoch ][0][0]->getScaledWidth();
+	int size_y = attackers_walking[0][ epoch ][0][0]->getScaledHeight();
 	if( xpos < 0 || xpos + size_x >= land_width_c || ypos < 0 || ypos + size_y >= land_height_c )
 		okay = false;
 	else if( current_sector->getPlayer() != -1 ) {
