@@ -1412,9 +1412,11 @@ bool loadImages() {
     // need to do flags beforehand, due to colour remapping
     icons->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
     for(int i=0;i<n_players_c;i++) { // different locations
-        for(int j=0;j<3;j++)
+        /*for(int j=0;j<3;j++)
             flags[i][j] = icons->copy(160 + 16*j, 144, 16, 16);
-        flags[i][3] = icons->copy(160 + 16*1, 144, 16, 16);
+        flags[i][3] = icons->copy(160 + 16*1, 144, 16, 16);*/
+        for(int j=0;j<4;j++)
+            flags[i][j] = icons->copy(144 + 16*j, 144, 16, 16);
         for(int j=0;j<n_flag_frames_c;j++) {
             int r = 0, g = 0, b = 0, col = 0;
             PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
@@ -1443,12 +1445,15 @@ bool loadImages() {
 	mine_gatherable_small = icons->copy(160, 0, 16, 16);
 
 	//panel_build[BUILDING_TOWER] = icons->copy(224, 63, 16, 16); // different size // not yet used
-	panel_build[BUILDING_MINE] = icons->copy(256, 63, 16, 16); // different size
+	//panel_build[BUILDING_MINE] = icons->copy(256, 63, 16, 16); // different size
+	panel_build[BUILDING_MINE] = mine_gatherable_small;
 	panel_build[BUILDING_FACTORY] = icons->copy(288, 63, 16, 16); // different size
-	panel_build[BUILDING_LAB] = icons->copy(192, 63, 16, 16); // different size
+	//panel_build[BUILDING_LAB] = icons->copy(192, 63, 16, 16); // different size
+	panel_build[BUILDING_LAB] = panel_lab;
 
 	panel_building[BUILDING_TOWER] = icons->copy(0, 33, 16, 16); // different size
-	panel_building[BUILDING_MINE] = icons->copy(32, 33, 16, 16); // different size
+	//panel_building[BUILDING_MINE] = icons->copy(32, 33, 16, 16); // different size
+	panel_building[BUILDING_MINE] = mine_gatherable_small;
 	panel_building[BUILDING_FACTORY] = panel_factory;
 	panel_building[BUILDING_LAB] = panel_lab;
 
@@ -2045,6 +2050,8 @@ bool openScreen(bool fullscreen) {
 		// (still works, though uneven spacings).
 		// We make an exception for height of 4/3, as a fairly common low end Android resolution is 480x320, and
 		// restricting to height 240 means a significant portion of wasted screen space!
+		//user_width = 1184;
+		//user_height = 720;
 
 		if( user_width >= 4*default_width_c ) {
 			scale_width = 4.0f;
