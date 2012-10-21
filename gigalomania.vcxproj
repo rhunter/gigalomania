@@ -205,7 +205,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="docs\todo.txt" />
-    <None Include="readme.html" />
+    <None Include="readme.html">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
