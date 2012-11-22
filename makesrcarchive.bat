@@ -114,6 +114,13 @@ copy %src%\debian\ %dst%\debian\
 mkdir %dst%\debian_maemo
 copy %src%\debian_maemo\ %dst%\debian_maemo\
 
+mkdir %dst%\androidaudio\
+
+copy %src%\androidaudio\androidaudio.cpp %dst%\androidaudio
+copy %src%\androidaudio\androidaudio.h %dst%\androidaudio
+copy %src%\androidaudio\androidsoundeffect.cpp %dst%\androidaudio
+copy %src%\androidaudio\androidsoundeffect.h %dst%\androidaudio
+
 mkdir %dst%\android
 xcopy %src%\android %dst%\android /E /Y
 

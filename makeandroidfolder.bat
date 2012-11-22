@@ -54,6 +54,13 @@ copy %src%\qt_sound.h %dst%
 
 REM Android specific files:
 
+mkdir %dst%\androidaudio\
+
+copy %src%\androidaudio\androidaudio.cpp %dst%\androidaudio
+copy %src%\androidaudio\androidaudio.h %dst%\androidaudio
+copy %src%\androidaudio\androidsoundeffect.cpp %dst%\androidaudio
+copy %src%\androidaudio\androidsoundeffect.h %dst%\androidaudio
+
 mkdir %dst%\android
 xcopy %src%\android %dst%\android /E /Y
 
