@@ -5,14 +5,21 @@
 #include "game.h"
 
 #include <QApplication>
+
 #ifndef Q_OS_ANDROID
 #include <phonon/AudioOutput>
+#endif
+
+#ifdef Q_OS_ANDROID
+AndroidAudio androidAudio;
 #endif
 
 void Sample::play(int ch) {
     if( this->sound != NULL && play_music ) {
 #ifndef Q_OS_ANDROID
         this->sound->play();
+#else
+        androidAudio.playSound(sound);
 #endif
     }
     if( this->text.length() > 0 ) {
@@ -38,8 +45,8 @@ void freeSound() {
 
 Sample *Sample::loadSample(const char *filename, bool iff) {
     Sample *sample = new Sample();
-#ifndef Q_OS_ANDROID
     string qt_filename = ":/" + string(filename);
+#ifndef Q_OS_ANDROID
     //qDebug("load: %s\n", qt_filename.c_str());
     //sample->sound = new QSound(qt_filename.c_str());
     //sample->sound = Phonon::createPlayer(Phonon::GameCategory, Phonon::MediaSource(qt_filename.c_str()));
@@ -51,6 +58,8 @@ Sample *Sample::loadSample(const char *filename, bool iff) {
     //qDebug("Sound has volume: %f\n", audioOutput->volume());
     //audioOutput->setVolume(0.5); // doesn't work on Nokia 5800!?
     //qDebug("Sound now has volume: %f\n", audioOutput->volume());
+#else
+    sample->sound = androidAudio.loadSound(QString(qt_filename.c_str()));
 #endif
     return sample;
 }

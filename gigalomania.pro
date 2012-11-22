@@ -39,6 +39,7 @@ symbian {
 # MOBILITY variable. 
 android {
     # feedback and phonon not supported on Android
+    LIBS += -lOpenSLES
 }
 else {
     CONFIG += mobility
@@ -57,7 +58,9 @@ SOURCES += main.cpp mainwindow.cpp \
     gamestate.cpp \
     qt_sound.cpp \
     qt_image.cpp \
-    qt_screen.cpp
+    qt_screen.cpp \
+    androidaudio/androidsoundeffect.cpp \
+    androidaudio/androidaudio.cpp
 HEADERS += mainwindow.h \
     utils.h \
     resources.h \
@@ -71,7 +74,9 @@ HEADERS += mainwindow.h \
     player.h \
     panel.h \
     gui.h \
-    gamestate.h
+    gamestate.h \
+    androidaudio/androidsoundeffect.h \
+    androidaudio/androidaudio.h
 FORMS +=
 
 DEFINES += USING_QT

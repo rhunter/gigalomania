@@ -200,17 +200,12 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     cy += step_y;
     this->addToPanel(STATE_OPTIONS, button_continue);
 
-#if defined(Q_OS_ANDROID)
-	// sound not available on Android
-	this->button_music = NULL;
-#else
     //char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
     char *music_texts[] = { "SOUND ON", "SOUND OFF" };
     this->button_music = new CycleButton((int)(mx - 4.5*fw), cy, music_texts, 2, letters_large);
     cy += step_y;
     this->button_music->setActive( play_music ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_music);
-#endif
 
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
     this->button_onemousebutton = NULL;

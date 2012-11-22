@@ -9,10 +9,11 @@ using std::string;
 
 #include <QtGlobal> // need this to get Q_OS_ANDROID #define, which we need before we include anything else!
 
-//#include <QSound>
 #ifndef Q_OS_ANDROID
-// Phonon not supported on Qt Android?
+// Phonon not supported on Qt Android
 #include <phonon/MediaObject>
+#else
+#include "androidaudio/androidaudio.h"
 #endif
 
 bool initSound();
@@ -20,22 +21,14 @@ void updateSound();
 void freeSound();
 
 class Sample : public TrackedObject {
-    /*bool is_music;
-    Mix_Music *music;
-	Mix_Chunk *chunk;
-    int channel;*/
-
 #ifndef Q_OS_ANDROID
     Phonon::MediaObject *sound;
 #else
-    void *sound;
+    //void *sound;
+    AndroidSoundEffect *sound;
 #endif
-    //QSound *sound;
     string text;
 public:
-    /*Sample(bool is_music, Mix_Music *music, Mix_Chunk *chunk) : is_music(is_music), music(music), chunk(chunk) {
-        channel = -1;
-    }*/
     Sample() : sound(NULL) {
         // create dummy sample
     }
