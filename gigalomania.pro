@@ -6,8 +6,8 @@
 #dir1.source = islands
 #dir2.source = gfx
 #DEPLOYMENTFOLDERS = dir1 dir2
-file1.source = readme.html
-DEPLOYMENTFOLDERS = file1
+#file1.source = readme.html
+#DEPLOYMENTFOLDERS = file1
 
 # UID from Symbian Signed:
 #symbian:TARGET.UID3 = 0xA00131BD
