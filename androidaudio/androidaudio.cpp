@@ -8,7 +8,7 @@
 #include <QDebug>
 
 AndroidAudio::AndroidAudio(QObject *parent) :
-    QObject(parent), sound_ok(false), mEngineObject(NULL), mEngineEngine(NULL), mOutputMixObject(NULL), /*mSoundCount(0),*/ mPlayerObject(NULL)
+    QObject(parent), sound_ok(false), mEngineObject(NULL), mEngineEngine(NULL), mOutputMixObject(NULL), mPlayerObject(NULL)
 {
     if( createEngine() ) {
         if( startSoundPlayer() ) {
@@ -21,10 +21,6 @@ AndroidAudio::~AndroidAudio()
 {
     destroyEngine();
 
-    /*for (int32_t i = 0; i < mSoundCount; ++i) {
-        qDeleteAll(mSounds);
-
-    }*/
 }
 
 // create the engine and output mix objects
@@ -92,24 +88,8 @@ void AndroidAudio::destroyEngine()
         (*mPlayerObject)->Destroy(mPlayerObject);
     }
 
-    /*for (int32_t i = 0; i < mSoundCount; ++i) {
-        mSounds.values().at(i)->unload();
-    }*/
-
     qDebug() << "Destroyed Android Audio Engine";
 }
-
-/*void AndroidAudio::registerSound(const QString& path, const QString& name)
-{
-    qDebug() << "registerSound:" << path << name;
-    AndroidSoundEffect *lSound = new AndroidSoundEffect(path, this);
-    qDebug() << "registerSound:created";
-    mSounds[name] = lSound;
-
-    qDebug() << "registerSound:loading";
-    lSound->load();
-    qDebug() << "registerSound:loaded";
-}*/
 
 AndroidSoundEffect *AndroidAudio::loadSound(const QString &filename) {
     if( !sound_ok ) {
@@ -132,7 +112,7 @@ bool AndroidAudio::startSoundPlayer()
     lDataLocatorIn.locatorType = SL_DATALOCATOR_BUFFERQUEUE;
     lDataLocatorIn.numBuffers = 1;
 
-    //Set the data format as mono-pcm-16bit-44100
+    //Set the data format
     SLDataFormat_PCM lDataFormat;
     lDataFormat.formatType = SL_DATAFORMAT_PCM;
     lDataFormat.numChannels = 2;
@@ -235,15 +215,5 @@ void AndroidAudio::playSound(const AndroidSoundEffect *sound) {
 
     }
 }
-
-/*void AndroidAudio::freeSound(const QString& name)
-{
-    AndroidSoundEffect* sound = mSounds[name];
-
-    if( sound ) {
-        mSounds.erase( mSounds.find(name) );
-        delete sound;
-    }
-}*/
 
 #endif

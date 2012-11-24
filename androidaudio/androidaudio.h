@@ -36,9 +36,6 @@ signals:
 
 public slots:
 
-    //void registerSound(const QString& path, const QString &name);
-    //void playSound(const QString& name);
-    //void freeSound(const QString& name);
     void playSound(const AndroidSoundEffect *sound);
     AndroidSoundEffect *loadSound(const QString &filename);
 
@@ -61,8 +58,6 @@ private:
     SLPlayItf mPlayerPlay;
     SLBufferQueueItf mPlayerQueue;
 
-    //QMap<QString, AndroidSoundEffect*> mSounds;
-    //int32_t mSoundCount;
 #endif
 };
 

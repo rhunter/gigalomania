@@ -42,6 +42,8 @@ bool AndroidSoundEffect::load()
     if (dataRead != mLength) {
         qDebug() << "File size != dataRead :" << mPath;
         lSoundFile.close();
+        delete [] mBuffer;
+        mBuffer = NULL;
         return false;
     }
 
