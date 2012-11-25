@@ -97,7 +97,11 @@ AndroidSoundEffect *AndroidAudio::loadSound(const QString &filename) {
         return NULL;
     }
     AndroidSoundEffect *sound = new AndroidSoundEffect(filename, this);
-    sound->load();
+    if( !sound->load() ) {
+        qDebug() << "failed to load sound";
+        delete sound;
+        sound = NULL;
+    }
     return sound;
 }
 
