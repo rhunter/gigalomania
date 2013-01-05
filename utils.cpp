@@ -352,6 +352,8 @@ void initLogFile() {
 	LOG("Platform: Linux\n");
 #elif defined(__APPLE__) && defined(__MACH__)
 	LOG("Platform: MacOS X\n");
+#elif AROS
+    LOG("Platform: AROS\n");
 #elif defined(Q_OS_SYMBIAN)
     LOG("Platform: Symbian\n");
 #else

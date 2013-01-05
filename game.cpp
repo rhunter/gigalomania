@@ -20,6 +20,10 @@ using std::stringstream;
 #include <SDL/SDL.h>
 #endif
 
+#ifdef AROS
+#include <proto/dos.h>
+#endif
+
 #if defined(__APPLE__) && defined(__MACH__)
 #include <dirent.h>
 #include <string.h>
@@ -2475,6 +2479,29 @@ bool createMaps() {
 			break;
 		}
 	}
+#elif AROS
+	BPTR lock = Lock(maps_dirname, ACCESS_READ);
+	if( lock == NULL ) {
+		LOG("failed to open directory: %s\n", maps_dirname);
+		return false;
+	}
+
+	struct FileInfoBlock FIB;
+	BOOL success = Examine(lock, &FIB);
+	success = ExNext(lock, &FIB);
+	while( success != DOSFALSE ) {
+		if( FIB.fib_DirEntryType < 0 ) {
+			// is a file
+			LOG("found file: %s\n", FIB.fib_FileName);
+			if( !readMap((char *)FIB.fib_FileName) ) {
+				LOG("failed reading map: %s\n", FIB.fib_FileName);
+				// don't fail altogether, just ignore
+			}
+		}
+		success = ExNext(lock, &FIB);
+	}
+
+	UnLock(lock);
 #else
 	DIR *dir = opendir(maps_dirname);
 #ifdef __linux
