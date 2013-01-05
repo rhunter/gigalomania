@@ -1,4 +1,4 @@
-This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 10.04 64 bit), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 10.04 64 bit) and AROS (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
 
 Linux
 =====
@@ -80,6 +80,15 @@ The method should be the same as for Maemo (see above), but with the installatio
 sudo make install_meego
 sudo make uninstall_meego
 
+AROS
+====
+
+AROS ( http://aros.sourceforge.net/ ) is an Open Source operating system compatible with AmigaOS. The distribution Icaros ( http://vmwaros.blogspot.co.uk/ ) makes it easy to run on a virtual machine on an x86 PC.
+
+A different makefile is needed for AROS, so use the command:
+
+make -f makefile_aros
+
 Symbian
 =======
 
@@ -109,6 +118,8 @@ Since version 0.23, I've released the source online using Git, at https://source
 
 History
 =====
+
+Version 0.25 adds the AROS port.
 
 Version 0.24 adds the Android port.
 
@@ -141,4 +152,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 22 November 2012
+Mark Harman 5 January 2013
