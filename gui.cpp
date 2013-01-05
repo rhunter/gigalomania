@@ -41,6 +41,9 @@ void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, P
 		//panel->addToPanel(panel->getPage(), oneMouseButtonPanel);
 		panel->add(oneMouseButtonPanel);
 		oneMouseButtonPanel->setModal();
+		if( caller_button->getInfoLMB() != NULL && mobile_ui ) {
+			addTextEffect(new TextEffect(caller_button->getInfoLMB(), 160, caller_button->getTop(), 3000));
+		}
 	}
 	else if( !onemousebutton && !click ) {
 		//buttonNMenClick(panel, m_left, m_middle, m_right);
