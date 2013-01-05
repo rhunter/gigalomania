@@ -20,7 +20,7 @@ copy %src%\gigalomania.sln %dst%
 copy %src%\resource.rc %dst%
 copy %src%\gigalomania.ico %dst%
 
-REM Linux stuff:
+REM Linux etc stuff:
 
 copy %src%\Makefile %dst%
 copy %src%\gigalomania_fullscreen.sh %dst%
@@ -30,6 +30,10 @@ copy %src%\gigalomania_maemo.desktop %dst%
 copy %src%\gigalomania_mobile.sh %dst%
 copy %src%\gigalomania64.png %dst%
 copy %src%\gigalomania48.png %dst%
+
+REM AROS stuff:
+
+copy %src%\Makefile_aros %dst%
 
 REM Qt stuff:
 
