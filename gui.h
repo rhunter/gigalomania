@@ -3,10 +3,15 @@
 /** Implements the GUI.
 */
 
-class PanelPage;
-class Button;
-class ImageButton;
-class CycleButton;
+namespace Gigalomania {
+	class PanelPage;
+	class Button;
+	class ImageButton;
+	class CycleButton;
+}
+
+using namespace Gigalomania;
+
 class PlaceMenGameState;
 class PlayingGameState;
 class Invention;

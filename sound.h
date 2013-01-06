@@ -18,37 +18,41 @@ bool initSound();
 void updateSound();
 void freeSound();
 
-class Sample : public TrackedObject {
-	//FMOD::Sound *sound;
-	bool is_music;
-	Mix_Music *music;
-	Mix_Chunk *chunk;
-	int channel;
+namespace Gigalomania {
+	class Sample : public TrackedObject {
+		//FMOD::Sound *sound;
+		bool is_music;
+		Mix_Music *music;
+		Mix_Chunk *chunk;
+		int channel;
 
-	string text;
+		string text;
 
-	Sample(bool is_music, Mix_Music *music, Mix_Chunk *chunk) : is_music(is_music), music(music), chunk(chunk) {
-		channel = -1;
-	}
-public:
-	/*Sample(FMOD::Sound *sound) : sound(sound) {
-	}*/
-	Sample() : is_music(false), music(NULL), chunk(NULL) {
-		// create dummy Sample
-	}
-	virtual ~Sample();
-	virtual const char *getClass() const { return "CLASS_SAMPLE"; }
-	void play(int ch);
-	void setVolume(float volume);
-	void setText(const char *text) {
-		this->text = text;
-	}
+		Sample(bool is_music, Mix_Music *music, Mix_Chunk *chunk) : is_music(is_music), music(music), chunk(chunk) {
+			channel = -1;
+		}
+	public:
+		/*Sample(FMOD::Sound *sound) : sound(sound) {
+		}*/
+		Sample() : is_music(false), music(NULL), chunk(NULL) {
+			// create dummy Sample
+		}
+		virtual ~Sample();
+		virtual const char *getClass() const { return "CLASS_SAMPLE"; }
+		void play(int ch);
+		void setVolume(float volume);
+		void setText(const char *text) {
+			this->text = text;
+		}
 
-	static Sample *loadSample(const char *filename, bool iff = false);
-	static Sample *loadSample(string filename, bool iff = false);
-	static Sample *loadSamplesChained(const char *filename1,const char *filename2,const char *filename3);
-	static Sample *loadMusic(const char *filename);
-};
+		static Sample *loadSample(const char *filename, bool iff = false);
+		static Sample *loadSample(string filename, bool iff = false);
+		static Sample *loadSamplesChained(const char *filename1,const char *filename2,const char *filename3);
+		static Sample *loadMusic(const char *filename);
+	};
+}
+
+using namespace Gigalomania;
 
 const int SOUND_CHANNEL_SAMPLES = 0;
 const int SOUND_CHANNEL_MUSIC   = 1;

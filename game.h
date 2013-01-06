@@ -6,6 +6,8 @@
 namespace Gigalomania {
 	class Screen;
 	class Image;
+	class PanelPage;
+	class Sample;
 }
 
 using namespace Gigalomania;
@@ -14,11 +16,9 @@ class Invention;
 class Weapon;
 class Element;
 class Sector;
-class PanelPage;
 class GameState;
 class PlayingGameState;
 class Player;
-class Sample;
 class Application;
 class TextEffect;
 

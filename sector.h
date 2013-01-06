@@ -5,16 +5,16 @@
 
 namespace Gigalomania {
 	class Image;
+	class PanelPage;
+	class Button;
 }
 
 using namespace Gigalomania;
 
 class Feature;
 class Sector;
-class Button;
 class PlayingGameState;
 class Invention;
-class PanelPage;
 
 using std::vector;
 using std::string;

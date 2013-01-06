@@ -11,6 +11,8 @@
 #define NULL 0
 #endif
 
+using namespace Gigalomania;
+
 //Vector TrackedObject::tags;
 vector<TrackedObject *> TrackedObject::tags;
 //VisionException *Vision::error = NULL;

@@ -11,13 +11,13 @@ using std::string;
 
 namespace Gigalomania {
 	class Image;
+	class ImageButton;
+	class Button;
+	class PanelPage;
 }
 
 using namespace Gigalomania;
 
-class ImageButton;
-class Button;
-class PanelPage;
 class ChooseGameTypePanel;
 class ChooseDifficultyPanel;
 class ChooseMenPanel;
