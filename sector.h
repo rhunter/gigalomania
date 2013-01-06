@@ -3,12 +3,17 @@
 /** Handles an individual sector.
 */
 
+namespace Gigalomania {
+	class Image;
+}
+
+using namespace Gigalomania;
+
 class Feature;
 class Sector;
 class Button;
 class PlayingGameState;
 class Invention;
-class Image;
 class PanelPage;
 
 using std::vector;

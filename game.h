@@ -3,13 +3,18 @@
 /** Main game file, mainly contains various setup functions.
 */
 
-class Image;
+namespace Gigalomania {
+	class Screen;
+	class Image;
+}
+
+using namespace Gigalomania;
+
 class Invention;
 class Weapon;
 class Element;
 class Sector;
 class PanelPage;
-class Screen;
 class GameState;
 class PlayingGameState;
 class Player;
@@ -23,9 +28,6 @@ using std::string;
 
 /*struct FSOUND_SAMPLE;
 typedef FSOUND_SAMPLE Sample;*/
-
-extern const int majorVersion;
-extern const int minorVersion;
 
 extern bool onemousebutton;
 extern bool mobile_ui;
@@ -334,7 +336,6 @@ public:
 
 extern Screen *screen;
 //extern GameState *gamestate;
-extern bool debugwindow;
 
 const int max_islands_per_epoch_c = 3;
 extern Map *maps[n_epochs_c][max_islands_per_epoch_c];

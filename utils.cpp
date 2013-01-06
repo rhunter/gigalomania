@@ -6,14 +6,6 @@
 #include <cstdlib> // n.b., needed on Linux at least
 #include <cstdarg> // n.b., needed on Linux at least
 
-#include "game.h"
-
-#ifdef USING_QT
-#include "qt_screen.h"
-#else
-#include "screen.h"
-#endif
-
 #ifdef _WIN32
 #include <shlobj.h>
 #include <Shlwapi.h>
@@ -30,7 +22,8 @@
 #include <cmath> // n.b., needed on Linux at least
 
 #include "utils.h"
-#include "game.h"
+#include "common.h"
+
 //---------------------------------------------------------------------------
 
 //const bool DEBUG = true;
@@ -495,3 +488,29 @@ float perlin_noise2(float vec[2]) {
 
 	return lerp(sy, a, b);
 }
+
+#ifdef AROS
+
+#include <proto/intuition.h>
+
+// This needs to be a separate function in a separate file, to avoid name collision with AROS/AmigaOS types Screen and Image.
+// This also means we shouldn't do "using namespace Gigalomania" in utils.cpp, unless we move this function to its own file.
+
+void getAROSScreenSize(int *user_width, int *user_height) {
+	// see http://wiki.amigaos.net/index.php/Intuition_Screens
+	// setup a default in case we can't access the Workbench Screen for some reason
+	*user_width = 640;
+	*user_height = 480;
+	struct Screen *my_wbscreen_ptr = LockPubScreen("Workbench");
+	if( my_wbscreen_ptr == NULL ) {
+		LOG("AROS: failed to lock Workbenc screen\n");
+	}
+	else {
+		*user_width = my_wbscreen_ptr->Width;
+		*user_height = my_wbscreen_ptr->Height;
+		LOG("AROS: Workbench screen is is %d x %d\n", *user_width, *user_height);
+		UnlockPubScreen(NULL, my_wbscreen_ptr);
+	}
+}
+
+#endif

@@ -9,7 +9,12 @@ using std::string;
 //#include "game.h"
 #include "common.h"
 
-class Image;
+namespace Gigalomania {
+	class Image;
+}
+
+using namespace Gigalomania;
+
 class ImageButton;
 class Button;
 class PanelPage;

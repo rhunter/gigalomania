@@ -1,5 +1,10 @@
 #pragma once
 
+const int majorVersion = 0;
+const int minorVersion = 25;
+
+extern bool debugwindow;
+
 const int n_epochs_c = 10;
 const int n_players_c = 4;
 const int map_width_c = 5;

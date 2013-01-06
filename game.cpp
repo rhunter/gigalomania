@@ -51,9 +51,6 @@ using std::stringstream;
 
 //---------------------------------------------------------------------------
 
-const int majorVersion = 0;
-const int minorVersion = 25;
-
 // onemousebutton means UI can be used with one mouse button only
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
 bool onemousebutton = true;
@@ -1301,6 +1298,11 @@ bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
 	return true;
 }
 
+bool loadOldImages() {
+	// progress should go from 0 to 80%
+	return false;
+}
+
 bool loadImages() {
     //int time_s = clock();
 	// progress should go from 0 to 80%
@@ -1351,8 +1353,10 @@ bool loadImages() {
 	}
 #endif
 #endif
-	if( background == NULL )
-		return false;
+	if( background == NULL ) {
+		//return false;
+		return loadOldImages();
+	}
 	drawProgress(20);
 	//scale_factor = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
 	//LOG("scale factor for images = %f\n", scale_factor);
@@ -2070,6 +2074,9 @@ bool openScreen(bool fullscreen) {
 		LOG("desktop is %d x %d\n", user_width, user_height);
 		user_height -= GetSystemMetrics(SM_CYCAPTION); // also ignore the window height
 		LOG("available height is %d\n", user_height);
+#elif AROS
+		// AROS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
+		getAROSScreenSize(&user_width, &user_height);
 #else
 		const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
 		user_width = videoInfo->current_w;

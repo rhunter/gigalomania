@@ -6,32 +6,34 @@
 
 struct SDL_Surface;
 
-class Screen {
-	SDL_Surface *surface;
+namespace Gigalomania {
+	class Screen {
+		SDL_Surface *surface;
 
-public:
-	Screen();
-	~Screen();
+	public:
+		Screen();
+		~Screen();
 
-	static bool canOpenFullscreen(int width, int height);
-	bool open(int screen_width, int screen_height, bool fullscreen);
-	void setTitle(const char *title);
-	void clear();
-	void refresh();
-	/*const SDL_Surface *getSurface() const {
-		return this->surface;
-	}
-	SDL_Surface *getSurface() {
-		return this->surface;
-	}*/
-	int getWidth() const;
-	int getHeight() const;
-	void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
-	void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
+		static bool canOpenFullscreen(int width, int height);
+		bool open(int screen_width, int screen_height, bool fullscreen);
+		void setTitle(const char *title);
+		void clear();
+		void refresh();
+		/*const SDL_Surface *getSurface() const {
+			return this->surface;
+		}
+		SDL_Surface *getSurface() {
+			return this->surface;
+		}*/
+		int getWidth() const;
+		int getHeight() const;
+		void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
+		void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
 
-	void getMouseCoords(int *m_x, int *m_y);
-	bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
-};
+		void getMouseCoords(int *m_x, int *m_y);
+		bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
+	};
+}
 
 class Application {
 	bool quit;

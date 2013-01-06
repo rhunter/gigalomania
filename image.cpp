@@ -53,6 +53,8 @@ inline void CreateMask( Uint32& rmask, Uint32& gmask, Uint32& bmask, Uint32& ama
 extern const bool DEBUG;
 extern const int DEBUGLEVEL;
 
+using namespace Gigalomania;
+
 SDL_Surface *Image::dest_surf = NULL;
 
 Image::Image() {

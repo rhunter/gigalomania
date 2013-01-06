@@ -6,7 +6,12 @@
 
 #include "resources.h"
 
-class Image;
+namespace Gigalomania {
+	class Image;
+}
+
+using namespace Gigalomania;
+
 
 /*inline bool mouse_left(Uint32 m_b) {
 	return ( m_b & SDL_BUTTON(1) ) != 0;

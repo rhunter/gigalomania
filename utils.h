@@ -155,3 +155,9 @@ bool addIfAbsent_vec(vector<T> *vec,const T& value) {
         }
         return false;
 }*/
+
+#ifdef AROS
+
+void getAROSScreenSize(int *user_width, int *user_height);
+
+#endif
