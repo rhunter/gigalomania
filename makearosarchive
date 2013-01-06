@@ -1,0 +1,28 @@
+delete ram:Gigalomania all
+delete ram:Gigalomania.info
+
+makedir ram:Gigalomania
+
+; exe
+copy gigalomania ram:Gigalomania
+copy aros/gigalomania.info ram:Gigalomania
+; readme etc
+copy readme.html ram:Gigalomania
+copy aros/readme.html.info ram:Gigalomania
+copy gpl.txt ram:Gigalomania
+
+makedir ram:Gigalomania/islands
+copy islands/#? all ram:Gigalomania/islands
+
+makedir ram:Gigalomania/gfx
+copy gfx/#? all ram:Gigalomania/gfx
+
+makedir ram:Gigalomania/sound
+copy sound/#? all ram:Gigalomania/sound
+
+copy aros/gigalomania_folder.info ram:Gigalomania.info
+
+; make archive - need to cd to ram: so lha stores relative paths
+cd ram:
+lha -a ram:gigalomania.i386-aros.lha Gigalomania
+lha -a ram:gigalomania.i386-aros.lha Gigalomania.info

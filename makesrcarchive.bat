@@ -5,7 +5,8 @@ mkdir c:\temp\gigalomaniasrc\
 set src="."
 set dst="c:\temp\gigalomaniasrc"
 
-copy %src%\makearchive.bat %dst%
+copy %src%\makewindowsarchive.bat %dst%
+copy %src%\makearosarchive %dst%
 copy %src%\makesrcarchive.bat %dst%
 copy %src%\makesymbianfolder.bat %dst%
 copy %src%\makeandroidfolder.bat %dst%
@@ -34,6 +35,9 @@ copy %src%\gigalomania48.png %dst%
 REM AROS stuff:
 
 copy %src%\Makefile_aros %dst%
+
+mkdir %dst%\aros
+xcopy %src%\aros %dst%\aros /E /Y
 
 REM Qt stuff:
 
@@ -93,7 +97,7 @@ copy %src%\qt_image.h %dst%
 copy %src%\qt_screen.h %dst%
 copy %src%\qt_sound.h %dst%
 
-REM also copy data folders, as Linux users won't have downloaded the Windows binary archive!
+REM also copy data folders
 
 mkdir %dst%\islands\
 copy %src%\islands\ %dst%\islands\

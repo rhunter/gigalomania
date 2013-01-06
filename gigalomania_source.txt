@@ -42,6 +42,8 @@ SDL_image: sdl_image.lib . See http://www.libsdl.org/projects/SDL_image/ .
 
 SDL_mixer: sdl_mixer.lib . See http://www.libsdl.org/projects/SDL_mixer/ .
 
+When built on Visual Studio in Release mode, you can use the makewindowsarchive.bat script to create the binary folder (in c:\temp\ ).
+
 OS X
 ====
 
@@ -91,14 +93,16 @@ make -f makefile_aros
 
 This will produce the Gigalomania executable, which you can run with: gigalomania
 
-To run in fullscreen mode, type: gigalomania fullscreen
+Note that Gigalomania requires a large stack - it seems to work okay with the AROS Shell default of 1024000 bytes.
+
+After building, you can use the makearosarchive script to create the binary folder (in RAM:).
 
 Symbian
 =======
 
 For Nokia Symbian smartphones, use the Qt SDK from Nokia: http://qt.nokia.com/ . Note that the distributed Symbian binary uses the images in gfx_2x rather than gfx (for faster startup - higher resolution not really needed on Symbian devices which have maximum resolution 640x480), but to get this to work, you'll have to rename the folders, so that the images in "gfx_2x" are in "gfx".
 
-On Windows, you can use the makesymbianfolder.bat script to create a folder for Symbian development, which uses the gfx_2x files.
+On Windows, you can use the makesymbianfolder.bat script to create a folder for Symbian development (in c:\temp\ ), which uses the gfx_2x files.
 
 The official Symbian release is built using Qt 4.7.3, to ensure compatibility with S60 5th edition (Symbian^1) - 4.7.4 is only compatible with Symbian^3 onwards.
 
@@ -113,7 +117,7 @@ Use necessitas to compile for Android ( http://necessitas.kde.org/ ). This has b
 
 Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/ , and replace gigalomania.qrc with gigalomania_android.qrc (i.e., copy/renaming the file). You'll also have to rename the folders, so that the images in "gfx_2x" are in "gfx" (whilst theoretically higher resolution Android phones could justify the higher resolution graphics, this also means slower startup time; also to use the full size gfx, the files in gfx_android_extras have to be increased in size too).
 
-On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development, which also replaces the jpg images with the pngs from gfx_android_extras/ , replaces the gigalomania.qrc file, and uses the gfx_2x files.
+On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development (in c:\temp\ ), which also replaces the jpg images with the pngs from gfx_android_extras/ , replaces the gigalomania.qrc file, and uses the gfx_2x files.
 
 Source Control
 ==============
