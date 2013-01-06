@@ -1247,6 +1247,9 @@ void processImage(Image *image) {
 	convertToHiColor(image);
 	image->scale(scale_factor_w, scale_factor_h);
 	image->setScale(scale_width, scale_height);
+	if( using_old_gfx ) {
+		image->smooth();
+	}
 }
 
 bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
@@ -1711,7 +1714,7 @@ bool loadOldImages() {
 			for(int k=0;k<n_attacker_directions_c;k++) {
 				int n_frames = n_attacker_frames[j][k];
 				for(int l=0;l<n_frames;l++) {
-					attackers_walking[i][j][k][l] = armies->copy(16*l, 32*j, 16, 16);
+					attackers_walking[i][j][k][l] = armies->copy(16*l + 64*k, 32*j, 16, 16);
 					int r = 0, g = 0, b = 0, col = 0;
 					PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
 					attackers_walking[i][j][k][l]->remap(240, 0, 0, r, g, b);
@@ -1724,7 +1727,7 @@ bool loadOldImages() {
 		for(int k=0;k<n_attacker_directions_c;k++) {
 			int n_frames = n_attacker_frames[10][k];
 			for(int l=0;l<n_frames;l++) {
-					attackers_walking[i][10][k][l] = armies->copy(16*l, 320, 16, 16);
+					attackers_walking[i][10][k][l] = armies->copy(16*l + 64*k, 320, 16, 16);
 					int r = 0, g = 0, b = 0, col = 0;
 					PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
 					attackers_walking[i][10][k][l]->remap(240, 0, 0, r, g, b);

@@ -1430,3 +1430,47 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
 		cx += w;
 	}
 }
+
+void Image::smooth() {
+	if( this->surface->format->BitsPerPixel != 24 && this->surface->format->BitsPerPixel != 32 ) {
+		return;
+	}
+	int w = getWidth();
+	int h = getHeight();
+	unsigned char *src_data = (unsigned char *)this->surface->pixels;
+	int bytesperpixel = this->surface->format->BytesPerPixel;
+	int pitch = this->surface->pitch;
+	unsigned char *new_data = new unsigned char[w * h * bytesperpixel];
+
+	SDL_LockSurface(this->surface);
+	for(int y=0;y<h;y++) {
+		for(int x=0;x<w;x++) {
+			for(int i=0;i<bytesperpixel;i++) {
+				Uint32 col = 0;
+				if(	x > 0 && x < w-1 && y > 0 && y < h-1 ) {
+						Uint32 sq[9];
+						int indx = 0;
+						for(int sx=x-1;sx<=x+1;sx++) {
+							for(int sy=y-1;sy<=y+1;sy++) {
+								sq[indx++] = src_data[ sy * pitch + sx * bytesperpixel + i ];
+							}
+						}
+						col = ( sq[0] + 2 * sq[1] + sq[2] + 2 * sq[3] + 4 * sq[4] + 2 * sq[5] + sq[6] + 2 * sq[7] + sq[8] ) / 16;
+						//col = ( sq[1] + sq[3] + sq[5] + sq[7] + 12 * sq[4] ) / 16;
+				}
+				else
+					col = src_data[ y * pitch + x * bytesperpixel + i ];
+				new_data[ y * w * bytesperpixel + x * bytesperpixel + i] = (unsigned char)col;
+			}
+		}
+	}
+	for(int y=0;y<h;y++) {
+		for(int x=0;x<w;x++) {
+			for(int i=0;i<bytesperpixel;i++) {
+				src_data[ y * pitch + x * bytesperpixel + i ] = new_data[ y * w * bytesperpixel + x * bytesperpixel + i];
+			}
+		}
+	}
+	delete [] new_data;
+	SDL_UnlockSurface(this->surface);
+}
