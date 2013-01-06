@@ -66,41 +66,43 @@ public:
     }
 };
 
-class Screen {
-    MainWindow mainWindow;
-    QPixmap pixmap;
-public:
-	Screen();
-	~Screen();
+namespace Gigalomania {
+    class Screen {
+        MainWindow mainWindow;
+        QPixmap pixmap;
+    public:
+            Screen();
+            ~Screen();
 
-	static bool canOpenFullscreen(int width, int height);
-	bool open(int screen_width, int screen_height, bool fullscreen);
-	void setTitle(const char *title);
-	void clear();
-	void refresh();
-    int getWidth() const {
-        return pixmap.width();
-    }
-    int getHeight() const {
-        return pixmap.height();
-    }
-	void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
-    void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
+            static bool canOpenFullscreen(int width, int height);
+            bool open(int screen_width, int screen_height, bool fullscreen);
+            void setTitle(const char *title);
+            void clear();
+            void refresh();
+        int getWidth() const {
+            return pixmap.width();
+        }
+        int getHeight() const {
+            return pixmap.height();
+        }
+            void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
+        void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
 
-	void getMouseCoords(int *m_x, int *m_y);
-	bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
+            void getMouseCoords(int *m_x, int *m_y);
+            bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
 
-    // Qt specific
-    MainWindow *getMainWindow() {
-        return &mainWindow;
-    }
-    const MainWindow *getMainWindow() const {
-        return &mainWindow;
-    }
-    QPixmap& getPixmap() {
-        return pixmap;
-    }
-    /*const QPixmap getPixmap() const {
-        return pixmap;
-    }*/
-};
+        // Qt specific
+        MainWindow *getMainWindow() {
+            return &mainWindow;
+        }
+        const MainWindow *getMainWindow() const {
+            return &mainWindow;
+        }
+        QPixmap& getPixmap() {
+            return pixmap;
+        }
+        /*const QPixmap getPixmap() const {
+            return pixmap;
+        }*/
+    };
+}

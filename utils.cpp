@@ -18,6 +18,12 @@
 #include <sys/stat.h> // for mkdir
 #endif
 
+#ifdef USING_QT
+#include <QString>
+#include <QDir>
+#include <QDesktopServices>
+#endif
+
 #include <cassert>
 #include <cmath> // n.b., needed on Linux at least
 
