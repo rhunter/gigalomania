@@ -51,6 +51,15 @@ copy %src%\qt_image.h %dst%
 copy %src%\qt_screen.h %dst%
 copy %src%\qt_sound.h %dst%
 
+REM need AndroidAudio files so that it will build
+
+mkdir %dst%\androidaudio\
+
+copy %src%\androidaudio\androidaudio.cpp %dst%\androidaudio
+copy %src%\androidaudio\androidaudio.h %dst%\androidaudio
+copy %src%\androidaudio\androidsoundeffect.cpp %dst%\androidaudio
+copy %src%\androidaudio\androidsoundeffect.h %dst%\androidaudio
+
 REM also copy data folders, as Linux users won't have downloaded the Windows binary archive!
 
 mkdir %dst%\islands\
