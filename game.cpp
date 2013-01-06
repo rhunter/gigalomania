@@ -14,9 +14,12 @@ using std::stringstream;
 
 #ifndef USING_QT
 
-#ifdef __linux
+#ifndef _WIN32
 #include <dirent.h>
 #include <string.h>
+#endif
+
+#ifdef __linux
 #include <SDL/SDL.h>
 #endif
 
@@ -25,8 +28,6 @@ using std::stringstream;
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
-#include <dirent.h>
-#include <string.h>
 #include <sdl.h>
 #endif
 
