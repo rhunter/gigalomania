@@ -1,5 +1,6 @@
 _old/
 archive/
+data/
 docs/
 gfx_orig/
 gfx/
@@ -24,10 +25,12 @@ Release/
 *.vcxproj.*
 *.sdf
 *.opensdf
+*.db
 
 *.ico
 *.ogg
 *.png
+*.jpg
 *.svg
 
 gpl.txt

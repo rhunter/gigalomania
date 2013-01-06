@@ -547,75 +547,86 @@ bool Image::copyPalette(const Image *image) {
 
 // side-effect: also converts images with < 256 colours to have 256 colours
 void Image::scale(float sx,float sy) {
-	// only supported for reducing the size - this is all we need, and is easier to optimise for performance
-	ASSERT( sx <= 1.0f );
-	ASSERT( sy <= 1.0f );
+	// only supported for either reducing or englarging the size - this is all we need, and is easier to optimise for performance
+	bool enlarging = false;
+	if( sx > 1.0f || sy > 1.0f ) {
+		// making larger
+		ASSERT( sx > 1.0f );
+		ASSERT( sy > 1.0f );
+		enlarging = true;
+	}
 #ifdef TIMING
 	int time_s = clock();
 #endif
-	//this->scale_x *= sx;
-	//this->scale_y *= sy;
 	int w = this->getWidth();
 	int h = this->getHeight();
 	SDL_LockSurface(this->surface);
 	unsigned char *src_data = (unsigned char *)this->surface->pixels;
-	/*FIBITMAP *new_bitmap = FreeImage_Allocate(sx * w, sy*h, this->surface->format->BitsPerPixel);
-	unsigned char *data = (unsigned char *)FreeImage_GetBits(new_bitmap);*/
 	int bytesperpixel = this->surface->format->BytesPerPixel;
 	int new_width = (int)(w * sx);
 	int new_height = (int)(h * sy);
 	int new_size = (int)(new_width * new_height * bytesperpixel);
 	bool is_paletted = this->isPaletted();
-	//is_paletted = true; // smooth scaling disabled for now, problems with mask colour!
 	unsigned char *new_data = NULL;
-	//float *new_data_nonpaletted = NULL;
 	int *new_data_nonpaletted = NULL;
 	int *count = NULL;
-	if( is_paletted ) {
+	if( is_paletted || enlarging ) {
 		new_data = new unsigned char[new_size];
 	}
 	else {
 		new_data_nonpaletted = new int[new_size];
 		count = new int[new_size];
 		for(int i=0;i<new_size;i++) {
-			//new_data_nonpaletted[i] = 0.0f;
 			new_data_nonpaletted[i] = 0;
 			count[i] = 0;
 		}
 	}
 	// faster to read in x direction! (caching?)
-	for(int cy=0;cy<h;cy++) {
-		int src_indx = cy * this->surface->pitch;
-		for(int cx=0;cx<w;cx++) {
-			//int src_indx = cy * this->surface->pitch + cx * bytesperpixel;
-			for(int i=0;i<bytesperpixel;i++, src_indx++) {
-				//int src_indx = cy * this->surface->pitch + cx * bytesperpixel + i;
-				T_ASSERT(src_indx >= 0 && src_indx < this->surface->pitch*h );
-				unsigned char pt = src_data[ src_indx ];
-				/*for(int x=0;x<sx;x++) {
-					for(int y=0;y<sy;y++) {
-						int dx = (int)(cx * sx + x);
-						int dy = (int)(cy * sy + y);*/
-				{
-					{
-						int dx = (int)(cx * sx);
-						int dy = (int)(cy * sy);
-						if( dx >= new_width || dy >= new_height ) {
-							// ignore leftover part
-							continue;
-						}
-						T_ASSERT( dx >= 0 && dx < new_width );
-						T_ASSERT( dy >= 0 && dy < new_height );
-						int dst_indx = (int)(dy * new_width * bytesperpixel + dx * bytesperpixel + i);
-						T_ASSERT(dst_indx >= 0 && dst_indx < new_width*new_height*bytesperpixel );
-						//new_data[ dy * w * sx /* * bytesperpixel + dx * bytesperpixel + i*/ ] = 0;
-						if( is_paletted )
+	if( enlarging ) {
+		for(int cy=0;cy<h;cy++) {
+			int src_indx = cy * this->surface->pitch;
+			for(int cx=0;cx<w;cx++) {
+				for(int i=0;i<bytesperpixel;i++, src_indx++) {
+					T_ASSERT(src_indx >= 0 && src_indx < this->surface->pitch*h );
+					unsigned char pt = src_data[ src_indx ];
+					for(int x=0;x<sx;x++) {
+						for(int y=0;y<sy;y++) {
+							int dx = (int)(cx * sx + x);
+							int dy = (int)(cy * sy + y);
+							T_ASSERT( dx >= 0 && dx < new_width );
+							T_ASSERT( dy >= 0 && dy < new_height );
+							int dst_indx = (int)(dy * new_width * bytesperpixel + dx * bytesperpixel + i);
+							T_ASSERT(dst_indx >= 0 && dst_indx < new_width*new_height*bytesperpixel );
 							new_data[ dst_indx ] = pt;
-						else {
-							//new_data_nonpaletted[ dst_indx ] += (float)pt;
-							new_data_nonpaletted[ dst_indx ] += pt;
-							count[ dst_indx ]++;
 						}
+					}
+				}
+			}
+		}
+	}
+	else {
+		for(int cy=0;cy<h;cy++) {
+			int src_indx = cy * this->surface->pitch;
+			for(int cx=0;cx<w;cx++) {
+				for(int i=0;i<bytesperpixel;i++, src_indx++) {
+					T_ASSERT(src_indx >= 0 && src_indx < this->surface->pitch*h );
+					unsigned char pt = src_data[ src_indx ];
+
+					int dx = (int)(cx * sx);
+					int dy = (int)(cy * sy);
+					if( dx >= new_width || dy >= new_height ) {
+						// ignore leftover part
+						continue;
+					}
+					T_ASSERT( dx >= 0 && dx < new_width );
+					T_ASSERT( dy >= 0 && dy < new_height );
+					int dst_indx = (int)(dy * new_width * bytesperpixel + dx * bytesperpixel + i);
+					T_ASSERT(dst_indx >= 0 && dst_indx < new_width*new_height*bytesperpixel );
+					if( is_paletted )
+						new_data[ dst_indx ] = pt;
+					else {
+						new_data_nonpaletted[ dst_indx ] += pt;
+						count[ dst_indx ]++;
 					}
 				}
 			}
@@ -628,12 +639,7 @@ void Image::scale(float sx,float sy) {
 		h *= sy;*/
 		w = (int)(w * sx);
 		h = (int)(h * sy);
-		//int w = FreeImage_GetWidth(new_bitmap);
-		//int h = FreeImage_GetHeight(new_bitmap);
-		//int bpp = FreeImage_GetBPP(new_bitmap);
 		int bpp = this->surface->format->BitsPerPixel;
-		//unsigned char *data = (unsigned char *)FreeImage_GetBits(new_bitmap);
-		//int pitch = FreeImage_GetPitch(new_bitmap);
 		int pitch = this->surface->format->BytesPerPixel * w;
 
 		/*Uint32 rmask, gmask, bmask;
@@ -650,7 +656,7 @@ void Image::scale(float sx,float sy) {
 		Uint32 gmask = this->surface->format->Gmask;
 		Uint32 bmask = this->surface->format->Bmask;
 		Uint32 amask = this->surface->format->Amask;
-		if( !is_paletted ) {
+		if( !(is_paletted || enlarging) ) {
 			new_data = new unsigned char[new_size];
 			for(int i=0;i<new_size;i++) {
 				new_data[i] = (unsigned char)(new_data_nonpaletted[i] / count[i]);

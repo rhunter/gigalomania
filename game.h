@@ -32,6 +32,8 @@ typedef FSOUND_SAMPLE Sample;*/
 extern bool onemousebutton;
 extern bool mobile_ui;
 
+extern bool using_old_gfx;
+
 extern Application *application;
 
 extern char *maps_dirname;
@@ -81,7 +83,6 @@ extern float scale_height;
 //const int screen_height = scale_height * default_height_c;
 const int screen_height = scale_height * 256;
 //const int screen_height = scale_height * 240;*/
-extern bool original_background;
 
 const int infinity_c = 31;
 //const int end_epoch_c = 9; // use this to have the last epoch game

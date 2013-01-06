@@ -533,13 +533,15 @@ void PlaceMenGameState::reset() {
 }
 
 void PlaceMenGameState::draw() {
-    screen->clear(); // workaround for bug on Symbian where background doesn't show (with 4x gfx)!
+	char buffer[256] = "";
+
+	screen->clear(); // workaround for bug on Symbian where background doesn't show (with 4x gfx)!
 	background_islands->draw(0, 0, false);
 
-    char buffer[256] = "";
-
-    sprintf(buffer, "Gigalomania v%d %d", majorVersion, minorVersion);
-    Image::writeMixedCase(160, 228, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE, true);
+	if( !using_old_gfx ) {
+		sprintf(buffer, "Gigalomania v%d %d", majorVersion, minorVersion);
+	    Image::writeMixedCase(160, 228, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE, true);
+	}
 
     /*this->choosemenPanel->draw();
     this->screen_page->draw();
@@ -587,7 +589,7 @@ void PlaceMenGameState::draw() {
     cy += s_h + 2;*/
 
 	if( choosemenPanel->getPage() == ChooseMenPanel::STATE_CHOOSEMEN ) {
-		cy = 80;
+		cy = 60;
 		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "Click on the icon below", Image::JUSTIFY_CENTRE, true);
 		cy += l_h + 2;
 		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to choose how many men", Image::JUSTIFY_CENTRE, true);
