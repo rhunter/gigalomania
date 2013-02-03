@@ -45,7 +45,7 @@ void freeSound() {
 
 Sample *Sample::loadSample(const char *filename, bool iff) {
     Sample *sample = new Sample();
-    string qt_filename = ":/" + string(filename);
+    string qt_filename = string(DEPLOYMENT_PATH) + string(filename);
 #ifndef Q_OS_ANDROID
     //qDebug("load: %s\n", qt_filename.c_str());
     //sample->sound = new QSound(qt_filename.c_str());

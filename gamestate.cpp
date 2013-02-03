@@ -839,7 +839,7 @@ bool PlayingGameState::readSectors(Map *map) {
 
 #if defined(USING_QT)
     char fullname[4096] = "";
-    sprintf(fullname, ":/%s/%s", maps_dirname, map->getFilename());
+    sprintf(fullname, "%s%s/%s", DEPLOYMENT_PATH, maps_dirname, map->getFilename());
     LOG("open: %s\n", fullname);
     QFile file(fullname);
     if( !file.open(QIODevice::ReadOnly) ) {

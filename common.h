@@ -1,5 +1,15 @@
 #pragma once
 
+#ifdef USING_QT
+#include <QtGlobal> // need this to get Q_OS_ANDROID #define, which we need before we include anything else!
+
+#if defined(Q_OS_ANDROID)
+#define DEPLOYMENT_PATH "assets:/"
+#else
+#define DEPLOYMENT_PATH ""
+#endif
+#endif
+
 const int majorVersion = 0;
 const int minorVersion = 25;
 

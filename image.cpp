@@ -1386,7 +1386,6 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
 	int n_lines = 0;
 	int max_wid = 0;
 	textLines(&n_lines, &max_wid, text);
-	ASSERT(n_lines == 1 || justify == JUSTIFY_LEFT);
 	int w = little[0]->getScaledWidth();
 	int n_h = 0;
 	if( numbers != NULL )

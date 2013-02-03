@@ -1244,12 +1244,16 @@ void convertToHiColor(Image *image) {
 }
 
 void processImage(Image *image) {
+    //LOG("    convert to hi color\n");
 	convertToHiColor(image);
-	image->scale(scale_factor_w, scale_factor_h);
-	image->setScale(scale_width, scale_height);
-	if( using_old_gfx ) {
-		image->smooth();
+    //LOG("    scale\n");
+    image->scale(scale_factor_w, scale_factor_h);
+    //LOG("    set scale\n");
+    image->setScale(scale_width, scale_height);
+    if( using_old_gfx ) {
+        image->smooth();
 	}
+    //LOG("    done\n");
 }
 
 bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
@@ -1866,35 +1870,6 @@ bool loadImages() {
 	// progress should go from 0 to 80%
 	string gfx_dir = "gfx/";
 
-/*#if defined(Q_OS_ANDROID)
-        player_select = Image::loadImage(gfx_dir + "player_select.png");
-#else
-        player_select = Image::loadImage(gfx_dir + "player_select.jpg");
-#endif
-
-#ifndef USING_QT
-    // if using Qt, we use resources even on Linux
-#ifdef __linux
-	if( player_select == NULL ) {
-		gfx_dir = "/usr/share/gigalomania/" + gfx_dir;
-		LOG("look in %s for gfx\n", gfx_dir.c_str());
-		player_select = Image::loadImage(gfx_dir + "player_select.jpg");
-	}
-#endif
-#endif
-	drawProgress(10);
-
-	if( player_select == NULL )
-		return false;
-
-	//scale_factor = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
-	//LOG("scale factor for images = %f\n", scale_factor);
-	scale_factor_w = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
-	scale_factor_h = ((float)(scale_height*default_height_c))/(float)player_select->getHeight();
-	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
-	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
-	processImage(player_select);
-	*/
 
 #if defined(Q_OS_ANDROID)
 	background = Image::loadImage(gfx_dir + "starfield.png");
@@ -2065,8 +2040,8 @@ bool loadImages() {
 	//panel_build[BUILDING_MINE] = icons->copy(256, 63, 16, 16); // different size
 	panel_build[BUILDING_MINE] = mine_gatherable_small;
 	panel_build[BUILDING_FACTORY] = icons->copy(288, 63, 16, 16); // different size
-	//panel_build[BUILDING_LAB] = icons->copy(192, 63, 16, 16); // different size
-	panel_build[BUILDING_LAB] = panel_lab;
+	panel_build[BUILDING_LAB] = icons->copy(192, 63, 16, 16); // different size
+	//panel_build[BUILDING_LAB] = panel_lab;
 
 	panel_building[BUILDING_TOWER] = icons->copy(0, 33, 16, 16); // different size
 	//panel_building[BUILDING_MINE] = icons->copy(32, 33, 16, 16); // different size
@@ -2927,7 +2902,7 @@ bool readMap(char *filename) {
 
 #if defined(USING_QT)
     char fullname[4096] = "";
-    sprintf(fullname, ":/%s/%s", maps_dirname, filename);
+    sprintf(fullname, "%s%s/%s", DEPLOYMENT_PATH, maps_dirname, filename);
     //LOG("open: %s\n", fullname);
     QFile file(fullname);
     if( !file.open(QIODevice::ReadOnly) ) {
@@ -3007,7 +2982,7 @@ bool createMaps() {
 #if defined(USING_QT)
     /*vector<string> maps;
     maps.push_back("")*/
-    QDir dir(":/islands/");
+    QDir dir(QString(DEPLOYMENT_PATH) + "islands/");
     QStringList list = dir.entryList();
     foreach(const QString file, list) {
         LOG("found file: %s\n", file.toLatin1().data());

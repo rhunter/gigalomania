@@ -68,7 +68,7 @@ void Image::setScale(float scale_x,float scale_y) {
 }
 
 bool Image::scaleTo(int n_w) {
-    this->image = this->image.scaledToWidth(n_w);
+    this->image = this->image.scaledToWidth(n_w, Qt::SmoothTransformation);
     return true;
 }
 
@@ -290,7 +290,7 @@ bool Image::convertToHiColor(bool alpha) {
 }
 
 Image * Image::loadImage(const char *filename) {
-    string qt_filename = ":/" + string(filename);
+    string qt_filename = string(DEPLOYMENT_PATH) + string(filename);
     LOG("loading image: %s\n", qt_filename.c_str());
     Image *image = new Image();
     if( !image->image.load(qt_filename.c_str()) ) {
@@ -447,7 +447,6 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
     int n_lines = 0;
     int max_wid = 0;
     textLines(&n_lines, &max_wid, text);
-    ASSERT(n_lines == 1 || justify == JUSTIFY_LEFT);
     int w = little[0]->getScaledWidth();
     int n_h = 0;
     if( numbers != NULL )

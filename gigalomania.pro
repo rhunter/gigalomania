@@ -8,13 +8,17 @@
 #DEPLOYMENTFOLDERS = dir1 dir2
 #file1.source = readme.html
 #DEPLOYMENTFOLDERS = file1
+dir1.source = gfx
+dir2.source = sound
+dir3.source = islands
+DEPLOYMENTFOLDERS += dir1 dir2 dir3
 
 # UID from Symbian Signed:
 #symbian:TARGET.UID3 = 0xA00131BD
 # Nokia UID for use only on Ovi Store! Not to be used anywhere else:
 symbian:TARGET.UID3 = 0x2005fff6
 
-VERSION = 0.24
+VERSION = 0.25
 
 # Smart Installer package's UID
 # This UID is from the protected range 
@@ -140,5 +144,4 @@ OTHER_FILES += \
     android/src/org/kde/necessitas/origo/QtApplication.java \
     android/version.xml
 
-RESOURCES += \
-    gigalomania.qrc
+RESOURCES +=
