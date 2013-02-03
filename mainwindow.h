@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
     QSystemScreenSaver *screen_saver;
 #endif
 
+protected:
+    virtual void closeEvent(QCloseEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
     //virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);

@@ -83,6 +83,12 @@ void MainWindow::updateScene() {
     application->update();
 }
 
+void MainWindow::closeEvent(QCloseEvent *event) {
+    LOG("MainWindow received close event\n");
+    keypressEscape();
+    event->ignore(); // we always handle this ourselves
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     qDebug("key press");
     /*if( event->key() == Qt::Key_VolumeDown ) {
