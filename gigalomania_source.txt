@@ -1,4 +1,4 @@
-This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 10.04 64 bit) and AROS (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 12.04 64 bit) and AROS (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
 
 Linux
 =====
@@ -95,7 +95,7 @@ This will produce the Gigalomania executable, which you can run with: gigalomani
 
 Note that Gigalomania requires a large stack - it seems to work okay with the AROS Shell default of 1024000 bytes.
 
-After building, you can use the makearosarchive script to create the binary folder (in RAM:).
+After building, you can use the makearosarchive script to create the binary folder (in RAM: ).
 
 Symbian
 =======
@@ -125,7 +125,7 @@ Source Control
 Since version 0.23, I've released the source online using Git, at https://sourceforge.net/p/gigalomania/code . Note that I work with the auto crlf turned off (otherwise it converts all the Linux line endings into Windows format, since I develop on Windows, which messes things up for the Linux source release). If you want to work on the source, please check out the latest version from the repository.
 
 History
-=====
+=======
 
 Version 0.25 adds the AROS port.
 
