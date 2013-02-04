@@ -9,7 +9,7 @@ REM Qt stuff:
 
 copy %src%\gigalomania.pro %dst%
 copy %src%\deployment.pri %dst%
-copy %src%\gigalomania.qrc %dst%
+REM copy %src%\gigalomania.qrc %dst%
 copy %src%\gigalomania.svg %dst%
 copy %src%\readme.html %dst%
 

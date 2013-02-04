@@ -9,7 +9,7 @@ REM Qt stuff:
 
 copy %src%\gigalomania.pro %dst%
 copy %src%\deployment.pri %dst%
-copy %src%\gigalomania.qrc %dst%
+REM copy %src%\gigalomania.qrc %dst%
 copy %src%\gigalomania64.png %dst%
 copy %src%\gigalomania48.png %dst%
 copy %src%\readme.html %dst%
@@ -76,8 +76,8 @@ REM copy %src%\gfx_2x\ %dst%\gfx\
 REM faff for jpgs not supported!
 copy %src%\gfx_android_extras %dst%\gfx\
 del %dst%\gfx\*.jpg
-del %dst%\gigalomania.qrc
-copy %src%\gigalomania_android.qrc %dst%\gigalomania.qrc
+REM del %dst%\gigalomania.qrc
+REM copy %src%\gigalomania_android.qrc %dst%\gigalomania.qrc
 
 mkdir %dst%\sound
 copy %src%\sound\ %dst%\sound\

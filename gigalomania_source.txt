@@ -115,9 +115,9 @@ Android
 
 Use necessitas to compile for Android ( http://necessitas.kde.org/ ). This has been tested with Necessitas alpha 4 (also referred to as "beta 1"), compiled on Windows 7. You need to compile against Android API target of at least 10 (due to use of Open SLES for sound).
 
-Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/ , and replace gigalomania.qrc with gigalomania_android.qrc (i.e., copy/renaming the file). You'll also have to rename the folders, so that the images in "gfx_2x" are in "gfx" (whilst theoretically higher resolution Android phones could justify the higher resolution graphics, this also means slower startup time; also to use the full size gfx, the files in gfx_android_extras have to be increased in size too).
+Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/.
 
-On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development (in c:\temp\ ), which also replaces the jpg images with the pngs from gfx_android_extras/ , replaces the gigalomania.qrc file, and uses the gfx_2x files.
+On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development (in c:\temp\ ), which also replaces the jpg images with the pngs from gfx_android_extras/.
 
 Source Control
 ==============
@@ -127,7 +127,7 @@ Since version 0.23, I've released the source online using Git, at https://source
 History
 =======
 
-Version 0.25 adds the AROS port.
+Version 0.25 adds the AROS port. Also no longer using Resource files for the Qt versions.
 
 Version 0.24 adds the Android port.
 
