@@ -1870,7 +1870,6 @@ bool loadImages() {
 	// progress should go from 0 to 80%
 	string gfx_dir = "gfx/";
 
-
 #if defined(Q_OS_ANDROID)
 	background = Image::loadImage(gfx_dir + "starfield.png");
 #else
@@ -1898,6 +1897,7 @@ bool loadImages() {
 	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
 	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
 	processImage(background);
+	drawProgress(25);
 
 	Image *image_slabs = NULL;
 	image_slabs = Image::loadImage(gfx_dir + "slabs.png");
@@ -1909,13 +1909,7 @@ bool loadImages() {
 		processImage(land[i]);
 		//land[i]->setMaskColor(255, 0, 255); // need to set the mask colour now, to stop it being multiplied!
 	}
-	/*land[MAP_ORANGE]->brighten(240.0f/255.0f, 112.0f/255.0f, 16.0f/255.0f, true);
-	land[MAP_GREEN]->brighten(0.0f/255.0f, 192.0f/255.0f, 0.0f/255.0f, true);
-	land[MAP_BROWN]->brighten(160.0f/255.0f, 64.0f/255.0f, 0.0f/255.0f, true);
-	land[MAP_WHITE]->brighten(240.0f/255.0f, 240.0f/255.0f, 240.0f/255.0f, true);
-	land[MAP_DBROWN]->brighten(112.0f/255.0f, 36.0f/255.0f, 16.0f/255.0f, true);
-	land[MAP_DGREEN]->brighten(0/255.0f, 96.0f/255.0f, 0.0f/255.0f, true);
-	land[MAP_GREY]->brighten(112.0f/255.0f, 112.0f/255.0f, 112.0f/255.0f, true);*/
+	drawProgress(32);
 	land[MAP_ORANGE]->brighten(187.5f/255.0f, 96.0f/255.0f, 42.0f/255.0f);
 	land[MAP_GREEN]->brighten(52.0f/255.0f, 163.5f/255.0f, 52.0f/255.0f);
 	land[MAP_BROWN]->brighten(116.0f/255.0f, 72.0f/255.0f, 36.0f/255.0f);
@@ -1956,6 +1950,7 @@ bool loadImages() {
 		fortress[i] = temp->copy(27, 9, 64, 51);
 		delete temp;
 	}
+	drawProgress(34);
 	for(int i=mine_epoch_c;i<n_epochs_c-1;i++) {
 		stringstream filename;
 		filename << gfx_dir << "building_mine_" << i << ".png";
@@ -1967,6 +1962,7 @@ bool loadImages() {
 		mine[i] = temp->copy(28, 12, 66, 51);
 		delete temp;
 	}
+	drawProgress(36);
 	for(int i=factory_epoch_c;i<n_epochs_c-1;i++) {
 		stringstream filename;
 		filename << gfx_dir << "building_factory_" << i << ".png";
@@ -1979,6 +1975,7 @@ bool loadImages() {
 		factory[i] = temp->copy(25, 1, 68, 62);
 		delete temp;
 	}
+	drawProgress(38);
 	for(int i=lab_epoch_c;i<n_epochs_c-1;i++) {
 		stringstream filename;
 		filename << gfx_dir << "building_lab_" << i << ".png";
@@ -2142,6 +2139,7 @@ bool loadImages() {
 	icons = Image::loadImage(gfx_dir + "icons64.png");
 	if( icons == NULL )
 		return false;
+	drawProgress(45);
 	// replace with new large icons
 	/*if( !icons->scaleTo(scale_width*128) ) // may need to update width as more icons added!
 	return false;*/
@@ -2157,6 +2155,7 @@ bool loadImages() {
 	icons = Image::loadImage(gfx_dir + "font.png");
 	if( icons == NULL )
 		return false;
+	drawProgress(48);
 	processImage(icons);
     //const int number_h_c = 8;
     const int number_h_c = 10;
@@ -2240,6 +2239,7 @@ bool loadImages() {
 			map_sq[i][j] = map_sq[i][0]->copy(0, 0, 16, 16);
 		}
     }
+	drawProgress(53);
 
 	Image *smallmap_coast = Image::loadImage(gfx_dir + "smallmap_coast.png");
 	if( smallmap_coast != NULL ) {
@@ -2250,7 +2250,7 @@ bool loadImages() {
 			coast_icons[i] = smallmap_coast->copy(22*i, 0, 22, 22);
 	}
 	delete smallmap_coast;
-	drawProgress(60);
+	drawProgress(55);
 
 	{
 		// initialise
@@ -2275,6 +2275,7 @@ bool loadImages() {
 		Image *gfx_def_image = Image::loadImage(gfx_dir + "defenders.png");
 		if( gfx_def_image == NULL )
 			return false;
+		drawProgress(58);
 		/*if( !gfx_def_image->scaleTo(scale_width*default_width_c) )
 		return false;*/
         //processImage(gfx_def_image);
@@ -2300,10 +2301,12 @@ bool loadImages() {
 		if( !loadAttackersWalkingImages(gfx_dir, n_epochs_c) ) {
 			return false;
 		}
+		drawProgress(60);
 
 		Image *gfx_planes = Image::loadImage(gfx_dir + "attacker_flying.png");
 		if( gfx_planes == NULL )
 			return false;
+		drawProgress(62);
 		/*if( !gfx_planes->scaleTo(scale_width*default_width_c) )
 		return false;*/
         gfx_planes->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
@@ -2333,6 +2336,7 @@ bool loadImages() {
 		Image *gfx_ammo = Image::loadImage(gfx_dir + "attacker_ammo.png");
 		if( gfx_ammo == NULL )
 			return false;
+		drawProgress(65);
 		/*if( !gfx_ammo->scaleTo(scale_width*default_width_c) )
 		return false;*/
 		processImage(gfx_ammo);
@@ -2395,7 +2399,6 @@ bool loadImages() {
             }
         }
     }
-	drawProgress(65);
 
 	// features
 	Image *gfx_features = Image::loadImage(gfx_dir + "features.png");
