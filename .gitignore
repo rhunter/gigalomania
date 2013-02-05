@@ -3,8 +3,8 @@ archive/
 data/
 docs/
 gfx_orig/
-gfx/
 gfx_2x/
+gfx_2x_nearestneighbour/
 gfx_android_extras/
 gfxsource/
 ipch/
@@ -15,6 +15,7 @@ sound/
 Debug/
 Release/
 CreateScaledGfx-build-*/
+newgfx/
 
 *.dll
 *.lib
@@ -30,8 +31,6 @@ CreateScaledGfx-build-*/
 
 *.ico
 *.ogg
-*.png
-*.jpg
 *.svg
 
 gpl.txt
