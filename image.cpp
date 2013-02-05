@@ -348,13 +348,17 @@ bool Image::createAlphaForColor(bool mask, unsigned char mr, unsigned char mg, u
 
 	this->convertToHiColor(true);
 
+#ifdef TIMING
+	int time_s = clock();
+#endif
+
 	SDL_LockSurface(this->surface);
-	for(int cx=0;cx<w;cx++) {
-		for(int cy=0;cy<h;cy++) {
+	// faster to read in x direction! (caching?)
+	for(int cy=0;cy<h;cy++) {
+		for(int cx=0;cx<w;cx++) {
 			Uint32 pixel = getpixel(this->surface, cx, cy);
 			Uint8 r = 0, g = 0, b = 0, a = 0;
 			SDL_GetRGB(pixel, this->surface->format, &r, &g, &b);
-			a = 255;
 			if( r == ar && g == ag && b == ab ) {
 				r = 0;
 				g = 0;
@@ -363,7 +367,6 @@ bool Image::createAlphaForColor(bool mask, unsigned char mr, unsigned char mg, u
 				pixel = SDL_MapRGBA(this->surface->format, r, g, b, a);
 				putpixel(this->surface, cx, cy, pixel);
 			}
-			//else if( mask && r == this->mask_r && g == this->mask_g && b == mask_b ) {
 			else if( mask && r == mr && g == mg && b == mb ) {
 				r = 0;
 				g = 0;
@@ -376,6 +379,13 @@ bool Image::createAlphaForColor(bool mask, unsigned char mr, unsigned char mg, u
 	}
 
 	SDL_UnlockSurface(this->surface);
+#ifdef TIMING
+	int time_taken = clock() - time_s;
+	LOG("    image createAlphaForColor time %d\n", time_taken);
+	static int total = 0;
+	total += time_taken;
+	LOG("    image createAlphaForColor total %d\n", total);
+#endif
 	return true;
 }
 
@@ -384,20 +394,33 @@ void Image::scaleAlpha(float scale) {
 	if( bpp != 32 )
 		return;
 
+#ifdef TIMING
+	int time_s = clock();
+#endif
+
 	int w = this->getWidth();
 	int h = this->getHeight();
 	SDL_LockSurface(this->surface);
-	for(int cx=0;cx<w;cx++) {
-		for(int cy=0;cy<h;cy++) {
+	// faster to read in x direction! (caching?)
+	for(int cy=0;cy<h;cy++) {
+		for(int cx=0;cx<w;cx++) {
 			Uint32 pixel = getpixel(this->surface, cx, cy);
 			Uint8 r = 0, g = 0, b = 0, a = 0;
 			SDL_GetRGBA(pixel, this->surface->format, &r, &g, &b, &a);
-			a *= scale;
+			//a *= scale;
+			a = (Uint8)(a*scale);
 			pixel = SDL_MapRGBA(this->surface->format, r, g, b, a);
 			putpixel(this->surface, cx, cy, pixel);
 		}
 	}
 	SDL_UnlockSurface(this->surface);
+#ifdef TIMING
+	int time_taken = clock() - time_s;
+	LOG("    image scaleAlpha time %d\n", time_taken);
+	static int total = 0;
+	total += time_taken;
+	LOG("    image scaleAlpha total %d\n", total);
+#endif
 }
 
 bool Image::convertToHiColor(bool alpha) {
@@ -545,8 +568,11 @@ bool Image::copyPalette(const Image *image) {
 	return true;
 }
 
-// side-effect: also converts images with < 256 colours to have 256 colours
+// side-effect: also converts images with < 256 colours to have 256 colours, unless scaling is 1.0
 void Image::scale(float sx,float sy) {
+	if( sx == 1.0f && sy == 1.0f ) {
+		return;
+	}
 	// only supported for either reducing or englarging the size - this is all we need, and is easier to optimise for performance
 	bool enlarging = false;
 	if( sx > 1.0f || sy > 1.0f ) {
@@ -589,8 +615,8 @@ void Image::scale(float sx,float sy) {
 				for(int i=0;i<bytesperpixel;i++, src_indx++) {
 					T_ASSERT(src_indx >= 0 && src_indx < this->surface->pitch*h );
 					unsigned char pt = src_data[ src_indx ];
-					for(int x=0;x<sx;x++) {
-						for(int y=0;y<sy;y++) {
+					for(int y=0;y<sy;y++) {
+						for(int x=0;x<sx;x++) {
 							int dx = (int)(cx * sx + x);
 							int dy = (int)(cy * sy + y);
 							T_ASSERT( dx >= 0 && dx < new_width );
@@ -739,8 +765,9 @@ void Image::remap(unsigned char sr,unsigned char sg,unsigned char sb,unsigned ch
 	int h = getHeight();
 	int bytesperpixel = this->surface->format->BytesPerPixel;
 	int pitch = this->surface->pitch;
-	for(int x=0;x<w;x++) {
-		for(int y=0;y<h;y++) {
+	// faster to read in x direction! (caching?)
+	for(int y=0;y<h;y++) {
+		for(int x=0;x<w;x++) {
 			/*unsigned char *src_data = (unsigned char *)this->surface->pixels;
 			unsigned char *ptr = &src_data[ y * pitch + x * bytesperpixel ];
 			if( ptr[0] == sr && ptr[1] == sg && ptr[2] == sb ) {
@@ -798,28 +825,9 @@ void Image::reshadeRGB(int from, bool to_r, bool to_g, bool to_b) {
 	int h = getHeight();
 	int bytesperpixel = this->surface->format->BytesPerPixel;
 	int pitch = this->surface->pitch;
-	for(int x=0;x<w;x++) {
-		for(int y=0;y<h;y++) {
-			/*unsigned char *src_data = (unsigned char *)this->surface->pixels;
-			unsigned char *ptr = &src_data[ y * pitch + x * bytesperpixel ];
-			int val = ptr[from];
-			int t_diff = 0;
-			int n = 0;
-			for(int j=0;j<3;j++) {
-				if( to[j] && j != from ) {
-					int val2 = ptr[j];
-					int diff = val2 - val;
-					t_diff += diff;
-					n++;
-					ptr[j] = val;
-				}
-			}
-			if( n > 0 && !to[from] ) {
-				t_diff /= n;
-				val += t_diff;
-				ASSERT(val >=0 && val < 256);
-				ptr[from] = val;
-			}*/
+	// faster to read in x direction! (caching?)
+	for(int y=0;y<h;y++) {
+		for(int x=0;x<w;x++) {
 			Uint32 pixel = getpixel(this->surface, x, y);
 			Uint8 rgba[] = {0, 0, 0, 0};
 			SDL_GetRGBA(pixel, this->surface->format, &rgba[0], &rgba[1], &rgba[2], &rgba[3]);
@@ -862,22 +870,9 @@ void Image::brighten(float sr, float sg, float sb) {
 	int h = getHeight();
 	int bytesperpixel = this->surface->format->BytesPerPixel;
 	int pitch = this->surface->pitch;
-	for(int x=0;x<w;x++) {
-		for(int y=0;y<h;y++) {
-			/*unsigned char *src_data = (unsigned char *)this->surface->pixels;
-			unsigned char *ptr = &src_data[ y * pitch + x * bytesperpixel ];
-			if( mask && ptr[0] == maskcol.r && ptr[1] == maskcol.g && ptr[2] == maskcol.b ) {
-				continue;
-			}
-			for(int j=0;j<3;j++) {
-				float col = (float)ptr[j];
-				col *= scale[j];
-				if( col < 0 )
-					col = 0;
-				else if( col > 255 )
-					col = 255;
-				ptr[j] = (unsigned char)col;
-			}*/
+	// faster to read in x direction! (caching?)
+	for(int y=0;y<h;y++) {
+		for(int x=0;x<w;x++) {
 			Uint32 pixel = getpixel(this->surface, x, y);
 			Uint8 rgba[] = {0, 0, 0, 0};
 			SDL_GetRGBA(pixel, this->surface->format, &rgba[0], &rgba[1], &rgba[2], &rgba[3]);
@@ -975,12 +970,6 @@ Image *Image::copy(int x, int y, int w, int h) const {
 	w = (int)(w * scale_x);
 	h = (int)(h * scale_y);
 
-	/*Image *copy_image = createBlankImage(w,h,this->surface->format->BitsPerPixel);
-	copy_image->surface->format->Rmask = this->surface->format->Rmask;
-	copy_image->surface->format->Gmask = this->surface->format->Gmask;
-	copy_image->surface->format->Bmask = this->surface->format->Bmask;
-	copy_image->surface->format->Amask = this->surface->format->Amask;*/
-
 	Image *copy_image = NULL;
 	{
 		SDL_Surface *surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, this->surface->format->BitsPerPixel, this->surface->format->Rmask, this->surface->format->Gmask, this->surface->format->Bmask, this->surface->format->Amask);
@@ -994,8 +983,9 @@ Image *Image::copy(int x, int y, int w, int h) const {
 	unsigned char *dst_data = (unsigned char *)copy_image->surface->pixels;
 	SDL_LockSurface(this->surface);
 	int bytesperpixel = this->surface->format->BytesPerPixel;
-	for(int cx=0;cx<w;cx++) {
-		for(int cy=0;cy<h;cy++) {
+	// faster to read in x direction! (caching?)
+	for(int cy=0;cy<h;cy++) {
+		for(int cx=0;cx<w;cx++) {
 			for(int i=0;i<bytesperpixel;i++) {
 				int src_indx = ( y + cy ) * this->surface->pitch + ( x + cx ) * bytesperpixel + i;
 				int dst_indx = cy * copy_image->surface->pitch + cx * bytesperpixel + i;
