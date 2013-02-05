@@ -283,10 +283,16 @@ Screen *screen = NULL;
 GameState *gamestate = NULL;
 //Sector *current_sector = NULL;
 
-bool play_music = true; // also affects any sound effects now
+const bool default_play_music_c = true;
+bool play_music = default_play_music_c; // also affects any sound effects now
 /*FMUSIC_MODULE *module = NULL;
 FSOUND_STREAM *str_music = NULL;*/
 Sample *music = NULL;
+
+#ifdef USING_QT
+QSettings qt_settings("Mark Harman", "Gigalomania");
+const QString play_music_key_c = "play_music";
+#endif
 
 Map::Map(MapColour colour,int n_opponents,const char *name) {
 	//*this->filename = '\0';
@@ -2607,6 +2613,8 @@ bool openScreen(bool fullscreen) {
 		LOG("available height is %d\n", user_height);
 		//user_width = 320;
 		//user_height = 240;
+		//user_width = 640;
+		//user_height = 480;
 #elif AROS
 		// AROS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
 		getAROSScreenSize(&user_width, &user_height);
@@ -3393,6 +3401,7 @@ void playGame(int n_args, char *args[]) {
 	debugwindow = true;
 	//fullscreen = true;
 #endif
+	//debugwindow = true;
 
 #if !defined(Q_OS_ANDROID)
         // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
@@ -3427,7 +3436,7 @@ void playGame(int n_args, char *args[]) {
 
 	initLogFile();
 
-	/*if( access("data", 0)==0 ) {
+        /*if( access("data", 0)==0 ) {
 	use_amigadata = true;
 	}
 	else if( access("Mega Lo Mania", 0)==0 ) {
@@ -3440,7 +3449,20 @@ void playGame(int n_args, char *args[]) {
 	LOG("onemousebutton?: %d\n", onemousebutton);
 	LOG("mobile_ui?: %d\n", mobile_ui);
 
-	for(int i=0;i<n_epochs_c;i++)
+#ifdef USING_QT
+        bool qt_ok = true;
+        int play_music_i = qt_settings.value(play_music_key_c, default_play_music_c).toInt(&qt_ok);
+        if( !qt_ok ) {
+            LOG("qt_settings: play_music not ok, set to default\n");
+            play_music = default_play_music_c;
+        }
+        else {
+            play_music = play_music_i != 0;
+            LOG("qt_settings: set play_music to %d\n", play_music);
+        }
+#endif
+
+        for(int i=0;i<n_epochs_c;i++)
 		for(int j=0;j<max_islands_per_epoch_c;j++)
 			maps[i][j] = NULL;
 

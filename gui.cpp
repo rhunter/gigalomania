@@ -397,6 +397,10 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	// update from options
 	if( button_music != NULL ) {
 		play_music = button_music->getActive() == 0;
+#ifdef USING_QT
+                // also save
+                qt_settings.setValue(play_music_key_c, play_music ? 1 : 0);
+#endif
 	}
     //onemousebutton = this->onemousebuttonOn();
 	if( button_onemousebutton != NULL ) {

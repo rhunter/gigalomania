@@ -284,7 +284,12 @@ extern int human_player;
 extern int end_game_time;
 extern bool play_music;
 
-//const int MAP_MAX_NAME = 256;
+#ifdef USING_QT
+#include <QSettings>
+
+extern QSettings qt_settings;
+extern const QString play_music_key_c;
+#endif
 
 //#include "sector.h"
 
