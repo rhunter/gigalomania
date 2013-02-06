@@ -760,21 +760,29 @@ void Image::remap(unsigned char sr,unsigned char sg,unsigned char sb,unsigned ch
 	if( this->surface->format->BitsPerPixel != 24 && this->surface->format->BitsPerPixel != 32 ) {
 		return;
 	}
+	if( rr == sr && rg == sg && rb == sb ) {
+		return;
+	}
+#ifdef TIMING
+	int time_s = clock();
+#endif
 	SDL_LockSurface(this->surface);
 	int w = getWidth();
 	int h = getHeight();
 	int bytesperpixel = this->surface->format->BytesPerPixel;
 	int pitch = this->surface->pitch;
+	/*int isr = (int)sr;
+	int isg = (int)sg;
+	int isb = (int)sb;
+	int mag_s = (int)sqrt( (float)(isr*isr + isg*isg + isb*isb) ); // *255
+	const int threshold = 0.9f * mag_s; // *255
+	int irr = (int)rr;
+	int irg = (int)rg;
+	int irb = (int)rb;
+	int mag_r = (int)sqrt( (float)(irr*irr + irg*irg + irb*irb) ); // *255*/
 	// faster to read in x direction! (caching?)
 	for(int y=0;y<h;y++) {
 		for(int x=0;x<w;x++) {
-			/*unsigned char *src_data = (unsigned char *)this->surface->pixels;
-			unsigned char *ptr = &src_data[ y * pitch + x * bytesperpixel ];
-			if( ptr[0] == sr && ptr[1] == sg && ptr[2] == sb ) {
-				ptr[0] = rr;
-				ptr[1] = rg;
-				ptr[2] = rb;
-			}*/
 			Uint32 pixel = getpixel(this->surface, x, y);
 			Uint8 r = 0, g = 0, b = 0, a = 0;
 			SDL_GetRGBA(pixel, this->surface->format, &r, &g, &b, &a);
@@ -782,10 +790,35 @@ void Image::remap(unsigned char sr,unsigned char sg,unsigned char sb,unsigned ch
 				pixel = SDL_MapRGBA(surface->format, rr, rg, rb, a);
 				putpixel(this->surface, x, y, pixel);
 			}
+			/*if( r == 0 && g == 0 && b == 0 ) {
+				continue;
+			}
+			int ir = (int)r;
+			int ig = (int)g;
+			int ib = (int)b;
+			int mag = (int)sqrt( (float)(ir*ir + ig*ig + ib*ib) ); // *255
+			int dot = ( sr*ir + sg*ig + sb*ib ); // *255*255
+			if( dot >= threshold*mag ) {
+				float cos_angle = ((float)dot) / (float)( mag_s * mag ); // *1
+				int proj_mag = mag * cos_angle; // *255
+				ir = proj_mag * rr / mag_r;
+				ig = proj_mag * rg / mag_r;
+				ib = proj_mag * rb / mag_r;
+				pixel = SDL_MapRGBA(surface->format, ir, ig, ib, a);
+				putpixel(this->surface, x, y, pixel);
+			}*/
 		}
 	}
 
 	SDL_UnlockSurface(this->surface);
+
+#ifdef TIMING
+	int time_taken = clock() - time_s;
+	LOG("    image remap time %d\n", time_taken);
+	static int total = 0;
+	total += time_taken;
+	LOG("    image remap total %d\n", total);
+#endif
 }
 
 //Image *Image::copy(int x,int y,int w,int h) {
@@ -858,12 +891,12 @@ void Image::reshadeRGB(int from, bool to_r, bool to_g, bool to_b) {
 }
 
 void Image::brighten(float sr, float sg, float sb) {
-#ifdef TIMING
-	int time_s = clock();
-#endif
 	if( this->surface->format->BitsPerPixel != 24 && this->surface->format->BitsPerPixel != 32 ) {
 		return;
 	}
+#ifdef TIMING
+	int time_s = clock();
+#endif
 	float scale[3] = {sr, sg, sb};
 	SDL_LockSurface(this->surface);
 	int w = getWidth();
