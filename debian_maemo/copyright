@@ -11,11 +11,19 @@ misc_menu_3.wav - from http://opengameart.org/content/gui-sound-effects, by Loki
 
 woodbrk.wav - modified from FreeCiv, under the GPL.
 
+attacker_walking_0_*.png, attacker_walking_1_*.png, attacker_walking_2_*.png, attacker_walking_3_*.png, attacker_walking_10_*.png, "Crossbow" defender, 10000BC, 2000BC, 1AD, 900AD, 1400AD, 1944AD, 2100AD and unarmed people icons - from http://opengameart.org/content/lpc-medieval-fantasy-character-sprites, by wulax, under CC BY-SA 3.0 or later, or the GPL v3 or later.
+
+attacker_walking_4.png, attacker_walking_5.png, "Factory" icon, "Stick", "Spear", "Shortbow", "Cauldron of Oil", "Crossbow", "Rifle", "Machine Gun", "Rocket" defenders, 1850AD, 1914AD, 1980AD people icons - from FreeCiv, under the GPL.
+
+Spaceship - from http://opengameart.org/content/spaceship, by yd, under CC0.
+
 deadtree1_00.png - modified from http://opengameart.org/content/widelands-dead-trees, taken from Widelands, under the GPL v2.
 
 tree*_*.png and "wood" element icon - modified from http://opengameart.org/content/widelands-trees-greenland, taken from Widelands, under the GPL v2.
 
 rock*.png, log0.png and "rock" element icon - modified from http://opengameart.org/content/isometric-64x64-outside-tileset, by Yar, under Creative Commons Attribution 3.0.
+
+"tower" icon - from http://opengameart.org/content/old-stone-buildings, by blarumyrran AT gmail DOT com, under CC0.
 
 "lightbulb" icon - modified from Crystal_Clear_app_ktip.png - from http://commons.wikimedia.org/wiki/File:Crystal_Clear_app_ktip.png, by Everaldo Coelho and YellowIcon under the LGPL.
 
@@ -33,6 +41,40 @@ rock*.png, log0.png and "rock" element icon - modified from http://opengameart.o
 
 "alien" element icon - modified from http://opengameart.org/content/faces-0, by Paulius Jurgelevičius, under CC0.
 
+"Mine" icon - from http://opengameart.org/content/tools-icons, by MrBeast, under the GPL v2 or later, LGPL v2.1 or later, or CC BY 3.0 or later.
+
+"Rock" weapon icon, "Slate" element icon - from http://opengameart.org/content/rocks, by Écrivain, under CC0.
+
+"Sword", "Pike", "Longbow" weapon icons - from http://opengameart.org/content/weapons-icons, by elerya, under CC BY 3.0 or later.
+
+"Trebuchet", "Cannon" weapon icons - from FreeCiv, under GPL v2 or later.
+
+"Biplanes" weapon icon - from http://commons.wikimedia.org/wiki/File:Biplane_landing.png, by Dr. Wessmann, under CC BY-SA 2.0.
+
+"Jet" weapon icon - from http://opengameart.org/content/fighter-planes-ww2-theme, by Nick, under CC BY 3.0 or later.
+
+"Nuke" weapon icon - from http://commons.wikimedia.org/wiki/File:Castle_Romeo.jpg, public domain.
+
+"Stick", "Spear" defence icons - from http://opengameart.org/content/weapon-icons-32x32px-painterly, by Scrittl, under the GPL v3 or later, or CC BY 3.0 or later.
+
+"Shortbow" defence icon - from http://opengameart.org/content/osare-weapon-icons, by Blarumyrran, under CC0.
+
+"Crossbow" defence icon - from http://opengameart.org/content/low-poly-crossbow, by Lamoot, under CC BY 3.0 or later.
+
+"Rifle" weapon icon - from http://www.flickr.com/photos/36224933@N07/3347657196, by Antique Military Rifles, under CC BY-SA 2.0.
+
+"Machine gun" defence icon - from http://commons.wikimedia.org/wiki/File:Machine_gun_Type_96_1.jpg, public domain.
+
+"Rocket" defence icon - from http://commons.wikimedia.org/wiki/File:Bazookasmithsonian.jpg, by Carl Malamud, under CC BY 2.0.
+
+"Bloody sword" icon - from http://opengameart.org/content/flare-item-variation-60x60-only, by Mumu, under CC0.
+
+"Flag" icons - from http://commons.wikimedia.org/wiki/File:Animated-Flag-Denmark.gif, by Dave Johnston, public domain.
+
+"Tick" icon - from http://opengameart.org/content/gui-items, by Scribe, under CC BY 3.0 or later.
+
+"Trash" icon - from http://commons.wikimedia.org/wiki/File:Gnome-edit-delete.svg, by GNOME icon artists, under the GPL v2 or later.
+
 The rendered building graphics use texture maps from:
 
     * Tileable5.png, Tileable9.png, Tileable10.png - from http://opengameart.org/content/117-stone-wall-tilable-textures-in-8-themes, by p0ss, under the GPL 2.
@@ -42,4 +84,4 @@ The rendered building graphics use texture maps from:
     * brick_seier.jpg - from http://www.flickr.com/photos/seier/4340689010/ by "seier+seier" under Creative Commons Attribution 2.0.
     * Shingle.png - from http://opengameart.org/content/dims-enviromental-and-architectural-textures, by Dim, under Creative Commons Attribution 3.0.
 
-All source files, along with graphics and other files not listed above, are Copyright 2003-2011 Mark Harman, Fredrik Sörensson, Stephen Fish, Andreas Herzig, released under the GPL v2 or later.  See /usr/share/common-licenses/GPL-2 .
+All source files, along with graphics and other files not listed above, are Copyright 2003-2013 Mark Harman, Fredrik Sörensson, Stephen Fish, Andreas Herzig, released under the GPL v2 or later.  See /usr/share/common-licenses/GPL-2 .
