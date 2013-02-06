@@ -1,4 +1,4 @@
-This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 12.04 64 bit) and AROS (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 12.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
 
 Linux
 =====
@@ -97,6 +97,8 @@ Note that Gigalomania requires a large stack - it seems to work okay with the AR
 
 After building, you can use the makearosarchive script to create the binary folder (in RAM: ).
 
+Hopefully this should work on any AROS platform, but I've only tested this on x86.
+
 Symbian
 =======
 
@@ -160,4 +162,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 5 January 2013
+Mark Harman 6 February 2013
