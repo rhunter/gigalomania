@@ -287,7 +287,7 @@ extern bool play_music;
 #ifdef USING_QT
 #include <QSettings>
 
-extern QSettings qt_settings;
+extern QSettings *qt_settings;
 extern const QString play_music_key_c;
 #endif
 

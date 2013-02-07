@@ -290,7 +290,7 @@ FSOUND_STREAM *str_music = NULL;*/
 Sample *music = NULL;
 
 #ifdef USING_QT
-QSettings qt_settings("Mark Harman", "Gigalomania");
+QSettings *qt_settings = NULL; // n.b., creating on stack means application fails to launch on Nokia 5800?!
 const QString play_music_key_c = "play_music";
 #endif
 
@@ -3254,6 +3254,12 @@ void cleanup() {
 	//stopMusic();
 	freeSound();
 	//SDL_Quit();
+#ifdef USING_QT
+        if( qt_settings != NULL ) {
+            delete qt_settings;
+            qt_settings = NULL;
+        }
+#endif
 	delete application;
 	application = NULL;
 }
@@ -3450,8 +3456,9 @@ void playGame(int n_args, char *args[]) {
 	LOG("mobile_ui?: %d\n", mobile_ui);
 
 #ifdef USING_QT
+        qt_settings = new QSettings("Mark Harman", "Gigalomania");
         bool qt_ok = true;
-        int play_music_i = qt_settings.value(play_music_key_c, default_play_music_c).toInt(&qt_ok);
+        int play_music_i = qt_settings->value(play_music_key_c, default_play_music_c).toInt(&qt_ok);
         if( !qt_ok ) {
             LOG("qt_settings: play_music not ok, set to default\n");
             play_music = default_play_music_c;
