@@ -156,7 +156,7 @@ bool addIfAbsent_vec(vector<T> *vec,const T& value) {
         return false;
 }*/
 
-#ifdef AROS
+#if defined(AROS) || defined(__MORPHOS__)
 
 void getAROSScreenSize(int *user_width, int *user_height);
 

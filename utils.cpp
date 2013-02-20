@@ -353,6 +353,8 @@ void initLogFile() {
 	LOG("Platform: MacOS X\n");
 #elif AROS
     LOG("Platform: AROS\n");
+#elif defined(__MORPHOS__)
+    LOG("Platform: MorphOS\n");
 #elif defined(Q_OS_SYMBIAN)
     LOG("Platform: Symbian\n");
 #else
@@ -495,7 +497,7 @@ float perlin_noise2(float vec[2]) {
 	return lerp(sy, a, b);
 }
 
-#ifdef AROS
+#if defined(AROS) || defined(__MORPHOS__)
 
 #include <proto/intuition.h>
 
@@ -509,12 +511,12 @@ void getAROSScreenSize(int *user_width, int *user_height) {
 	*user_height = 480;
 	struct Screen *my_wbscreen_ptr = LockPubScreen("Workbench");
 	if( my_wbscreen_ptr == NULL ) {
-		LOG("AROS: failed to lock Workbench screen\n");
+		LOG("getAROSScreenSize: failed to lock Workbench screen\n");
 	}
 	else {
 		*user_width = my_wbscreen_ptr->Width;
 		*user_height = my_wbscreen_ptr->Height;
-		LOG("AROS: Workbench screen is is %d x %d\n", *user_width, *user_height);
+		LOG("getAROSScreenSize: Workbench screen is is %d x %d\n", *user_width, *user_height);
 		UnlockPubScreen(NULL, my_wbscreen_ptr);
 	}
 }
