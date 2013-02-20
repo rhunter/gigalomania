@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 #ifndef USING_QT
-#ifdef __linux
+// n.b., need SDL even though we don't apparently call SDL in this file, so that main() is redefined with SDL's version
+#if defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else
 #include <sdl.h>
