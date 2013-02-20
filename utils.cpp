@@ -509,7 +509,7 @@ void getAROSScreenSize(int *user_width, int *user_height) {
 	*user_height = 480;
 	struct Screen *my_wbscreen_ptr = LockPubScreen("Workbench");
 	if( my_wbscreen_ptr == NULL ) {
-		LOG("AROS: failed to lock Workbenc screen\n");
+		LOG("AROS: failed to lock Workbench screen\n");
 	}
 	else {
 		*user_width = my_wbscreen_ptr->Width;
