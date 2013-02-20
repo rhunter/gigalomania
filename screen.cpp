@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#ifdef __linux
+#if defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else
 #include <sdl.h>
@@ -132,7 +132,9 @@ Application::~Application() {
 }
 
 bool Application::init() {
+#ifndef __MORPHOS__
 	putenv("SDL_VIDEO_CENTERED=0,0");
+#endif
 	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == -1 ) {
 		LOG("SDL_Init failed\n");
 		return false;

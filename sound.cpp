@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#ifdef __linux
+#if defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else
 #include <sdl.h>
