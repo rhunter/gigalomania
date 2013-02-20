@@ -19,11 +19,12 @@ using std::stringstream;
 #include <string.h>
 #endif
 
-// some platforms need SDL defined in this file
-#if defined(__APPLE__) && defined(__MACH__)
-#include <sdl.h>
+#ifdef _WIN32
+// Windows doesn't need SDL in this file
 #elif defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
+#else
+#include <sdl.h>
 #endif
 
 #ifdef AROS
