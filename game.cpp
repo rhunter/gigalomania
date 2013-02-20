@@ -19,16 +19,15 @@ using std::stringstream;
 #include <string.h>
 #endif
 
-#ifdef __linux
+// some platforms need SDL defined in this file
+#if defined(__APPLE__) && defined(__MACH__)
+#include <sdl.h>
+#elif defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #endif
 
 #ifdef AROS
 #include <proto/dos.h>
-#endif
-
-#if defined(__APPLE__) && defined(__MACH__)
-#include <sdl.h>
 #endif
 
 #endif
@@ -598,24 +597,10 @@ void drawProgress(int percentage) {
 	const int ypos = (int)(screen->getHeight()*0.5f - height*0.5f);
 
     screen->clear(); // n.b., needed for Qt/Symbian, where background defaults to white
-	/*int col = SDL_MapRGB(screen->getSurface()->format, 255, 255, 255);
-	SDL_Rect rect;
-	rect.x = xpos;
-	rect.y = ypos;
-	rect.w = width+1;
-	rect.h = height+1;
-	SDL_FillRect(screen->getSurface(), &rect, col);*/
 	screen->fillRect(xpos, ypos, width+1, height+1, 255, 255, 255);
 	int progress_width = (int)(((width-1) * percentage) / 100.0f);
-	/*rect.x++;
-	rect.y++;
-	rect.w = progress_width;
-	rect.h -= 2;
-	col = SDL_MapRGB(screen->getSurface()->format, 127, 0, 0);
-	SDL_FillRect(screen->getSurface(), &rect, col);*/
 	screen->fillRect(xpos+1, ypos+1, progress_width, height-1, 127, 0, 0);
 	
-	//SDL_UpdateRect(screen->getSurface(), 0, 0, 0, 0);
 	screen->refresh();
 #ifdef USING_QT
     application->processEvents(); // needed to update the screen in Qt! (due to being outside of qApp.exec())
@@ -2616,13 +2601,16 @@ bool openScreen(bool fullscreen) {
 		//user_width = 640;
 		//user_height = 480;
 #elif AROS
-		// AROS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
-		getAROSScreenSize(&user_width, &user_height);
+	    // AROS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
+	    getAROSScreenSize(&user_width, &user_height);
+#elif defined(__MORPHOS__)
+	    // MorphOS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
+        getAROSScreenSize(&user_width, &user_height);
 #else
-		const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
-		user_width = videoInfo->current_w;
-		user_height = videoInfo->current_h;
-		LOG("desktop is %d x %d\n", user_width, user_height);
+	    const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
+	    user_width = videoInfo->current_w;
+	    user_height = videoInfo->current_h;
+	    LOG("desktop is %d x %d\n", user_width, user_height);
 #endif
 
 		// Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
@@ -3253,7 +3241,6 @@ void cleanup() {
 	// no longer need to stop music, as it's deleted as a TrackedObject
 	//stopMusic();
 	freeSound();
-	//SDL_Quit();
 #ifdef USING_QT
         if( qt_settings != NULL ) {
             delete qt_settings;
@@ -3479,13 +3466,6 @@ void playGame(int n_args, char *args[]) {
 	for(int i=0;i<n_players_c;i++)
 		n_suspended[i] = 0;
 
-	// init SDL
-	/*putenv("SDL_VIDEO_CENTERED=0,0");
-	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == -1 ) {
-		LOG("SDL_Init failed!!!\n");
-		return;
-	}*/
-
 	// init application
 	application = new Application();
 	if( !application->init() ) {
@@ -3495,8 +3475,6 @@ void playGame(int n_args, char *args[]) {
 	else if( !initSound() ) {
 		// don't fail, just warn
 		LOG("Failed to initialise sound system\n");
-		/*SDL_Quit();
-		return;*/
 	}
 
 	LOG("successfully opened libraries\n");
