@@ -2602,16 +2602,16 @@ bool openScreen(bool fullscreen) {
 		//user_width = 640;
 		//user_height = 480;
 #elif AROS
-	    // AROS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
-	    getAROSScreenSize(&user_width, &user_height);
+		// AROS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
+		getAROSScreenSize(&user_width, &user_height);
 #elif defined(__MORPHOS__)
-	    // MorphOS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
-        getAROSScreenSize(&user_width, &user_height);
+		// MorphOS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
+		getAROSScreenSize(&user_width, &user_height);
 #else
-	    const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
-	    user_width = videoInfo->current_w;
-	    user_height = videoInfo->current_h;
-	    LOG("desktop is %d x %d\n", user_width, user_height);
+		const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
+		user_width = videoInfo->current_w;
+		user_height = videoInfo->current_h;
+		LOG("desktop is %d x %d\n", user_width, user_height);
 #endif
 
 		// Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
