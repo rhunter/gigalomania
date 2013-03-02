@@ -99,6 +99,17 @@ After building, you can use the makearosarchive script to create the binary fold
 
 Hopefully this should work on any AROS platform, but I've only tested this on x86.
 
+MorphOS
+=======
+
+As with AROS, a different makefile is needed for MorphOS, so use the command:
+
+make -f makefile_aros
+
+This will produce the Gigalomania executable, which you can run with: gigalomania
+
+As with AROS, a large stack may be required (e.g., 1024000 bytes).
+
 Symbian
 =======
 
@@ -129,7 +140,7 @@ Since version 0.23, I've released the source online using Git, at https://source
 History
 =======
 
-Version 0.25 adds the AROS port. Also no longer using Resource files for the Qt versions.
+Version 0.25 adds the AROS and MorphOS ports (though for 0.25, the MorphOS port was done as a separate release, as it was ported after the main 0.25 release). Also no longer using Resource files for the Qt versions.
 
 Version 0.24 adds the Android port.
 
@@ -162,4 +173,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 6 February 2013
+Mark Harman 20 February 2013
