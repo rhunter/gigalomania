@@ -27,6 +27,8 @@ gigalomania (0.25) precise; urgency=low
   * Now using high resolution graphics for Android.
   * Improved startup performance.
 
+ -- Mark Harman <mark.harman@ntlworld.com>  Thu, 7 Feb 2012 21:03:00 +0000
+
 gigalomania (0.24) maverick; urgency=low
 
   * Fixed possible crash when loading save games.
