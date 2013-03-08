@@ -49,7 +49,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/gigalomania.
-	$(MAKE) DESTDIR=$(CURDIR)/debian/gigalomania install
+	$(MAKE) DESTDIR=$(CURDIR)/debian/gigalomania maemo_install
 
 
 # Build architecture-independent files here.
