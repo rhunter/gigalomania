@@ -305,6 +305,8 @@ void Application::runMainLoop() {
 					break;
 				}*/
 			case SDL_ACTIVEEVENT:
+#ifndef AROS
+				// disabled for AROS, as we receive inactive events when the mouse goes outside the window!
 				if( (event.active.state & SDL_APPINPUTFOCUS) != 0 || (event.active.state & SDL_APPACTIVE) != 0 ) {
 					if( event.active.gain == 1 ) {
 						// activate
@@ -314,6 +316,7 @@ void Application::runMainLoop() {
 						keypressP(); // automatically pause when application goes inactive
 					}
 				}
+#endif
 				break;
 			}
 		}
