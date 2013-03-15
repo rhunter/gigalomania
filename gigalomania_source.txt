@@ -110,6 +110,8 @@ This will produce the Gigalomania executable, which you can run with: gigalomani
 
 As with AROS, a large stack may be required (e.g., 1024000 bytes).
 
+Note that some stability problems have been reported, which is why this is still a source-only release for MorphOS - please let me know if you have any solutions/ideas (or alternatively, if it runs fine on your system).
+
 Symbian
 =======
 
@@ -140,7 +142,9 @@ Since version 0.23, I've released the source online using Git, at https://source
 History
 =======
 
-Version 0.25 adds the AROS and MorphOS ports (though for 0.25, the MorphOS port was done as a separate release, as it was ported after the main 0.25 release). Also no longer using Resource files for the Qt versions.
+Version 0.26 adds the MorphOS port (source only).
+
+Version 0.25 adds the AROS port. Also no longer using Resource files for the Qt versions.
 
 Version 0.24 adds the Android port.
 
@@ -173,4 +177,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 20 February 2013
+Mark Harman 13 March 2013
