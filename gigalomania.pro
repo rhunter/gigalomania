@@ -18,7 +18,7 @@ DEPLOYMENTFOLDERS += dir1 dir2 dir3
 # Nokia UID for use only on Ovi Store! Not to be used anywhere else:
 symbian:TARGET.UID3 = 0x2005fff6
 
-VERSION = 0.25
+VERSION = 0.26
 
 # Smart Installer package's UID
 # This UID is from the protected range 

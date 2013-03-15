@@ -11,7 +11,7 @@
 #endif
 
 const int majorVersion = 0;
-const int minorVersion = 25;
+const int minorVersion = 26;
 
 extern bool debugwindow;
 
