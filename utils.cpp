@@ -16,6 +16,7 @@
 #define access _access
 #elif __linux
 #include <sys/stat.h> // for mkdir
+#include <unistd.h> // for access
 #endif
 
 #ifdef USING_QT
