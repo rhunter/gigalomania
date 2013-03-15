@@ -1283,7 +1283,7 @@ bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
 			int n_frames = n_attacker_frames[epoch][dir];
 			for(int frame=0;frame<n_frames;frame++) {
 				attackers_walking[player][epoch][dir][frame] = gfx_image->copy(16*frame, 0, 16, 16);
-				int r = 0, g = 0, b = 0, col = 0;
+				int r = 0, g = 0, b = 0;
 				PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)player);
 				attackers_walking[player][epoch][dir][frame]->remap(240, 0, 0, r, g, b);
 				processImage(attackers_walking[player][epoch][dir][frame]);
@@ -1711,7 +1711,7 @@ bool loadOldImages() {
 				int n_frames = n_attacker_frames[j][k];
 				for(int l=0;l<n_frames;l++) {
 					attackers_walking[i][j][k][l] = armies->copy(16*l + 64*k, 32*j, 16, 16);
-					int r = 0, g = 0, b = 0, col = 0;
+					int r = 0, g = 0, b = 0;
 					PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
 					attackers_walking[i][j][k][l]->remap(240, 0, 0, r, g, b);
 				}
@@ -1724,7 +1724,7 @@ bool loadOldImages() {
 			int n_frames = n_attacker_frames[10][k];
 			for(int l=0;l<n_frames;l++) {
 					attackers_walking[i][10][k][l] = armies->copy(16*l + 64*k, 320, 16, 16);
-					int r = 0, g = 0, b = 0, col = 0;
+					int r = 0, g = 0, b = 0;
 					PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
 					attackers_walking[i][10][k][l]->remap(240, 0, 0, r, g, b);
 			}
@@ -1805,7 +1805,7 @@ bool loadOldImages() {
 
     for(int i=0;i<n_saucer_frames_c;i++) {
         for(int k=0;k<4;k++) {
-            int r = 0, g = 0, b = 0, col = 0;
+            int r = 0, g = 0, b = 0;
             PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
             saucers[k][i]->remap(240, 0, 0, r, g, b);
         }
@@ -1815,7 +1815,7 @@ bool loadOldImages() {
             continue;
         for(int j=0;j<n_defender_frames_c;j++) {
             for(int k=0;k<4;k++) {
-                int r = 0, g = 0, b = 0, col = 0;
+                int r = 0, g = 0, b = 0;
                 PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
                 defenders[k][i][j]->remap(240, 0, 0, r, g, b);
             }
@@ -1999,7 +1999,7 @@ bool loadImages() {
         for(int j=0;j<4;j++)
             flags[i][j] = icons->copy(144 + 16*j, 144, 16, 16);
         for(int j=0;j<n_flag_frames_c;j++) {
-            int r = 0, g = 0, b = 0, col = 0;
+            int r = 0, g = 0, b = 0;
             PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
             flags[i][j]->remap(240, 0, 0, r, g, b);
             processImage(flags[i][j]);
@@ -2079,7 +2079,7 @@ bool loadImages() {
 			flags[i][j] = icons->copy(160 + 16*j, 144, 16, 16);
 		flags[i][3] = flags[i][1];
 		for(int j=0;j<n_flag_frames_c;j++) {
-			int r = 0, g = 0, b = 0, col = 0;
+			int r = 0, g = 0, b = 0;
 			PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
 			flags[i][j]->remap(240, 0, 0, r, g, b);
 		}
@@ -2273,7 +2273,7 @@ bool loadImages() {
         //processImage(gfx_def_image);
         gfx_def_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
         for(int k=0;k<n_players_c;k++) {
-            int r = 0, g = 0, b = 0, col = 0;
+            int r = 0, g = 0, b = 0;
             PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
             for(int i=0;i<n_epochs_c;i++) {
 				for(int j=0;j<n_defender_frames_c;j++) {
@@ -2304,7 +2304,7 @@ bool loadImages() {
         gfx_planes->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
         // do remapping before scaling
         for(int i=0;i<n_players_c;i++) {
-            int r = 0, g = 0, b = 0, col = 0;
+            int r = 0, g = 0, b = 0;
             PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
             for(int j=0;j<n_saucer_frames_c;j++) {
                 saucers[i][j] = gfx_planes->copy(32*j, 64, 32, 32);
@@ -2364,7 +2364,7 @@ bool loadImages() {
 				for(int dir=0;dir<n_attacker_directions_c;dir++) {
 					int n_frames = n_attacker_frames[i][dir];
 					for(int frame=0;frame<n_frames;frame++) {
-						int r = 0, g = 0, b = 0, col = 0;
+						int r = 0, g = 0, b = 0;
 						PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)player);
 						ASSERT(attackers_walking[player][i][dir][frame] != NULL);
 						attackers_walking[player][i][dir][frame]->remap(240, 0, 0, r, g, b);
@@ -2374,7 +2374,7 @@ bool loadImages() {
         }
         for(int i=0;i<n_saucer_frames_c;i++) {
             for(int k=0;k<4;k++) {
-                int r = 0, g = 0, b = 0, col = 0;
+                int r = 0, g = 0, b = 0;
                 PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
                 saucers[k][i]->remap(240, 0, 0, r, g, b);
             }
@@ -2384,7 +2384,7 @@ bool loadImages() {
                 continue;
             for(int j=0;j<n_defender_frames_c;j++) {
                 for(int k=0;k<4;k++) {
-                    int r = 0, g = 0, b = 0, col = 0;
+                    int r = 0, g = 0, b = 0;
                     PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)k);
                     defenders[k][i][j]->remap(240, 0, 0, r, g, b);
                 }
