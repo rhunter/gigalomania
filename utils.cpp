@@ -367,17 +367,13 @@ bool log(const char *text,...) {
 	//return true;
 	logfile = fopen(logfilename,"at+");
 	va_list vlist;
-	char buffer[65536];
 	va_start(vlist, text);
-	vsprintf(buffer,text,vlist);
 	if( logfile != NULL )
-		fprintf(logfile,buffer);
+		vfprintf(logfile, text, vlist);
 	if( debugwindow )
-		printf(buffer);
-#ifdef USING_QT
-        qDebug(buffer);
-#endif
-        va_end(vlist);
+		vprintf(text, vlist);
+    va_end(vlist);
+
 	if( logfile != NULL )
 		fclose(logfile);
 	return true;
