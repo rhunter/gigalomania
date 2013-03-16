@@ -352,6 +352,9 @@ void initLogFile() {
 	LOG("Platform: Linux\n");
 #elif defined(__APPLE__) && defined(__MACH__)
 	LOG("Platform: MacOS X\n");
+#elif __amigaos4__
+	// must be before AROS, as the AmigaOS 4 makefile defines AROS too
+    LOG("Platform: AmigaOS 4\n");
 #elif AROS
     LOG("Platform: AROS\n");
 #elif defined(__MORPHOS__)
@@ -495,6 +498,10 @@ float perlin_noise2(float vec[2]) {
 }
 
 #if defined(AROS) || defined(__MORPHOS__)
+#ifdef __amigaos4__
+#undef __USE_AMIGAOS_NAMESPACE__
+#define __USE_INLINE__
+#endif
 
 #include <proto/intuition.h>
 
@@ -513,8 +520,18 @@ void getAROSScreenSize(int *user_width, int *user_height) {
 	else {
 		*user_width = my_wbscreen_ptr->Width;
 		*user_height = my_wbscreen_ptr->Height;
-		LOG("getAROSScreenSize: Workbench screen is is %d x %d\n", *user_width, *user_height);
+		LOG("getAROSScreenSize: Workbench screen size is %d x %d\n", *user_width, *user_height);
 		UnlockPubScreen(NULL, my_wbscreen_ptr);
+#ifdef __amigaos4__
+		/* Performance on AmigaOS 4 is reported to be slow when run at 1280x960, so we set a max of 640x480.
+		 */
+		const int max_width_c = 640, max_height_c = 480;
+		if( *user_width > max_width_c )
+			*user_width = max_width_c;
+		if( *user_height > max_height_c )
+			*user_height = max_height_c;
+		LOG("size restricted to %d x %d\n", *user_width, *user_height);
+#endif
 	}
 }
 
