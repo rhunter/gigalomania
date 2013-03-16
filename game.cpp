@@ -1235,14 +1235,14 @@ void convertToHiColor(Image *image) {
 	image->convertToHiColor(false);
 }
 
-void processImage(Image *image) {
+void processImage(Image *image, bool old_smooth = true) {
     //LOG("    convert to hi color\n");
 	convertToHiColor(image);
     //LOG("    scale\n");
     image->scale(scale_factor_w, scale_factor_h);
     //LOG("    set scale\n");
     image->setScale(scale_width, scale_height);
-    if( using_old_gfx ) {
+    if( using_old_gfx && old_smooth ) {
         image->smooth();
 	}
     //LOG("    done\n");
@@ -1355,6 +1355,7 @@ bool loadOldImages() {
 			return false;
 		}
 		convertToHiColor(land[i]);
+		land[i]->smooth();
 	}
 	delete image_slabs;
 	image_slabs = NULL;
@@ -1390,6 +1391,7 @@ bool loadOldImages() {
 	icons->setScale(scale_width, scale_height);
 	icons->setColor(0, 255, 0, 255);
 	convertToHiColor(icons);
+	icons->smooth();
 
 	for(int i=0;i<n_epochs_c;i++)
 		men[i] = icons->copy(16*i, 0, 16, 16);
@@ -1658,7 +1660,7 @@ bool loadOldImages() {
 		return false;
 	}
 	armies->setColor(0, 255, 0, 255);
-	processImage(armies);
+	processImage(armies, false); // don't smooth, as it messes up the colour remapping!
 
 	for(int i=0;i<=5;i++) {
 		for(int j=0;j<n_defender_frames_c;j++) {
@@ -3393,9 +3395,9 @@ void playGame(int n_args, char *args[]) {
 #ifdef _DEBUG
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );  // TEST!
 	debugwindow = true;
-	//fullscreen = true;
 #endif
 	//debugwindow = true;
+	//fullscreen = true;
 
 #if !defined(Q_OS_ANDROID)
         // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
