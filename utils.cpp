@@ -375,7 +375,7 @@ bool log(const char *text,...) {
 		vfprintf(logfile, text, vlist);
 	if( debugwindow )
 		vprintf(text, vlist);
-    va_end(vlist);
+	va_end(vlist);
 
 	if( logfile != NULL )
 		fclose(logfile);
