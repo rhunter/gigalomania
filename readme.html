@@ -69,8 +69,7 @@ to nuclear weapons and spaceships. You can advance through ten different ages, f
 <ul>
 <li><p>For <b>Windows</b>,
 <a href="http://launchpad.net/gigalomania/trunk/0.25/+download/gigalomania.msi">download the
-installer</a>. To play, run Gigalomania , or Gigalomania Fullscreen to run in fullscreen
-mode. <b>If you get an error when trying to run, you may need to install the
+installer</a>. <b>If you get an error when trying to run, you may need to install the
 <a href="http://www.microsoft.com/download/en/details.aspx?id=8328">Visual C++ 2010 SP1 Redistributable</a>.</b></p></li>
 
 <li><p>For <b>OS X</b>, download the <a href="http://launchpad.net/gigalomania/trunk/0.24/+download/gigalomania_osx.zip">OS X archive</a>.
@@ -80,7 +79,7 @@ For more details, see the <a href="http://www.herzig-net.de/prog/?page=prog-macg
 <li><p>For <b>Ubuntu/Debian</b>, download the relevant binary installation from the
 <a href="https://launchpad.net/~mark-harman/+archive/gigalomania/+packages">Ubuntu packages page</a>. Gigalomania is also available from the Ubuntu Software Centre (however it takes a few weeks for the latest version to appear, so please check out the packages page for the latest version). For other Linux distributions, you have to compile from the source (see below).</p></li>
 
-<li><p>For <b>AROS x86</b>, download the <a href="http://launchpad.net/gigalomania/trunk/0.25/+download/gigalomania.i386-aros.lha">AROS archive</a>. For other AROS platforms, you have to compile from the source. The AROS x86 archive is also available on <a href="http://archives.aros-exec.org/index.php?function=showfile&file=game/strategy/gigalomania.i386-aros.lha">The AROS Archives</a> and
+<li><p>For <b>AROS x86</b>, download the <a href="http://launchpad.net/gigalomania/trunk/0.26/+download/gigalomania.i386-aros.lha">AROS archive</a>. For other AROS platforms, you have to compile from the source. The AROS x86 archive is also available on <a href="http://archives.aros-exec.org/index.php?function=showfile&file=game/strategy/gigalomania.i386-aros.lha">The AROS Archives</a> and
 <a href="http://aminet.net/package/game/strat/gigalomania.i386-aros">Aminet</a>.</p></li>
 
 <li><p>For <b>MorphOS</b>, you must currently compile from source (see below).</p></li>
@@ -103,7 +102,7 @@ For more details, see the <a href="http://www.herzig-net.de/prog/?page=prog-macg
 <li><p>For <b>Android smartphones</b>, download from
 <a href="https://play.google.com/store/apps/details?id=net.sourceforge.gigalomania">Google Play</a>.</p></li>
 
-<li><p>The <a href="http://launchpad.net/gigalomania/trunk/0.25/+download/gigalomaniasrc.zip">source code is
+<li><p>The <a href="http://launchpad.net/gigalomania/trunk/0.26/+download/gigalomaniasrc.zip">source code is
 available</a>, released under the <a href="http://www.gnu.org/copyleft/gpl.html">GPL v2 or
 later</a>. Please see the file gigalomania_source.txt (in the source archive) for details on how to
 compile.</p></li>
@@ -117,6 +116,7 @@ compile.</p></li>
 <p><b>Contents:</b>
 <ul>
 <li><a href="#requirements">Requirements</a></li>
+<li><a href="#windowedfullscreen">Choosing windowed or fullscreen mode</a></li>
 <li><a href="#quickstart">Quickstart</a></li>
 <li><a href="#controls">Controls</a></li>
 <li><a href="#gametypes">Game types</a></li>
@@ -159,9 +159,17 @@ Gigalomania (if it's not already installed). Ministro manages the required Qt li
   <li>Please <a href="#contact">contact me</a> to report any problems.</li>
 </ul></p>
 
-<p>On PC platforms, Gigalomania also supports using the graphics from Mega Lo Mania (from the Amiga version) if you have that game. The "data/" folder should be
-copied into the main gigalomania/ folder, and then rename the "gfx/" folder to something else (e.g., "xgfx/").  It's up to you to legally obtain the game if you
-want this feature!</p>
+<p>On PC platforms, Gigalomania also supports using the graphics from Mega Lo Mania (from the Amiga version - should be in hard disk format, e.g., Whdload version)
+if you have that game. The "data/" folder should be copied into the main gigalomania/ folder, and then rename the "gfx/" folder to something else (e.g., "xgfx/"). 
+It's up to you to legally obtain the game if you want this feature!</p>
+
+<p><a name="windowedfullscreen"><b>Choosing windowed or fullscreen mode</b></p>
+
+<p>On non-mobile platforms, Gigalomania runs in windowed mode, in the largest window it can (up to 1280x960). On Windows and Linux, you can run
+"Gigalomania Fullscreen" to run in fullscreen mode. You can also force fullscreen mode on any platform by running from the commandline with the option:
+ fullscreen</p>  
+
+<p>Mobile platforms always run in fullscreen mode. AmigaOS 4 is currently limited to 640x480, due to reported performance problems.</p>
 
 <p><a name="quickstart"><b>Quickstart</b></p>
 
@@ -404,12 +412,14 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <p><a name="credits"><b>Credits etc</b></p>
 
 <p><ul>
-<li><b>Mark Harman</b> - Main programming, Symbian and Android ports.</li>
+<li><b>Mark Harman</b> - Main programming, Symbian, Android and AROS ports.</li>
 <li><b>Fredrik Sörensson</b> - Linux port, and switch to using SDL_image instead of FreeImage.</li>
 <li><b>Stephen Fish</b> - Various graphics (the good graphics are done by Stephen, except for those files listed below; the rubbish graphics are placeholder graphics done by me;)</li>
 <li><b>Andreas Herzig</b> - OS X port, and features.png graphic.</li>
 <li><b>Aapo Rantalainen</b> - Maemo and Meego port.</li>
 <li><b>Thore Sittly</b> ( TSittly AT gmx DOT de ) - MorphOS port.</li>
+<li><b>René Thol</b> - AmigaOS 4 port.</li>
+<li><b>kas1e</b> ( kas1e AT yandex DOT ru ) - AmigaOS 4 port.</li>
 </ul></p>
 
 <p><a name="contact"><b>Contacting me (bugs etc)</b></p>
@@ -471,7 +481,7 @@ licence, e.g., <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA
 <p><a name="history"><b>History</b></p>
 
 <pre>
-Version 0.26 (Work in progress)
+Version 0.26 (2013/03/17)
 
 ADDED   Ports for MorphOS and AmigaOS 4.
 UPDATED When using Mega Lo Mania graphics, they are now smoothed for better
