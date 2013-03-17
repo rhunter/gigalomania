@@ -1,3 +1,13 @@
+gigalomania (0.26) precise; urgency=low
+
+  * Ports for MorphOS and AmigaOS 4.
+  * When using Mega Lo Mania graphics, they are now smoothed for better
+    appearance.
+  * Reduced required stack size (log function no longer needs large static
+    buffer, also eliminates risk of buffer overrun).
+
+ -- Mark Harman <mark.harman@ntlworld.com>  Sun, 17 Mar 2012 15:31:00 +0000
+
 gigalomania (0.25) precise; urgency=low
 
   * Auto-slow sometimes activated when player wasn't being attacked.
