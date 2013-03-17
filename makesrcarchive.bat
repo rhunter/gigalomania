@@ -39,6 +39,10 @@ copy %src%\Makefile_aros %dst%
 mkdir %dst%\aros
 xcopy %src%\aros %dst%\aros /E /Y
 
+REM AmigaOS 4 stuff:
+
+copy %src%\Makefile_aos4 %dst%
+
 REM Qt stuff:
 
 copy %src%\gigalomania.pro %dst%
