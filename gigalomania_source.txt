@@ -97,7 +97,7 @@ Or run fullscreen with: gigalomania fullscreen
 
 Note that Gigalomania requires a large stack - it seems to work okay with the AROS Shell default of 1024000 bytes.
 
-After building, you can use the makearosarchive script to create the binary folder (in RAM: ).
+After building, you can use the makearosarchive script to create the binary folder (in RAM: ). This makes use of icons in the aros/ folder.
 
 Hopefully this should work on any AROS platform, but I've only tested this on x86.
 
@@ -115,6 +115,8 @@ Or run fullscreen with: gigalomania fullscreen
 As with AROS, a large stack may be required (e.g., 1024000 bytes).
 
 Note that some stability problems have been reported, which is why this is still a source-only release for MorphOS - please let me know if you have any solutions/ideas (or alternatively, if it runs fine on your system).
+
+If you want to make a binary archive, there are some icons to use in the aros/ folder.
 
 AmigaOS 4
 =========
@@ -194,4 +196,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 16 March 2013
+Mark Harman 17 March 2013
