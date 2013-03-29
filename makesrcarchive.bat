@@ -43,6 +43,9 @@ REM AmigaOS 4 stuff:
 
 copy %src%\Makefile_aos4 %dst%
 
+mkdir %dst%\amigaos4
+xcopy %src%\amigaos4 %dst%\amigaos4 /E /Y
+
 REM Qt stuff:
 
 copy %src%\gigalomania.pro %dst%
