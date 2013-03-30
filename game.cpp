@@ -3347,7 +3347,7 @@ void updateGame() {
 		}
 	}
 
-	if( gameStateID == GAMESTATEID_PLAYING && !state_changed ) {
+	if( gameStateID == GAMESTATEID_PLAYING && !state_changed && gameMode != GAMEMODE_MULTIPLAYER_CLIENT ) {
 		if( human_player != PLAYER_DEMO && !playerAlive(human_player) ) {
 			playSample(s_itis_all_over);
 			state_changed = true;
@@ -3424,9 +3424,6 @@ void playGame(int n_args, char *args[]) {
         freopen_s(&dummy, "con", "w", stdout);*/
         FILE *dummy = freopen("con", "w", stdout);
 		SetConsoleTitleA("DEBUG:");
-	}
-	else {
-		FreeConsole(); // get rid of Visual Studio startup window
 	}
 #endif
 
