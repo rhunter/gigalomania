@@ -106,18 +106,6 @@ const int n_blue_flashes_c = 7;
 const int n_coast_c = 15;
 const int n_map_sq_c = 16;
 
-enum MapColour {
-	MAP_UNDEFINED_COL = -1,
-	MAP_ORANGE = 0,
-	MAP_GREEN,
-	MAP_BROWN,
-	MAP_WHITE,
-	MAP_DBROWN,
-	MAP_DGREEN,
-	MAP_GREY,
-	MAP_N_COLOURS
-};
-
 //extern Image *player_select;
 extern Image *background;
 extern Image *land[];
@@ -279,8 +267,8 @@ enum PlayerMode {
 	PLAYER_DEMO = -2,
 	PLAYER_NONE = -1
 };
-extern int human_player;
-//extern int enemy_player;
+bool isDemo();
+//extern int human_player;
 extern int end_game_time;
 extern bool play_music;
 
@@ -346,6 +334,7 @@ extern Screen *screen;
 const int max_islands_per_epoch_c = 3;
 extern Map *maps[n_epochs_c][max_islands_per_epoch_c];
 extern Map *map;
+const Map *getMap();
 
 void keypressEscape();
 void keypressP();
@@ -358,6 +347,7 @@ void playGame(int n_args, char *args[]);
 void placeTower();
 bool playerAlive(int player);
 void quitGame();
+void setClientPlayer(int set_client_player);
 void newGame();
 void nextEpoch();
 void nextIsland();

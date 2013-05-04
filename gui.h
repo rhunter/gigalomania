@@ -133,6 +133,7 @@ public:
 	};
 private:
 	PlayingGameState *gamestate;
+	int client_player;
 	//State state;
 	MouseState mousestate;
 	int deploy_shield;
@@ -203,7 +204,7 @@ private:
 	static void buttonNMinersClick(void *data, int arg, bool m_left, bool m_middle, bool m_right);
 	static void buttonNBuildersClick(void *data, int arg, bool m_left, bool m_middle, bool m_right);
 public:
-	GamePanel(PlayingGameState *gamestate);
+	GamePanel(PlayingGameState *gamestate, int client_player);
 	virtual ~GamePanel();
 
 	void setup();

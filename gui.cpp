@@ -379,7 +379,7 @@ void ChooseMenPanel::buttonNMenClick(void *data, int arg, bool m_left, bool m_mi
 	}
 	for(int y=0;y<map_height_c;y++) {
 		for(int x=0;x<map_width_c;x++) {
-			if( map->isSectorAt(x, y) ) {
+			if( getMap()->isSectorAt(x, y) ) {
 				/*ASSERT( ((PlaceMenGameState *)gamestate)->map_panels[x][y] != NULL );
 				((PlaceMenGameState *)gamestate)->map_panels[x][y]->setEnabled( n_men > 0 );*/
 				/*ASSERT( ((PlaceMenGameState *)gamestate)->getMapPanel(x, y) != NULL );
@@ -549,7 +549,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
     return ( button_onemousebutton->getActive() == 0 );
 }*/
 
-GamePanel::GamePanel(PlayingGameState *gamestate) : MultiPanel(GamePanel::N_STATES, offset_panel_x_c, offset_panel_y_c), gamestate(gamestate) {
+GamePanel::GamePanel(PlayingGameState *gamestate, int client_player) : MultiPanel(GamePanel::N_STATES, offset_panel_x_c, offset_panel_y_c), gamestate(gamestate), client_player(client_player) {
 	//this->state = STATE_SECTORCONTROL;
 	this->c_page = (int)STATE_SECTORCONTROL;
 	this->mousestate = MOUSESTATE_NORMAL;
@@ -770,7 +770,6 @@ void GamePanel::setup() {
 	this->button_bigattack = new ImageButton(33, 0, 32, 16, panel_bigattack, "return to main screen");
 	this->addToPanel(STATE_ATTACK, button_bigattack);
 	this->button_deploy_unarmedmen = new ImageButton(offset_attack_x_c, 24, 16, 28, unarmed_man);
-	//this->button_deploy_unarmedmen = new ImageButton(offset_attack_x_c, 24, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	this->button_deploy_unarmedmen->setInfoLMB("add an unarmed man to the army");
 	this->addToPanel(STATE_ATTACK, button_deploy_unarmedmen);
 	for(int i=0;i<n_sub_epochs;i++) {
@@ -787,7 +786,6 @@ void GamePanel::setup() {
 	// DESIGN
 	this->button_bigdesign = new ImageButton(33, 0, 32, 16, panel_bigdesign, "return to main screen");
 	this->addToPanel(STATE_DESIGN, button_bigdesign);
-	//this->button_designers = new ImageButton(40, 16, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	this->button_designers = new ImageButton(40, 16, 16, 40, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	if( onemousebutton ) {
 		this->button_designers->setInfoLMB("change the number of designers");
@@ -911,7 +909,6 @@ void GamePanel::setup() {
 	// FACTORY
 	this->button_bigfactory = new ImageButton(33, 0, 32, 16, panel_bigfactory, "return to main screen");
 	this->addToPanel(STATE_FACTORY, button_bigfactory);
-	//this->button_workers = new ImageButton(40, 16, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	this->button_workers = new ImageButton(40, 14, 16, 26, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	if( onemousebutton ) {
 		this->button_workers->setInfoLMB("change the number of workers");
@@ -921,7 +918,6 @@ void GamePanel::setup() {
 		this->button_workers->setInfoRMB("increase the number of workers");
 	}
 	this->addToPanel(STATE_FACTORY, button_workers);
-	//this->button_famount = new ImageButton(40, 44, 16, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	this->button_famount = new ImageButton(40, 40, 14, 28, men[gamestate->getCurrentSector()->getBuildingEpoch()]);
 	if( onemousebutton ) {
 		this->button_famount->setInfoLMB("change the number to produce");
@@ -952,7 +948,7 @@ void GamePanel::setup() {
 }
 
 void GamePanel::refreshCanDesign() {
-	if( gamestate->getCurrentSector()->getActivePlayer() != human_player ) {
+	if( !gamestate->viewingActiveClientSector() ) {
 		return;
 	}
 	if( start_epoch == end_epoch_c ) {
@@ -985,7 +981,7 @@ void GamePanel::refreshCanDesign() {
 }
 
 void GamePanel::refreshDesignInventions() {
-	if( gamestate->getCurrentSector()->getActivePlayer() != human_player ) {
+	if( !gamestate->viewingActiveClientSector() ) {
 		return;
 	}
 	for(int i=0;i<n_sub_epochs;i++) {
@@ -1003,7 +999,7 @@ void GamePanel::refreshDesignInventions() {
 }
 
 void GamePanel::refreshManufactureInventions() {
-	if( gamestate->getCurrentSector()->getActivePlayer() != human_player ) {
+	if( !gamestate->viewingActiveClientSector() ) {
 		return;
 	}
 	for(int i=0;i<n_sub_epochs;i++) {
@@ -1021,7 +1017,7 @@ void GamePanel::refreshManufactureInventions() {
 }
 
 void GamePanel::refreshDeployInventions() {
-	if( gamestate->getCurrentSector()->getActivePlayer() != human_player ) {
+	if( !gamestate->viewingActiveClientSector() ) {
 		return;
 	}
 	for(int i=0;i<n_sub_epochs;i++) {
@@ -1046,7 +1042,7 @@ void GamePanel::refreshDeployInventions() {
 }
 
 void GamePanel::refreshShutdown() {
-	if( gamestate->getCurrentSector()->getActivePlayer() != human_player ) {
+	if( !gamestate->viewingActiveClientSector() ) {
 		return;
 	}
 	this->button_shutdown->setEnabled( gamestate->getCurrentSector()->canShutdown() );
@@ -1061,7 +1057,7 @@ void GamePanel::refresh() {
 	panel->setEnabled(false);
 	}
 	}*/
-	if( gamestate->getCurrentSector()->getActivePlayer() != human_player ) {
+	if( !gamestate->viewingActiveClientSector() ) {
 		this->setEnabled(false);
 		return;
 	}
@@ -1085,19 +1081,15 @@ void GamePanel::refresh() {
 		this->button_elements2[i]->setEnabled(false);
 		this->button_nminers2[i]->setEnabled(false);
 
-		//if( this->element_index[i] != -1 && gamestate->getCurrentSector()->canMine( (Id)this->element_index[i] ) ) {
 		if( this->element_index[i] != -1 ) {
 			ASSERT_ELEMENT_ID( this->element_index[i] );
 			bool can_mine = gamestate->getCurrentSector()->canMine( (Id)this->element_index[i] );
 			int n_elements = 0, fraction = 0;
-			//gamestate->getCurrentSector()->getTotalElements(&n_elements, &fraction, this->element_index[i]);
 			gamestate->getCurrentSector()->getElementStocks(&n_elements, &fraction, (Id)this->element_index[i]);
 			if( n_elements > 0 || fraction > 0 || can_mine ) {
 				this->button_elements[i]->setEnabled(true);
 				this->button_elements2[i]->setEnabled(true);
 			}
-			/*gamestate->getCurrentSector()->getElements(&n_elements, &fraction, this->element_index[i]);
-			if( ( n_elements > 0 || fraction > 0 ) && elements[ this->element_index[i] ]->type != Element::GATHERABLE ) {*/
 			if( can_mine && elements[ this->element_index[i] ]->getType() != Element::GATHERABLE ) {
 				this->button_nminers[i]->setEnabled(true);
 				this->button_nminers2[i]->setEnabled(true);
@@ -1191,7 +1183,7 @@ void GamePanel::setMouseState(MouseState mousestate) {
 void GamePanel::draw() {
 	if( this->c_page == STATE_SECTORCONTROL ) {
 		//Image::write(offset_panel_x_c + 8, offset_panel_y_c + 6, letters_small, map->getName(), Image::JUSTIFY_LEFT, true, scale_width, scale_height);
-		Image::writeMixedCase(offset_panel_x_c + 8, offset_panel_y_c - 1, letters_large, letters_small, NULL, map->getName(), Image::JUSTIFY_LEFT, true);
+		Image::writeMixedCase(offset_panel_x_c + 8, offset_panel_y_c - 1, letters_large, letters_small, NULL, getMap()->getName(), Image::JUSTIFY_LEFT, true);
 		if( start_epoch != end_epoch_c ) {
 			int year = epoch_dates[gamestate->getCurrentSector()->getEpoch()];
 			bool shiny = gamestate->getCurrentSector()->getEpoch() == n_epochs_c-1;
@@ -1201,37 +1193,12 @@ void GamePanel::draw() {
 			era->draw(offset_panel_x_c + 88, offset_panel_y_c + 7, true);
 		}
 
-		if( gamestate->getCurrentSector()->getActivePlayer() == human_player ) {
+		if( gamestate->viewingActiveClientSector() ) {
 			const int xpos = 8, ypos = 18;
 			//const int xpos = 40, ypos = 40;
 			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + xpos, offset_panel_y_c + ypos, true);
 			Image::writeNumbers(offset_panel_x_c + xpos + 8, offset_panel_y_c + ypos + 18, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(),Image::JUSTIFY_CENTRE, true);
-			/*{
-				bool can_research = false;
-				for(int i=0;i<n_epochs_c && !can_research;i++) {
-					if( gamestate->getCurrentSector()->canResearch(Invention::WEAPON, i) )
-						can_research = true;
-					else if( gamestate->getCurrentSector()->canResearch(Invention::DEFENCE, i) )
-						can_research = true;
-					else if( gamestate->getCurrentSector()->canResearch(Invention::SHIELD, i) )
-						can_research = true;
-				}
-				if( can_research ) {
-					SDL_Rect rect;
-					rect.x = this->button_design->getLeft();
-					rect.y = this->button_design->getTop();
-					rect.w = this->button_design->getWidth();
-					rect.h = this->button_design->getHeight();
-					rect.x *= scale_width;
-					rect.y *= scale_height;
-					rect.w *= scale_width;
-					rect.h *= scale_height;
-					Uint32 color = SDL_MapRGB(screen->getSurface()->format, 255, 255, 255);
-					SDL_FillRect(screen->getSurface(), &rect, color);
-				}
-			}*/
 			if( gamestate->getCurrentSector()->getCurrentDesign() != NULL ) {
-				//Image::writeNumbers(offset_panel_x_c + 16, offset_panel_y_c + 58, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE,true,scale_width,scale_height);
 				Image::writeNumbers( this->button_ndesigners->getXCentre(), this->button_ndesigners->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE,true);
 			}
 			for(int i=0;i<4;i++) {
@@ -1251,7 +1218,7 @@ void GamePanel::draw() {
 				}
 			}
 		}
-		else if( gamestate->getCurrentSector()->getPlayer() == human_player ) {
+		else if( gamestate->viewingAnyClientSector() ) {
 			ASSERT( gamestate->getCurrentSector()->isShutdown() );
 			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 40, offset_panel_y_c + 40, true);
 			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 58, numbers_grey, gamestate->getCurrentSector()->getPopulation(),Image::JUSTIFY_CENTRE, true);
@@ -1265,7 +1232,7 @@ void GamePanel::draw() {
 					n_players_in_sector++;
 				}
 			}
-			if( n_players_in_sector == 1 && player_in_sector == human_player ) {
+			if( n_players_in_sector == 1 && player_in_sector == client_player ) {
 				int halfdays = 0, hours = 0;
 				gamestate->getCurrentSector()->buildingTowerTimeLeft(player_in_sector, &halfdays, &hours);
 				int clock_index = hours + 1;
@@ -1300,29 +1267,6 @@ void GamePanel::draw() {
 		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + 44, true);
 	}
 	else if( this->c_page == STATE_SHIELD ) {
-		//int col = SDL_MapRGB(screen->getSurface()->format, 0, 255, 0);
-#if 0
-		int col = SDL_MapRGB(screen->getSurface()->format, 0, 0, 0);
-		for(int i=0;i<N_BUILDINGS;i++) {
-			if( gamestate->getCurrentSector()->getBuilding((Type)i) != NULL ) {
-				int width = building_health->getScaledWidth();
-				int health = gamestate->getCurrentSector()->getBuilding((Type)i)->getHealth();
-				int offx = offset_panel_x_c + 24;
-				SDL_Rect rect;
-				/*rect.x = (short)(scale_width * ( offset_panel_x_c + 24 ));
-				rect.y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
-				rect.w = (short)(( scale_width * health ) * 0.6);
-				rect.h = (short)(scale_height * 4);*/
-				rect.x = (short)(scale_width * offx + ( scale_width * health * width ) / 100.0);
-				rect.y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
-				rect.w = (short)ceil(( scale_width * (100 - health) * width ) / 100.0);
-				rect.h = (short)(scale_height * 5);
-				building_health->draw(offx, (int)(rect.y/scale_height), true);
-				SDL_FillRect(screen->getSurface(), &rect, col);
-				panel_building[i]->draw(offset_panel_x_c + 8, offset_panel_y_c + 64 - 5 + 16 * i, true);
-			}
-		}
-#endif
 		for(int i=0;i<N_BUILDINGS;i++) {
 			if( gamestate->getCurrentSector()->getBuilding((Type)i) != NULL ) {
 				int width = building_health->getScaledWidth();
@@ -1420,11 +1364,6 @@ void GamePanel::draw() {
 			if( fraction == 1 ) {
 				numbers_half->draw(offset_panel_x_c + 72 + off, ypos, true);
 			}
-			/*if( n_elements > 0 || fraction > 0 ) {
-			Image::writeNumbers(offset_panel_x_c + 72, offset_panel_y_c + 38 + 28*i, numbers_grey, n_elements, Image::JUSTIFY_CENTRE, true);
-			}*/
-			/*gamestate->getCurrentSector()->getElements(&n_elements, &fraction, element);
-			if( ( n_elements > 0 || fraction > 0 ) && elements[element]->type != Element::GATHERABLE ) {*/
 			if( this->button_nminers2[i]->isEnabled() ) {
 				int n_miners = gamestate->getCurrentSector()->getMiners( element );
 				Image::writeNumbers( this->button_nminers2[i]->getXCentre(), this->button_nminers2[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE,true);
@@ -1435,7 +1374,6 @@ void GamePanel::draw() {
 		for(int i=0;i<N_BUILDINGS;i++)
 		{
 			if( this->button_nbuilders2[i] != NULL && this->button_nbuilders2[i]->isEnabled() ) {
-				//Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
 				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getTop() + 20, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
 				if( gamestate->getCurrentSector()->getBuilders((Type)i) > 0 ) {
 					int halfdays = 0, hours = 0;
@@ -1450,20 +1388,6 @@ void GamePanel::draw() {
 				}
 			}
 		}
-		/*if( this->button_build2[BUILDING_MINE]->isEnabled() ) {
-		Image::writeNumbers( this->button_build2[BUILDING_MINE]->getXCentre(), this->button_build2[BUILDING_MINE]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders(BUILDING_MINE),Image::JUSTIFY_CENTRE,true);
-		if( gamestate->getCurrentSector()->getBuilders(BUILDING_MINE) > 0 ) {
-		int halfdays = 0, hours = 0;
-		gamestate->getCurrentSector()->buildingTimeLeft(BUILDING_MINE, &halfdays, &hours);
-		int clock_index = hours + 1;
-		icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16, true);
-		Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
-		}
-		else {
-		icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16, true);
-		icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + 32, true);
-		}
-		}*/
 	}
 	else if( this->c_page == STATE_KNOWNDESIGNS ) {
 		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + 24, true);
@@ -1504,7 +1428,6 @@ void GamePanel::draw() {
 		//const int y2 = 72;
 		const int y2 = 66;
 		this->button_workers->setImage( men[gamestate->getCurrentSector()->getBuildingEpoch()] );
-		//this->button_famount->image = men[gamestate->getCurrentSector()->getBuildingEpoch()];
 		if( gamestate->getCurrentSector()->getCurrentManufacture() == NULL ) {
 			dash_grey->draw(offset_panel_x_c + 45, offset_panel_y_c + y0 + 20, true);
 			this->button_famount->setImage(NULL);
@@ -1571,13 +1494,17 @@ void GamePanel::changeMiners(Id element,bool decrease,int n) {
 		n_miners -= n;
 		if( n_miners < 0 )
 			n_miners = 0;
-		gamestate->getCurrentSector()->setMiners( element, n_miners );
+		//gamestate->getCurrentSector()->setMiners( element, n_miners );
+		const Sector *current_sector = this->gamestate->getCurrentSector();
+		this->gamestate->setNMiners(current_sector->getXPos(), current_sector->getYPos(), element, n_miners);
 	}
 	else if( !decrease && n_spare > 0 ) {
 		if( n > n_spare )
 			n = n_spare;
 		n_miners += n;
-		gamestate->getCurrentSector()->setMiners( element, n_miners );
+		//gamestate->getCurrentSector()->setMiners( element, n_miners );
+		const Sector *current_sector = this->gamestate->getCurrentSector();
+		this->gamestate->setNMiners(current_sector->getXPos(), current_sector->getYPos(), element, n_miners);
 	}
 }
 
@@ -1594,13 +1521,17 @@ void GamePanel::buttonNDesignersClick(void *data, int arg, bool m_left, bool m_m
 		n_designers -= n;
 		if( n_designers < 0 )
 			n_designers = 0;
-		gamePanel->gamestate->getCurrentSector()->setDesigners( n_designers );
+		//gamePanel->gamestate->getCurrentSector()->setDesigners( n_designers );
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setNDesigners(current_sector->getXPos(), current_sector->getYPos(), n_designers);
 	}
 	else if( m_right ) {
 		if( n > n_spare )
 			n = n_spare;
 		n_designers += n;
-		gamePanel->gamestate->getCurrentSector()->setDesigners( n_designers );
+		//gamePanel->gamestate->getCurrentSector()->setDesigners( n_designers );
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setNDesigners(current_sector->getXPos(), current_sector->getYPos(), n_designers);
 	}
 }
 
@@ -1617,13 +1548,17 @@ void GamePanel::buttonNManufacturersClick(void *data, int arg, bool m_left, bool
 		n_workers -= n;
 		if( n_workers < 0 )
 			n_workers = 0;
-		gamePanel->gamestate->getCurrentSector()->setWorkers( n_workers );
+		//gamePanel->gamestate->getCurrentSector()->setWorkers( n_workers );
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setNWorkers(current_sector->getXPos(), current_sector->getYPos(), n_workers);
 	}
 	else if( m_right ) {
 		if( n > n_spare )
 			n = n_spare;
 		n_workers += n;
-		gamePanel->gamestate->getCurrentSector()->setWorkers( n_workers );
+		//gamePanel->gamestate->getCurrentSector()->setWorkers( n_workers );
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setNWorkers(current_sector->getXPos(), current_sector->getYPos(), n_workers);
 	}
 }
 
@@ -1635,11 +1570,16 @@ void GamePanel::buttonFAmountClick(void *data, int arg, bool m_left, bool m_midd
 	}
 	int famount = gamePanel->gamestate->getCurrentSector()->getFAmount();
 	if( m_left ) {
-		if( famount > 1 )
-			gamePanel->gamestate->getCurrentSector()->setFAmount( famount - 1 );
+		if( famount > 1 ) {
+			//gamePanel->gamestate->getCurrentSector()->setFAmount( famount - 1 );
+			const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+			gamePanel->gamestate->setFAmount(current_sector->getXPos(), current_sector->getYPos(), famount - 1);
+		}
 	}
 	else if( m_right && famount != infinity_c ) {
-		gamePanel->gamestate->getCurrentSector()->setFAmount( famount + 1 );
+		//gamePanel->gamestate->getCurrentSector()->setFAmount( famount + 1 );
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setFAmount(current_sector->getXPos(), current_sector->getYPos(), famount + 1);
 	}
 }
 
@@ -1667,13 +1607,17 @@ void GamePanel::buttonNBuildersClick(void *data, int arg, bool m_left, bool m_mi
 		n_builders -= n;
 		if( n_builders < 0 )
 			n_builders = 0;
-		gamePanel->gamestate->getCurrentSector()->setBuilders((Type)arg, n_builders);
+		//gamePanel->gamestate->getCurrentSector()->setBuilders((Type)arg, n_builders);
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setNBuilders(current_sector->getXPos(), current_sector->getYPos(), (Type)arg, n_builders);
 	}
 	else if( m_right && n_spare > 0 ) {
 		if( n > n_spare )
 			n = n_spare;
 		n_builders += n;
-		gamePanel->gamestate->getCurrentSector()->setBuilders((Type)arg, n_builders);
+		//gamePanel->gamestate->getCurrentSector()->setBuilders((Type)arg, n_builders);
+		const Sector *current_sector = gamePanel->gamestate->getCurrentSector();
+		gamePanel->gamestate->setNBuilders(current_sector->getXPos(), current_sector->getYPos(), (Type)arg, n_builders);
 	}
 }
 
@@ -1726,42 +1670,10 @@ void GamePanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,boo
 x		}*/
 		else if( ( m_left || m_right ) && this->button_ndesigners->mouseOver(m_x,m_y) && gamestate->getCurrentSector()->getCurrentDesign() != NULL ) {
             done = true;
-            /*int n_designers = gamestate->getCurrentSector()->getDesigners();
-			int n_spare = gamestate->getCurrentSector()->getAvailablePopulation();
-			int n = getNClicks();
-			if( m_left ) {
-				n_designers -= n;
-				if( n_designers < 0 )
-					n_designers = 0;
-				gamestate->getCurrentSector()->setDesigners( n_designers );
-			}
-			else if( m_right ) {
-				if( n > n_spare )
-					n = n_spare;
-				n_designers += n;
-				gamestate->getCurrentSector()->setDesigners( n_designers );
-			}*/
-			//processClick(buttonNDesignersClick, this, 0, button_ndesigners, m_left, m_middle, m_right);
 			processClick(buttonNDesignersClick, this->get(this->c_page), this, 0, button_ndesigners, m_left, m_middle, m_right, click);
 		}
 		else if( ( m_left || m_right ) && this->button_nworkers->mouseOver(m_x,m_y) && gamestate->getCurrentSector()->getCurrentManufacture() != NULL ) {
             done = true;
-            /*int n_workers = gamestate->getCurrentSector()->getWorkers();
-			int n_spare = gamestate->getCurrentSector()->getAvailablePopulation();
-			int n = getNClicks();
-			if( m_left ) {
-				n_workers -= n;
-				if( n_workers < 0 )
-					n_workers = 0;
-				gamestate->getCurrentSector()->setWorkers( n_workers );
-			}
-			else if( m_right ) {
-				if( n > n_spare )
-					n = n_spare;
-				n_workers += n;
-				gamestate->getCurrentSector()->setWorkers( n_workers );
-			}*/
-			//processClick(buttonNManufacturersClick, this, 0, button_nworkers, m_left, m_middle, m_right);
 			processClick(buttonNManufacturersClick, this->get(this->c_page), this, 0, button_nworkers, m_left, m_middle, m_right, click);
 		}
 		else if( m_left && click && ( this->button_build[BUILDING_MINE]->mouseOver(m_x,m_y) || this->button_build[BUILDING_FACTORY]->mouseOver(m_x,m_y) || this->button_build[BUILDING_LAB]->mouseOver(m_x,m_y) )  ) {
@@ -1805,9 +1717,6 @@ x		}*/
                 }
                 else {
                     ASSERT_ELEMENT_ID( this->element_index[i] );
-                    /*int n = getNClicks();
-                    changeMiners(element, m_left, n);*/
-                    //processClick(buttonNMinersClick, this, i, button_nminers[i], m_left, m_middle, m_right);
                     processClick(buttonNMinersClick, this->get(this->c_page), this, i, button_nminers[i], m_left, m_middle, m_right, click);
                 }
 			}
@@ -1825,22 +1734,6 @@ x		}*/
 					}
                 }
                 else {
-                    /*int n_builders = gamestate->getCurrentSector()->getBuilders((Type)i);
-                    int n_spare = gamestate->getCurrentSector()->getAvailablePopulation();
-                    int n = getNClicks();
-                    if( m_left && n_builders > 0 ) {
-                        n_builders -= n;
-                        if( n_builders < 0 )
-                            n_builders = 0;
-                        gamestate->getCurrentSector()->setBuilders((Type)i, n_builders);
-                    }
-                    else if( m_right && n_spare > 0 ) {
-                        if( n > n_spare )
-                            n = n_spare;
-                        n_builders += n;
-                        gamestate->getCurrentSector()->setBuilders((Type)i, n_builders);
-                    }*/
-                    //processClick(buttonNBuildersClick, this, i, button_nbuilders[i], m_left, m_middle, m_right);
                     processClick(buttonNBuildersClick, this->get(this->c_page), this, i, button_nbuilders[i], m_left, m_middle, m_right, click);
                 }
 			}
@@ -1859,7 +1752,8 @@ x		}*/
 				) {
                     done = true;
                     Design *design = gamestate->getCurrentSector()->bestDesign(Invention::SHIELD, start_epoch + i);
-					gamestate->getCurrentSector()->setCurrentDesign( design );
+					//gamestate->getCurrentSector()->setCurrentDesign( design );
+					gamestate->setCurrentDesign(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), design);
 					{
 						stringstream str;
 						str << "start designing a " << design->getInvention()->getName();
@@ -1872,7 +1766,8 @@ x		}*/
 				) {
                     done = true;
                     Design *design = gamestate->getCurrentSector()->bestDesign(Invention::DEFENCE, start_epoch + i);
-					gamestate->getCurrentSector()->setCurrentDesign( design );
+					//gamestate->getCurrentSector()->setCurrentDesign( design );
+					gamestate->setCurrentDesign(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), design);
 					{
 						stringstream str;
 						str << "start designing a " << design->getInvention()->getName();
@@ -1885,7 +1780,8 @@ x		}*/
 				) {
                     done = true;
                     Design *design = gamestate->getCurrentSector()->bestDesign(Invention::WEAPON, start_epoch + i);
-					gamestate->getCurrentSector()->setCurrentDesign( design );
+					//gamestate->getCurrentSector()->setCurrentDesign( design );
+					gamestate->setCurrentDesign(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), design);
 					{
 						stringstream str;
 						str << "start designing a " << design->getInvention()->getName();
@@ -1895,22 +1791,6 @@ x		}*/
 		}
         if( ( m_left || m_right ) && !done && this->button_designers->mouseOver(m_x,m_y) ) {
             done = true;
-            /*int n_designers = gamestate->getCurrentSector()->getDesigners();
-			int n_spare = gamestate->getCurrentSector()->getAvailablePopulation();
-			int n = getNClicks();
-			if( m_left ) {
-				n_designers -= n;
-				if( n_designers < 0 )
-					n_designers = 0;
-				gamestate->getCurrentSector()->setDesigners( n_designers );
-			}
-			else if( m_right ) {
-				if( n > n_spare )
-					n = n_spare;
-				n_designers += n;
-				gamestate->getCurrentSector()->setDesigners( n_designers );
-			}*/
-			//processClick(buttonNDesignersClick, this, 0, button_designers, m_left, m_middle, m_right);
 			processClick(buttonNDesignersClick, this->get(this->c_page), this, 0, button_designers, m_left, m_middle, m_right, click);
 		}
 	}
@@ -1977,13 +1857,15 @@ x		}*/
             registerClick();
             // return assembled army
 			this->setPage(STATE_SECTORCONTROL);
-			gamestate->getCurrentSector()->returnAssembledArmy();
+			//gamestate->getCurrentSector()->returnAssembledArmy();
+			gamestate->returnAssembledArmy(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos());
 			setMouseState(MOUSESTATE_NORMAL);
 		}
 		else if( m_left && click && this->button_return_attackers->mouseOver(m_x,m_y) ) {
             done = true;
             // return assembled army
-			gamestate->getCurrentSector()->returnAssembledArmy();
+			//gamestate->getCurrentSector()->returnAssembledArmy();
+			gamestate->returnAssembledArmy(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos());
 			setMouseState(MOUSESTATE_NORMAL);
 		}
 		else if( m_left && !click && this->button_deploy_unarmedmen->mouseOver(m_x,m_y) && n_nukes == 0 ) {
@@ -1996,8 +1878,9 @@ x		}*/
 			if( n_spare < n )
 				n = 1;
 			if( n_spare >= n ) {
-				gamestate->getCurrentSector()->getAssembledArmy()->add(n_epochs_c, n);
-				gamestate->getCurrentSector()->setPopulation( n_population - n );
+				//gamestate->getCurrentSector()->getAssembledArmy()->add(n_epochs_c, n);
+				//gamestate->getCurrentSector()->setPopulation( n_population - n );
+				gamestate->assembleArmyUnarmed(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), n);
 				setMouseState(MOUSESTATE_DEPLOY_WEAPON);
 			}
 		}
@@ -2015,7 +1898,8 @@ x		}*/
 			if( ok && this->button_deploy_attackers[i]->mouseOver(m_x,m_y) ) {
                 done = true;
                 int n = getNClicks();
-				if( gamestate->getCurrentSector()->assembleArmy(start_epoch + i, n) ) {
+				//if( gamestate->getCurrentSector()->assembleArmy(start_epoch + i, n) ) {
+				if( gamestate->assembleArmy(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), start_epoch + i, n) ) {
 					setMouseState(MOUSESTATE_DEPLOY_WEAPON);
 				}
 			}
@@ -2112,7 +1996,8 @@ x		}*/
             registerClick();
             this->setPage(STATE_KNOWNDESIGNS);
 			ASSERT(this->designinfo != NULL);
-			gamestate->getCurrentSector()->trashDesign(this->designinfo);
+			//gamestate->getCurrentSector()->trashDesign(this->designinfo);
+			gamestate->trashDesign(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), this->designinfo);
 		}
 	}
 	else if( this->c_page == STATE_FACTORY ) {
@@ -2128,7 +2013,8 @@ x		}*/
 				) {
                     done = true;
                     Design *design = gamestate->getCurrentSector()->knownDesign(Invention::SHIELD, start_epoch + i);
-					gamestate->getCurrentSector()->setCurrentManufacture( design );
+					//gamestate->getCurrentSector()->setCurrentManufacture( design );
+					gamestate->setCurrentManufacture(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), design);
 					{
 						stringstream str;
 						str << "start manufacturing a " << design->getInvention()->getName();
@@ -2141,7 +2027,8 @@ x		}*/
 				) {
                     done = true;
                     Design *design = gamestate->getCurrentSector()->knownDesign(Invention::DEFENCE, start_epoch + i);
-					gamestate->getCurrentSector()->setCurrentManufacture( design );
+					//gamestate->getCurrentSector()->setCurrentManufacture( design );
+					gamestate->setCurrentManufacture(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), design);
 					{
 						stringstream str;
 						str << "start manufacturing a " << design->getInvention()->getName();
@@ -2154,7 +2041,8 @@ x		}*/
 				) {
                     done = true;
                     Design *design = gamestate->getCurrentSector()->knownDesign(Invention::WEAPON, start_epoch + i);
-					gamestate->getCurrentSector()->setCurrentManufacture( design );
+					//gamestate->getCurrentSector()->setCurrentManufacture( design );
+					gamestate->setCurrentManufacture(gamestate->getCurrentSector()->getXPos(), gamestate->getCurrentSector()->getYPos(), design);
 					{
 						stringstream str;
 						str << "start manufacturing a " << design->getInvention()->getName();

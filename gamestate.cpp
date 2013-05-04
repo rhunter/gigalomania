@@ -243,7 +243,7 @@ bool TextEffect::render() const {
 	return false;
 }
 
-GameState::GameState() {
+GameState::GameState(int client_player) : client_player(client_player) {
 	this->fade = NULL;
 	this->whitefade = NULL;
 	//this->effects = new Vector();
@@ -281,6 +281,14 @@ GameState::~GameState() {
 void GameState::reset() {
     //LOG("GameState::reset()\n");
 	this->screen_page->free(true);
+}
+
+void GameState::setDefaultMouseImage() {
+	if( isDemo() )
+		mouse_image = mouse_pointers[0];
+	else
+		mouse_image = mouse_pointers[client_player];
+	mobile_ui_display_mouse = false;
 }
 
 void GameState::draw() {
@@ -324,7 +332,7 @@ void GameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	this->screen_page->input(m_x, m_y, m_left, m_middle, m_right, click);
 }
 
-ChooseGameTypeGameState::ChooseGameTypeGameState() : GameState() {
+ChooseGameTypeGameState::ChooseGameTypeGameState(int client_player) : GameState(client_player) {
 	this->choosegametypePanel = NULL;
 }
 
@@ -357,12 +365,7 @@ void ChooseGameTypeGameState::draw() {
 	this->screen_page->draw();
 	//this->screen_page->drawPopups();
 
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
-
+	GameState::setDefaultMouseImage();
 	GameState::draw();
 }
 
@@ -372,7 +375,7 @@ void ChooseGameTypeGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_midd
 	this->choosegametypePanel->input(m_x, m_y, m_left, m_middle, m_right, click);
 }
 
-ChooseDifficultyGameState::ChooseDifficultyGameState() : GameState() {
+ChooseDifficultyGameState::ChooseDifficultyGameState(int client_player) : GameState(client_player) {
 	this->choosedifficultyPanel = NULL;
 }
 
@@ -404,12 +407,7 @@ void ChooseDifficultyGameState::draw() {
 
 	this->screen_page->draw();
 
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
-
+	GameState::setDefaultMouseImage();
 	GameState::draw();
 }
 
@@ -419,7 +417,7 @@ void ChooseDifficultyGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_mi
 	this->choosedifficultyPanel->input(m_x, m_y, m_left, m_middle, m_right, click);
 }
 
-ChoosePlayerGameState::ChoosePlayerGameState() : button_red(NULL), button_yellow(NULL), button_green(NULL), button_blue(NULL) {
+ChoosePlayerGameState::ChoosePlayerGameState(int client_player) : GameState(client_player), button_red(NULL), button_yellow(NULL), button_green(NULL), button_blue(NULL) {
 }
 
 ChoosePlayerGameState::~ChoosePlayerGameState() {
@@ -457,16 +455,11 @@ void ChoosePlayerGameState::draw() {
 
 	this->screen_page->draw();
 
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
-
+	GameState::setDefaultMouseImage();
 	GameState::draw();
 }
 
-PlaceMenGameState::PlaceMenGameState() : GameState(), start_map_x(-1), start_map_y(-1) {
+PlaceMenGameState::PlaceMenGameState(int client_player) : GameState(client_player), start_map_x(-1), start_map_y(-1) {
 	this->off_x = (int)(0.25 * default_width_c);
 	this->choosemenPanel = NULL;
 	for(int y=0;y<map_height_c;y++) {
@@ -515,7 +508,7 @@ void PlaceMenGameState::reset() {
 	for(int y=0;y<map_height_c;y++) {
 		for(int x=0;x<map_width_c;x++) {
 			map_panels[x][y] = NULL;
-			if( map->isSectorAt(x, y) ) {
+			if( getMap()->isSectorAt(x, y) ) {
 				//int map_x = offset_map_x_c + 16 * x;
 				int map_x = this->off_x - 8 * map_width_c + 16 * x;
 				int map_y = offset_map_y_c + 16 * y;
@@ -569,7 +562,7 @@ void PlaceMenGameState::draw() {
 	era->draw(cx+8, cy, true);
     cy += l_h + 2;
 
-    if( human_player != PLAYER_DEMO && gameType == GAMETYPE_ALLISLANDS ) {
+    if( !isDemo() && gameType == GAMETYPE_ALLISLANDS ) {
 		int n_suspended = getNSuspended();
         if( n_suspended > 0 )
 		{
@@ -621,13 +614,7 @@ void PlaceMenGameState::draw() {
     this->screen_page->draw();
 	//this->screen_page->drawPopups();
 
-	// mouse pointer
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
-
+	GameState::setDefaultMouseImage();
 	GameState::draw();
 }
 
@@ -646,7 +633,7 @@ void PlaceMenGameState::requestNewGame() {
 	this->screen_page->add(confirm_window);
 }
 
-PlayingGameState::PlayingGameState() : GameState() {
+PlayingGameState::PlayingGameState(int client_player) : GameState(client_player) {
 	this->current_sector = NULL;
 	this->flag_frame_step = 0;
 	this->defenders_last_frame_update = 0;
@@ -898,9 +885,10 @@ void PlayingGameState::createSectors(int x, int y, int n_men) {
 	LOG("PlayingGameState::createSectors(%d, %d, %d)\n", x, y, n_men);
 
 	map->createSectors(this, start_epoch);
-	current_sector = map->getSector(x, y);
-	if( human_player != PLAYER_DEMO ) {
-		this->getCurrentSector()->createTower(human_player, n_men);
+	Sector *sector = map->getSector(x, y);
+	current_sector = sector;
+	if( !isDemo() ) {
+		sector->createTower(client_player, n_men);
 	}
 	//current_sector->createTower(human_player, 10);
 
@@ -910,7 +898,7 @@ void PlayingGameState::createSectors(int x, int y, int n_men) {
 	//Sector *enemy_sector = map->sectors[1][2];
 
 	for(int i=0;i<n_players_c;i++) {
-		if( i == human_player || players[i] == NULL )
+		if( i == client_player || players[i] == NULL )
 			continue;
 		int ex = 0, ey = 0;
 		while( true ) {
@@ -951,12 +939,21 @@ GamePanel *PlayingGameState::getGamePanel() {
 	return this->gamePanel;
 }
 
-Sector *PlayingGameState::getCurrentSector() {
+/*Sector *PlayingGameState::getCurrentSector() {
 	return current_sector;
-}
+}*/
 
 const Sector *PlayingGameState::getCurrentSector() const {
 	return current_sector;
+}
+
+bool PlayingGameState::viewingActiveClientSector() const {
+	return this->getCurrentSector()->getActivePlayer() == client_player;
+}
+
+bool PlayingGameState::viewingAnyClientSector() const {
+	// includes shutdown sectors
+	return this->getCurrentSector()->getPlayer() == client_player;
 }
 
 bool PlayingGameState::openPitMine() {
@@ -1044,7 +1041,7 @@ void PlayingGameState::reset() {
 	// setup screen_page buttons
 	this->setupMapGUI();
 
-	if( human_player != PLAYER_DEMO ) {
+	if( !isDemo() ) {
 		speed_button = new ImageButton(offset_map_x_c + 16 * map_width_c + 4, 4, icon_speeds[time_rate-1]);
 		if( onemousebutton ) {
 			speed_button->setInfoLMB("cycle through different time rates");
@@ -1095,7 +1092,7 @@ void PlayingGameState::reset() {
 		smokeParticleSystem = new SmokeParticleSystem(smoke_image);
 	}*/
 
-	this->gamePanel = new GamePanel(this);
+	this->gamePanel = new GamePanel(this, this->client_player);
 	// must call setup last, in case it recalls member functions of PlayingGameState, that requires the buttons to have been initialised
 	this->gamePanel->setup();
 
@@ -1149,16 +1146,16 @@ void PlayingGameState::resetShieldButtons() {
 			screen_page->add(shield_number_panels[i]);
 		}
 	}
-	if( human_player != PLAYER_DEMO && n_sides > 2 ) {
+	if( !isDemo() && n_sides > 2 ) {
 		for(int i=0;i<n_players_c;i++) {
-			if( shield_buttons[i] != NULL && i != human_player && !Player::isAlliance(i, human_player) ) {
+			if( shield_buttons[i] != NULL && i != client_player && !Player::isAlliance(i, client_player) ) {
 				shield_buttons[i]->setInfoLMB("make an alliance");
 			}
 		}
 	}
 	bool any_alliances = false;
-	for(int i=0;i<n_players_c && !any_alliances && human_player != PLAYER_DEMO;i++) {
-		if( i != human_player && Player::isAlliance(i, human_player) ) {
+	for(int i=0;i<n_players_c && !any_alliances && !isDemo();i++) {
+		if( i != client_player && Player::isAlliance(i, client_player) ) {
 			any_alliances = true;
 			ASSERT( players[i] != NULL );
 			ASSERT( !players[i]->isDead() );
@@ -1215,7 +1212,7 @@ void PlayingGameState::draw() {
 
 	bool no_armies = true;
 	for(int i=0;i<n_players_c && no_armies;i++) {
-		Army *army = current_sector->getArmy(i);
+		const Army *army = current_sector->getArmy(i);
 		if( army->getTotal() > 0 )  {
 			no_armies = false;
 		}
@@ -1284,7 +1281,7 @@ void PlayingGameState::draw() {
 			int off = 0;
 			for(int j=i;j<n_players_c;j++) {
 				if( j == i || Player::isAlliance(i, j) ) {
-					Army *army = current_sector->getArmy(j);
+					const Army *army = current_sector->getArmy(j);
 					if( army->getTotal() > 0 ) {
 						for(int k=0;k<=n_sub_epochs;k++) {
 							int idx = (k==0) ? 10 : start_epoch + k - 1;
@@ -1306,7 +1303,7 @@ void PlayingGameState::draw() {
 
 	// trees etc (not at front)
 	for(int i=0;i<current_sector->getNFeatures();i++) {
-		Feature *feature = current_sector->getFeature(i);
+		const Feature *feature = current_sector->getFeature(i);
 		/*const int tree_ticks_per_frame_c = 110; // tree animation looks better if offset from main animation, and if slightly slower
 		int tree_counter = getRealTime() / tree_ticks_per_frame_c;
 		const Image *image = current_sector->isTreesNuked() ? icon_trees[2][0] : feature->getImage(tree_counter);
@@ -1415,7 +1412,7 @@ void PlayingGameState::draw() {
 
 	// trees etc (at front)
 	for(int i=0;i<current_sector->getNFeatures();i++) {
-		Feature *feature = current_sector->getFeature(i);
+		const Feature *feature = current_sector->getFeature(i);
 		if( feature->isAtFront() ) {
 			feature->draw();
 		}
@@ -1495,7 +1492,7 @@ void PlayingGameState::draw() {
 			int off = 0;
 			for(int j=i;j<n_players_c;j++) {
 				if( j == i || Player::isAlliance(i, j) ) {
-					Army *army = current_sector->getArmy(j);
+					const Army *army = current_sector->getArmy(j);
 					int n_army = army->getTotal();
 					if( n_army > 0 ) {
 						shield_number_panels[i]->setEnabled(true);
@@ -1541,11 +1538,7 @@ void PlayingGameState::draw() {
 	SDL_GetMouseState(&m_x, &m_y);
 	m_x /= scale_width;
 	m_y /= scale_height;*/
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
+	GameState::setDefaultMouseImage();
 	mouse_off_x = 0;
 	mouse_off_y = 0;
 	if( gameStateID == GAMESTATEID_PLAYING ) {
@@ -1553,12 +1546,12 @@ void PlayingGameState::draw() {
 		if( mousestate == GamePanel::MOUSESTATE_DEPLOY_WEAPON || selected_army != NULL ) {
 			ASSERT( mousestate != GamePanel::MOUSESTATE_DEPLOY_WEAPON || selected_army == NULL );
 			bool bloody = false;
-			Sector *this_sector = ( selected_army == NULL ) ? current_sector : selected_army->getSector();
-			if( this_sector->getPlayer() != human_player ) {
-				if( this_sector->getPlayer() != PLAYER_NONE && !Player::isAlliance(this_sector->getPlayer(), human_player) )
+			const Sector *this_sector = ( selected_army == NULL ) ? current_sector : selected_army->getSector();
+			if( this_sector->getPlayer() != client_player ) {
+				if( this_sector->getPlayer() != PLAYER_NONE && !Player::isAlliance(this_sector->getPlayer(), client_player) )
 					bloody = true;
 				for(int i=0;i<n_players_c && !bloody;i++) {
-					if( i != human_player && !Player::isAlliance(i, human_player) ) {
+					if( i != client_player && !Player::isAlliance(i, client_player) ) {
 						if( this_sector->getArmy(i)->any(true) )
 							bloody = true;
 					}
@@ -1626,7 +1619,7 @@ void PlayingGameState::update() {
 
 	int n_armies = 0;
 	for(int i=0;i<n_players_c;i++) {
-		Army *army = current_sector->getArmy(i);
+		const Army *army = current_sector->getArmy(i);
 		if( army->getTotal() > 0 )
 			n_armies++;
 	}
@@ -1749,7 +1742,8 @@ bool PlayingGameState::buildingMouseClick(int s_m_x,int s_m_y,bool m_left,bool m
 	}
 
 	if( !done && this->getGamePanel()->getMouseState() == GamePanel::MOUSESTATE_SHUTDOWN && building->getType() == BUILDING_TOWER ) {
-		current_sector->shutdown();
+		//current_sector->shutdown();
+		this->shutdown(current_sector->getXPos(), current_sector->getYPos());
 		done = true;
 	}
 
@@ -1771,12 +1765,14 @@ bool PlayingGameState::buildingMouseClick(int s_m_x,int s_m_y,bool m_left,bool m
 					// set new defender
 					int deploy_defence = this->getGamePanel()->getDeployDefence();
 					ASSERT(deploy_defence != -1);
-					current_sector->deployDefender(building, i, deploy_defence);
+					//current_sector->deployDefender(building, i, deploy_defence);
+					this->deployDefender(current_sector->getXPos(), current_sector->getYPos(), building->getType(), i, deploy_defence);
 				}
 				else if( building->getTurretMan(i) != -1 ) {
 					// remove existing defender
 					// return current defender to stocks
-					current_sector->returnDefender(building, i);
+					//current_sector->returnDefender(building, i);
+					this->returnDefender(current_sector->getXPos(), current_sector->getYPos(), building->getType(), i);
 				}
 		}
 	}
@@ -1802,7 +1798,8 @@ bool PlayingGameState::buildingMouseClick(int s_m_x,int s_m_y,bool m_left,bool m
 			building->health = building->max_health;
 			current_sector->stored_shields[deploy_shield]--;
 			}*/
-			current_sector->useShield(building, deploy_shield);
+			//current_sector->useShield(building, deploy_shield);
+			this->useShield(current_sector->getXPos(), current_sector->getYPos(), building->getType(), deploy_shield);
 		}
 	}
 
@@ -1824,26 +1821,6 @@ void PlayingGameState::moveTo(int map_x,int map_y) {
 void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click) {
 	GameState::mouseClick(m_x, m_y, m_left, m_middle, m_right, click);
 
-	//bool m_left = mouse_left(m_b);
-	/*int s_m_y = (int)(m_y / scale_height);
-	if( m_left && click ) {
-		human_player = -1;
-		if( s_m_y >= 55 && s_m_y < 99 )
-			human_player = 0;
-		else if( s_m_y >= 99 && s_m_y < 143 )
-			human_player = 2;
-		else if( s_m_y >= 143 && s_m_y < 187 )
-			human_player = 1;
-		else if( s_m_y >= 187 && s_m_y < 231 )
-			human_player = 3;
-
-		if( human_player != -1 ) {
-			//human_player = PLAYER_DEMO; // force demo mode
-			setGameStateID(GAMESTATEID_PLACEMEN);
-			newGame();
-			//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
-		}
-	}*/
 	int player = -1;
     if( m_left && click && button_red->mouseOver(m_x, m_y) ) {
 		player = 0;
@@ -1859,8 +1836,9 @@ void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 	}
 
 	if( player != -1 ) {
-		human_player = player;
+		//human_player = player;
 		//human_player = PLAYER_DEMO; // force demo mode
+		setClientPlayer(player);
 		setGameStateID(GAMESTATEID_PLACEMEN);
 		newGame();
 		//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
@@ -1920,11 +1898,10 @@ void PlaceMenGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,boo
 			LOG("starting epoch %d island %s at %d, %d\n", start_epoch, map->getName(), map_x, map_y);
 			this->start_map_x = map_x;
 			this->start_map_y = map_y;
-			if( human_player != PLAYER_DEMO ) {
-				players[human_player]->setNMenForThisIsland( this->choosemenPanel->getNMen() );
-				ASSERT( players[human_player]->getNMenForThisIsland() <= getMenAvailable() );
-				LOG("human is player %d, starting with %d men\n", human_player, players[human_player]->getNMenForThisIsland());
-				//placeTower(map_x, map_y, players[human_player]->getNMenForThisIsland());
+			if( !isDemo() ) {
+				players[client_player]->setNMenForThisIsland( this->choosemenPanel->getNMen() );
+				ASSERT( players[client_player]->getNMenForThisIsland() <= getMenAvailable() );
+				LOG("human is player %d, starting with %d men\n", client_player, players[client_player]->getNMenForThisIsland());
 			}
 			else {
 				LOG("DEMO mode\n");
@@ -1933,24 +1910,6 @@ void PlaceMenGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,boo
 			placeTower();
 			return;
 		}
-		/*int map_x = ( s_m_x - offset_map_x_c ) / 16;
-		int map_y = ( s_m_y - offset_map_y_c ) / 16;
-		if( map_x >= 0 && map_x < map_width_c && map_y >= 0 && map_y < map_height_c ) {
-			if( map->sector_at[map_x][map_y] ) {
-				LOG("starting epoch %d island %s at %d, %d\n", start_epoch, map->getName(), map_x, map_y);
-				if( human_player != PLAYER_DEMO ) {
-					players[human_player]->n_men_for_this_island = this->choosemenPanel->getNMen();
-					ASSERT( players[human_player]->n_men_for_this_island <= getMenAvailable() );
-					LOG("human is player %d, starting with %d men", human_player, players[human_player]->n_men_for_this_island);
-					placeTower(map_x, map_y, players[human_player]->n_men_for_this_island);
-				}
-				else {
-					LOG("DEMO mode\n");
-					placeTower(map_x, map_y, 0);
-				}
-				return;
-			}
-		}*/
 	}
 
     if( !done )
@@ -1991,6 +1950,11 @@ bool PlayingGameState::canRequestAlliance(int player,int i) const {
 
 void PlayingGameState::requestAlliance(int player,int i,bool human) {
 	// 'player' requests alliance with 'i'
+	/*if( !human ) {
+		// AIs only supported in non-player mode
+		ASSERT(gameMode == GAMEMODE_SINGLEPLAYER);
+	}*/
+	ASSERT(gameMode == GAMEMODE_SINGLEPLAYER); // blocked for now
 	ASSERT(player != i);
 	ASSERT(players[player] != NULL);
 	ASSERT(!players[player]->isDead());
@@ -1998,17 +1962,19 @@ void PlayingGameState::requestAlliance(int player,int i,bool human) {
 	bool ok = true;
 	bool ask_human_player = false;
 	int playing_asking_human = -1; // which player do we need to ask the human?
+	int human_player = -1;
 	// okay to request?
 	// check i, and those who are allied with i
 	for(int j=0;j<n_players_c && ok;j++) {
 		if( j == player || players[j] == NULL || players[j]->isDead() ) {
 		}
 		else if( j == i || Player::isAlliance(i, j) ) {
-			if( j == human_player ) {
+			//if( j == human_player ) {
+			if( players[j]->isHuman() ) {
 				// request if human is part of alliance
-				//ok = false;
 				ask_human_player = true;
 				playing_asking_human = player;
+				human_player = j;
 			}
 			else if( !players[j]->requestAlliance(player) ) {
 				ok = false;
@@ -2022,11 +1988,13 @@ void PlayingGameState::requestAlliance(int player,int i,bool human) {
 		if( j == player || players[j] == NULL || players[j]->isDead() ) {
 		}
 		else if( Player::isAlliance(player, j) ) {
-			if( j == human_player ) {
+			//if( j == human_player ) {
+			if( players[j]->isHuman() ) {
 				// request if human is part of alliance
 				//ok = false;
 				ask_human_player = true;
 				playing_asking_human = i;
+				human_player = j;
 			}
 			else if( !players[j]->requestAlliance(i) ) {
 				ok = false;
@@ -2128,7 +2096,7 @@ void PlayingGameState::refreshTimeRate() {
 }
 
 void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click) {
-	if( human_player != PLAYER_DEMO && players[human_player]->isDead() ) {
+	if( !isDemo() && players[client_player]->isDead() ) {
 		return;
 	}
 	GameState::mouseClick(m_x, m_y, m_left, m_middle, m_right, click);
@@ -2153,7 +2121,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 		if( this->alliance_yes->mouseOver(m_x, m_y) ) {
 			ASSERT( players[player_asking_alliance] != NULL );
 			ASSERT( !players[player_asking_alliance]->isDead() != NULL );
-			this->makeAlliance(player_asking_alliance, human_player);
+			this->makeAlliance(player_asking_alliance, client_player);
 			// makeAlliance also cancels
 			done = true;
 		}
@@ -2173,9 +2141,11 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 					int n_nukes = selected_army->getSoldiers(nuclear_epoch_c);
 					ASSERT( n_nukes == 0 );
 					// move selected army
-					//if( !map->sectors[map_x][map_y]->isNuked() && map->sectors[map_x][map_y]->moveArmy(human_player, selected_army) ) {
-					if( map->getSector(map_x, map_y)->moveArmy(human_player, selected_army) ) {
+					/*if( map->getSector(map_x, map_y)->moveArmy(selected_army) ) {
 						this->moveTo(map_x,map_y);
+					}*/
+					if( this->moveArmyTo(selected_army->getSector()->getXPos(), selected_army->getSector()->getYPos(), map_x, map_y) ) {
+						this->moveTo(map_x, map_y);
 					}
 					else {
 						// (some of) army too far - don't lose selection
@@ -2203,13 +2173,21 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 							playSample(s_cant_nuke_ally);
 						}
 						else {
-							if( map->getSector(map_x, map_y)->nuke(current_sector) ) {
+							/*if( map->getSector(map_x, map_y)->nukeSector(current_sector) ) {
 								current_sector->getAssembledArmy()->empty();
+								this->moveTo(map_x,map_y);
+							}*/
+							if( map->getSector(map_x, map_y)->isBeingNuked() ) {
+								//map->getSector(map_x, map_y)->nukeSector(current_sector);
+								this->nukeSector(current_sector->getXPos(), current_sector->getYPos(), map_x, map_y);
+								//current_sector->getAssembledArmy()->empty();
+								this->assembledArmyEmpty(current_sector->getXPos(), current_sector->getYPos());
 								this->moveTo(map_x,map_y);
 							}
 						}
 					}
-					else if( map->getSector(map_x, map_y)->moveArmy(human_player, current_sector->getAssembledArmy() ) ) {
+					//else if( map->getSector(map_x, map_y)->moveArmy(current_sector->getAssembledArmy() ) ) {
+					else if( this->moveAssembledArmyTo(current_sector->getXPos(), current_sector->getYPos(), map_x, map_y) ) {
 						this->getGamePanel()->setMouseState(GamePanel::MOUSESTATE_NORMAL);
 						this->moveTo(map_x,map_y);
 					}
@@ -2219,15 +2197,17 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 				//if( map->sectors[map_x][map_y] != current_sector )
 				{
 					// move to viewing a different sector
-					if( current_sector->getPlayer() == human_player )
-						current_sector->returnAssembledArmy();
+					if( current_sector->getPlayer() == client_player ) {
+						//current_sector->returnAssembledArmy();
+						this->returnAssembledArmy(current_sector->getXPos(), current_sector->getYPos());
+					}
 					this->getGamePanel()->setMouseState(GamePanel::MOUSESTATE_NORMAL);
 					this->moveTo(map_x,map_y);
 				}
 			}
-			else if( m_right && human_player != PLAYER_DEMO ) {
+			else if( m_right && !isDemo() ) {
 				// select an army
-				Army *army = map->getSector(map_x, map_y)->getArmy(human_player);
+				Army *army = map->getSector(map_x, map_y)->getArmy(client_player);
 				if( army->getTotal() > 0 ) {
 					done = true;
 					selected_army = army;
@@ -2304,7 +2284,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 			bool ok = false;
 			for(int j=i;j<n_players_c && !ok;j++) {
 				if( j == i || Player::isAlliance(i, j) ) {
-					Army *army = current_sector->getArmy(j);
+					const Army *army = current_sector->getArmy(j);
 					if( army->getTotal() > 0 )
 						ok = true;
 				}
@@ -2323,17 +2303,17 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 	}
 
 	// alliances
-	for(int i=0;i<n_players_c && !done && m_left && click && human_player != PLAYER_DEMO;i++) {
-		if( i != human_player && players[i] != NULL && !players[i]->isDead() ) {
+	for(int i=0;i<n_players_c && !done && m_left && click && !isDemo();i++) {
+		if( i != client_player && players[i] != NULL && !players[i]->isDead() ) {
 			if( shield_buttons[i] != NULL && shield_buttons[i]->mouseOver(m_x, m_y) ) {
 				if( this->player_asking_alliance != -1 && this->player_asking_alliance == i ) {
 					// automatically accept
-					this->makeAlliance(human_player, i);
+					this->makeAlliance(client_player, i);
 				}
 				else {
 					// request alliance
-					if( canRequestAlliance(human_player, i) ) {
-						requestAlliance(human_player, i, true);
+					if( canRequestAlliance(client_player, i) ) {
+						requestAlliance(client_player, i, true);
 					}
 				}
 				// automatically cancel any alliance being asked for
@@ -2348,8 +2328,8 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 		// break alliance
 		bool any = false;
 		for(int i=0;i<n_players_c;i++) {
-			if( i != human_player && Player::isAlliance(i, human_player) ) {
-				Player::setAlliance(i, human_player, false);
+			if( i != client_player && Player::isAlliance(i, client_player) ) {
+				Player::setAlliance(i, client_player, false);
 				any = true;
 			}
 		}
@@ -2361,8 +2341,8 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 	}
 
 	//if( !done && s_m_x >= offset_land_x_c + 16 && s_m_y >= offset_land_y_c ) {
-	if( !done && click && human_player != PLAYER_DEMO && this->land_panel->mouseOver(m_x, m_y) ) {
-		Army *army_in_sector = current_sector->getArmy(human_player);
+	if( !done && click && !isDemo() && this->land_panel->mouseOver(m_x, m_y) ) {
+		const Army *army_in_sector = current_sector->getArmy(client_player);
 		Building *building = current_sector->getBuilding(BUILDING_TOWER);
 		bool clicked_fortress = building != NULL && s_m_x >= offset_land_x_c + building->getX() && s_m_x < offset_land_x_c + building->getX() + fortress[ current_sector->getBuildingEpoch() ]->getScaledWidth() &&
 			s_m_y >= offset_land_y_c + building->getY() && s_m_y < offset_land_y_c + building->getY() + fortress[ current_sector->getBuildingEpoch() ]->getScaledHeight();
@@ -2374,7 +2354,8 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 					// deploy assembled army
                     done = true;
                     registerClick();
-                    army_in_sector->add( current_sector->getAssembledArmy() );
+                    //army_in_sector->add( current_sector->getAssembledArmy() );
+					this->moveAssembledArmyTo(current_sector->getXPos(), current_sector->getYPos(), current_sector->getXPos(), current_sector->getYPos());
 					this->getGamePanel()->setMouseState(GamePanel::MOUSESTATE_NORMAL);
                 }
 				else {
@@ -2389,12 +2370,14 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
                 registerClick();
                 // move selected army
 				if( clicked_fortress && current_sector->getPlayer() == selected_army->getPlayer() ) {
-					current_sector->returnArmy(selected_army);
+					//current_sector->returnArmy(selected_army);
+					this->returnArmy(current_sector->getXPos(), current_sector->getYPos(), selected_army->getSector()->getXPos(), selected_army->getSector()->getYPos());
 				}
 				else {
 					if( selected_army->getSector() != current_sector ) {
 						// move selected army
-						current_sector->moveArmy(human_player, selected_army);
+						//current_sector->moveArmy(client_player, selected_army);
+						this->moveArmyTo(selected_army->getSector()->getXPos(), selected_army->getSector()->getYPos(), current_sector->getXPos(), current_sector->getYPos());
 					}
 				}
 			}
@@ -2402,15 +2385,18 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 		if( !done && ( onemousebutton ? m_left : m_right ) && !clicked_fortress && army_in_sector->getTotal() > 0 ) {
 			done = true;
             registerClick();
-            selected_army = army_in_sector;
+            //selected_army = army_in_sector;
+			selected_army = map->getSector(current_sector->getXPos(), current_sector->getYPos())->getArmy(client_player);
 			clear_selected_army = false;
-			if( current_sector->getPlayer() == human_player )
-				current_sector->returnAssembledArmy();
+			if( current_sector->getPlayer() == client_player ) {
+				//current_sector->returnAssembledArmy();
+				this->returnAssembledArmy(current_sector->getXPos(), current_sector->getYPos());
+			}
 			this->getGamePanel()->setMouseState(GamePanel::MOUSESTATE_NORMAL);
 		}
 	}
 
-	if( current_sector->getPlayer() == human_player && click ) {
+	if( current_sector->getPlayer() == client_player && click ) {
 		for(int i=0;i<N_BUILDINGS && !done;i++) {
 			done = buildingMouseClick(s_m_x, s_m_y, m_left, m_right, current_sector->getBuilding((Type)i));
 		}
@@ -2482,7 +2468,7 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 			Soldier *soldier = soldiers[i]->at(j);
 			n_soldiers_type[ soldier->epoch ]++;
 		}
-		Army *army = current_sector->getArmy(i);
+		const Army *army = current_sector->getArmy(i);
 		for(int j=0;j<=n_epochs_c;j++) {
 			int diff = army->getSoldiers(j) - n_soldiers_type[j];
 			if( diff > 0 ) {
@@ -2585,7 +2571,7 @@ void PlayingGameState::refreshButtons() {
 				building->getBuildingButton()->setInfoLMB("");
 			}
 
-			if( current_sector->getPlayer() != human_player ) {
+			if( current_sector->getPlayer() != client_player ) {
 				// no text
 			}
 			else if( this->getGamePanel()->getMouseState() == GamePanel::MOUSESTATE_SHUTDOWN ) {
@@ -2663,6 +2649,179 @@ void PlayingGameState::refreshShieldNumberPanels() {
 	}
 }
 
+void PlayingGameState::setNDesigners(int sector_x, int sector_y, int n_designers) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		if( sector->getCurrentDesign() != NULL ) {
+			sector->setDesigners(n_designers);
+		}
+	}
+}
+
+void PlayingGameState::setNWorkers(int sector_x, int sector_y, int n_workers) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		if( sector->getCurrentManufacture() != NULL ) {
+			sector->setWorkers(n_workers);
+		}
+	}
+}
+
+void PlayingGameState::setFAmount(int sector_x, int sector_y, int n_famount) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		if( sector->getCurrentManufacture() != NULL ) {
+			sector->setFAmount(n_famount);
+		}
+	}
+}
+
+void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_miners) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		if( sector->canMine(element) != NULL ) {
+			sector->setMiners(element, n_miners);
+		}
+	}
+}
+
+void PlayingGameState::setNBuilders(int sector_x, int sector_y, Type type, int n_builders) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		if( sector->canBuild(type) != NULL ) {
+			sector->setBuilders(type, n_builders);
+		}
+	}
+}
+
+void PlayingGameState::setCurrentDesign(int sector_x, int sector_y, Design *design) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		sector->setCurrentDesign(design);
+	}
+}
+
+void PlayingGameState::setCurrentManufacture(int sector_x, int sector_y, Design *design) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		sector->setCurrentManufacture(design);
+	}
+}
+
+void PlayingGameState::assembledArmyEmpty(int sector_x, int sector_y) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		sector->getAssembledArmy()->empty();
+	}
+}
+
+void PlayingGameState::assembleArmyUnarmed(int sector_x, int sector_y, int n) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		int n_spare = sector->getAvailablePopulation();
+		if( n_spare >= n ) {
+			int n_population = sector->getPopulation();
+			sector->getAssembledArmy()->add(n_epochs_c, n);
+			sector->setPopulation(n_population - n);
+		}
+	}
+}
+
+bool PlayingGameState::assembleArmy(int sector_x, int sector_y, int epoch, int n) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		if( sector->assembleArmy(epoch, n) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void PlayingGameState::returnAssembledArmy(int sector_x, int sector_y) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		sector->returnAssembledArmy();
+	}
+}
+
+void PlayingGameState::returnArmy(int sector_x, int sector_y, int src_x, int src_y) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		Sector *src = map->getSector(src_x, src_y);
+		Army *army = src->getArmy(client_player);
+		sector->returnArmy(army);
+	}
+}
+
+bool PlayingGameState::moveArmyTo(int src_x, int src_y, int target_x, int target_y) {
+	Sector *src = map->getSector(src_x, src_y);
+	Sector *target = map->getSector(target_x, target_y);
+	Army *army = src->getArmy(client_player);
+	return target->moveArmy(army);
+}
+
+bool PlayingGameState::moveAssembledArmyTo(int src_x, int src_y, int target_x, int target_y) {
+	Sector *src = map->getSector(src_x, src_y);
+	if( src->getActivePlayer() == client_player ) {
+		Army *army = src->getAssembledArmy();
+		Sector *target = map->getSector(target_x, target_y);
+		return target->moveArmy(army);
+	}
+	return false;
+}
+
+void PlayingGameState::nukeSector(int src_x, int src_y, int target_x, int target_y) {
+	Sector *src = map->getSector(src_x, src_y);
+	Sector *target = map->getSector(target_x, target_y);
+	if( src->getActivePlayer() == client_player ) {
+		target->nukeSector(src);
+	}
+}
+
+void PlayingGameState::deployDefender(int sector_x, int sector_y, Type type, int turret, int epoch) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		Building *building = sector->getBuilding(type);
+		if( building != NULL ) {
+			sector->deployDefender(building, turret, epoch);
+		}
+	}
+}
+
+void PlayingGameState::returnDefender(int sector_x, int sector_y, Type type, int turret) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		Building *building = sector->getBuilding(type);
+		if( building != NULL ) {
+			sector->returnDefender(building, turret);
+		}
+	}
+}
+
+void PlayingGameState::useShield(int sector_x, int sector_y, Type type, int shield) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		Building *building = sector->getBuilding(type);
+		if( building != NULL ) {
+			sector->useShield(building, shield);
+		}
+	}
+}
+
+void PlayingGameState::trashDesign(int sector_x, int sector_y, Invention *invention) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		sector->trashDesign(invention);
+	}
+}
+
+void PlayingGameState::shutdown(int sector_x, int sector_y) {
+	Sector *sector = map->getSector(sector_x, sector_y);
+	if( sector->getActivePlayer() == client_player ) {
+		sector->shutdown();
+	}
+}
+
 void EndIslandGameState::reset() {
     //LOG("EndIslandGameState::reset()\n");
 	this->screen_page->free(true);
@@ -2707,26 +2866,26 @@ void EndIslandGameState::draw() {
 	int rect_w = (int)(16 * scale_width);
 	int rect_h = (int)(8 * scale_height);
 
-	if( human_player != PLAYER_DEMO ) {
-		PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)human_player);
+	if( !isDemo() ) {
+		PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)client_player);
 		/*col = SDL_MapRGB(screen->getSurface()->format, r, g, b);
 		SDL_FillRect(screen->getSurface(), &rect, col);*/
 		screen->fillRect(rect_x, rect_y, rect_w, rect_h, r, g, b);
 
 		//Image::write(40, ypos, letters_small, "HUMAN", Image::JUSTIFY_LEFT, true);
-		Image::write(40, ypos, letters_small, PlayerType::getName((PlayerType::PlayerTypeID)human_player), Image::JUSTIFY_LEFT, true);
+		Image::write(40, ypos, letters_small, PlayerType::getName((PlayerType::PlayerTypeID)client_player), Image::JUSTIFY_LEFT, true);
 
-		Image::writeNumbers(110, ypos, numbers_yellow, players[human_player]->getNMenForThisIsland(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(150, ypos, numbers_yellow, players[human_player]->getNBirths(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(190, ypos, numbers_yellow, players[human_player]->getNDeaths(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(230, ypos, numbers_yellow, players[human_player]->getFinalMen(), Image::JUSTIFY_LEFT, true);
+		Image::writeNumbers(110, ypos, numbers_yellow, players[client_player]->getNMenForThisIsland(), Image::JUSTIFY_LEFT, true);
+		Image::writeNumbers(150, ypos, numbers_yellow, players[client_player]->getNBirths(), Image::JUSTIFY_LEFT, true);
+		Image::writeNumbers(190, ypos, numbers_yellow, players[client_player]->getNDeaths(), Image::JUSTIFY_LEFT, true);
+		Image::writeNumbers(230, ypos, numbers_yellow, players[client_player]->getFinalMen(), Image::JUSTIFY_LEFT, true);
 		if( suspend )
-			Image::writeNumbers(270, ypos, numbers_yellow, players[human_player]->getNSuspended(), Image::JUSTIFY_LEFT, true);
+			Image::writeNumbers(270, ypos, numbers_yellow, players[client_player]->getNSuspended(), Image::JUSTIFY_LEFT, true);
 		ypos += 10;
 	}
 
 	for(int i=0;i<n_players_c;i++) {
-		if( i == human_player || players[i] == NULL )
+		if( i == client_player || players[i] == NULL )
 			continue;
 		PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)i);
 		/*col = SDL_MapRGB(screen->getSurface()->format, r, g, b);
@@ -2749,12 +2908,7 @@ void EndIslandGameState::draw() {
 	this->screen_page->draw();
 	//this->screen_page->drawPopups();
 
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
-
+	GameState::setDefaultMouseImage();
 	GameState::draw();
 }
 
@@ -2781,7 +2935,7 @@ void GameCompleteGameState::draw() {
 	this->screen_page->draw();
 	//this->screen_page->drawPopups();
 
-	if( human_player != PLAYER_DEMO ) {
+	if( !isDemo() ) {
 		stringstream str;
 		int l_h = letters_large[0]->getScaledHeight();
 		int y = 80;
@@ -2819,12 +2973,7 @@ void GameCompleteGameState::draw() {
 		y += l_h + 2;
 	}
 
-	if( human_player == PLAYER_DEMO )
-		mouse_image = mouse_pointers[0];
-	else
-		mouse_image = mouse_pointers[human_player];
-	mobile_ui_display_mouse = false;
-
+	GameState::setDefaultMouseImage();
 	GameState::draw();
 }
 

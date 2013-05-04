@@ -27,6 +27,8 @@ class Army;
 class Soldier;
 class Building;
 class Map;
+class Design;
+class Invention;
 
 const int offset_map_x_c = 8;
 const int offset_map_y_c = 16;
@@ -169,6 +171,7 @@ public:
 
 class GameState {
 protected:
+	int client_player;
 	FadeEffect *fade;
 	FadeEffect *whitefade;
 	PanelPage *screen_page;
@@ -185,8 +188,10 @@ protected:
     Button *confirm_yes_button;
     Button *confirm_no_button;
 
+	void setDefaultMouseImage();
+
 public:
-	GameState();
+	GameState(int client_player);
 	virtual ~GameState();
 
 	virtual void reset();
@@ -213,7 +218,7 @@ class ChooseGameTypeGameState : public GameState {
 	ChooseGameTypePanel *choosegametypePanel;
 
 public:
-	ChooseGameTypeGameState();
+	ChooseGameTypeGameState(int client_player);
 	virtual ~ChooseGameTypeGameState();
 
 	virtual void reset();
@@ -227,7 +232,7 @@ class ChooseDifficultyGameState : public GameState {
 	ChooseDifficultyPanel *choosedifficultyPanel;
 
 public:
-	ChooseDifficultyGameState();
+	ChooseDifficultyGameState(int client_player);
 	virtual ~ChooseDifficultyGameState();
 
 	virtual void reset();
@@ -243,7 +248,7 @@ class ChoosePlayerGameState : public GameState {
 	Button *button_green;
 	Button *button_blue;
 public:
-	ChoosePlayerGameState();
+	ChoosePlayerGameState(int client_player);
 	virtual ~ChoosePlayerGameState();
 
 	virtual void reset();
@@ -258,7 +263,7 @@ class PlaceMenGameState : public GameState {
 	int start_map_x, start_map_y;
 
 public:
-	PlaceMenGameState();
+	PlaceMenGameState(int client_player);
 	virtual ~PlaceMenGameState();
 
 	virtual void reset();
@@ -281,7 +286,7 @@ public:
 };
 
 class PlayingGameState : public GameState {
-	Sector *current_sector;
+	const Sector *current_sector;
 	GamePanel *gamePanel;
 	ImageButton *speed_button;
 	ImageButton *shield_buttons[n_players_c];
@@ -298,7 +303,7 @@ class PlayingGameState : public GameState {
 	int soldiers_last_time_moved;
 	int soldiers_last_time_turned;
 	int air_last_time_moved;
-	Army *selected_army;
+	const Army *selected_army;
 	//int n_soldiers[n_players_c];
 	//Vector *soldiers[n_players_c];
 	vector<Soldier *> *soldiers[n_players_c];
@@ -332,10 +337,10 @@ class PlayingGameState : public GameState {
 	//static void buttonSpeedClick(void *data, int arg, bool m_left, bool m_middle, bool m_right);
 public:
 
-	PlayingGameState();
+	PlayingGameState(int client_player);
 	virtual ~PlayingGameState();
 
-	void createSectors(int x, int y, int n_men);
+	void createSectors( int x, int y, int n_men);
 
 	virtual void reset();
 	virtual void draw();
@@ -343,8 +348,10 @@ public:
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
 
 	GamePanel *getGamePanel();
-	Sector *getCurrentSector();
+	//Sector *getCurrentSector();
 	const Sector *getCurrentSector() const;
+	bool viewingActiveClientSector() const;
+	bool viewingAnyClientSector() const; // includes shutdown sectors
 	void resetShieldButtons();
 	void setFlashingSquare(int xpos,int ypos);
 	void addBuilding(Building *building);
@@ -363,9 +370,6 @@ public:
 	const Army *getSelectedArmy() const {
 		return this->selected_army;
 	}
-	Army *getSelectedArmy() {
-		return this->selected_army;
-	}
 	void clearSelectedArmy() {
 		this->selected_army = NULL;
 	}
@@ -381,11 +385,40 @@ public:
 	}
     //void requestQuit();
 	void refreshTimeRate();
+
+	// functions for requesting a modification to the game world based on client user input
+	// for now, these functions make the modification themselves directly - later on, we can go via a server class
+	void setNDesigners(int sector_x, int sector_y, int n_designers);
+	void setNWorkers(int sector_x, int sector_y, int n_workers);
+	void setFAmount(int sector_x, int sector_y, int n_famount);
+	void setNMiners(int sector_x, int sector_y, Id element, int n_miners);
+	void setNBuilders(int sector_x, int sector_y, Type type, int n_builders);
+
+	void setCurrentDesign(int sector_x, int sector_y, Design *design);
+	void setCurrentManufacture(int sector_x, int sector_y, Design *design);
+
+	void assembledArmyEmpty(int sector_x, int sector_y);
+	void assembleArmyUnarmed(int sector_x, int sector_y, int n);
+	bool assembleArmy(int sector_x, int sector_y, int epoch, int n);
+	void returnAssembledArmy(int sector_x, int sector_y);
+	void returnArmy(int sector_x, int sector_y, int src_x, int src_y);
+	bool moveArmyTo(int src_x, int src_y, int target_x, int target_y);
+	bool moveAssembledArmyTo(int src_x, int src_y, int target_x, int target_y);
+	void nukeSector(int src_x, int src_y, int target_x, int target_y);
+
+	void deployDefender(int sector_x, int sector_y, Type type, int turret, int epoch);
+	void returnDefender(int sector_x, int sector_y, Type type, int turret);
+	void useShield(int sector_x, int sector_y, Type type, int shield);
+
+	void trashDesign(int sector_x, int sector_y, Invention *invention);
+
+	void shutdown(int sector_x, int sector_y);
+	//current_sector->shutdown();
 };
 
 class EndIslandGameState : public GameState {
 public:
-	EndIslandGameState() {
+	EndIslandGameState(int client_player) : GameState(client_player) {
 	}
 	virtual ~EndIslandGameState() {
 	}
@@ -397,7 +430,7 @@ public:
 
 class GameCompleteGameState : public GameState {
 public:
-	GameCompleteGameState() {
+	GameCompleteGameState(int client_player) : GameState(client_player) {
 	}
 	virtual ~GameCompleteGameState() {
 	}

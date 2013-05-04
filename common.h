@@ -62,3 +62,15 @@ enum Id {
 	ALIEN,
 	N_ID
 };
+
+enum MapColour {
+	MAP_UNDEFINED_COL = -1,
+	MAP_ORANGE = 0,
+	MAP_GREEN,
+	MAP_BROWN,
+	MAP_WHITE,
+	MAP_DBROWN,
+	MAP_DGREEN,
+	MAP_GREY,
+	MAP_N_COLOURS
+};

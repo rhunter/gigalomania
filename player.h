@@ -31,7 +31,9 @@ class Player {
 	int n_men_for_this_island;
 	int n_suspended;
 
-	void doSectorAI(PlayingGameState *gamestate, Sector *sector);
+	bool is_human;
+
+	void doSectorAI(int client_player, PlayingGameState *gamestate, Sector *sector);
 	static bool alliances[n_players_c][n_players_c];
 	static int alliance_last_asked[n_players_c][n_players_c];
 
@@ -42,15 +44,18 @@ class Player {
 public:
 	//Player(int index, char *name);
 	//Player(int index, int personality);
-	Player(int index);
+	Player(bool is_human, int index);
 	~Player();
 
+	bool isHuman() const {
+		return this->is_human;
+	}
 	//int getShieldIndex();
 	static int getShieldIndex(bool allied[n_players_c]);
 	/*int getPersonality() {
 	return personality;
 	}*/
-	void doAIUpdate(PlayingGameState *gamestate);
+	void doAIUpdate(int client_player, PlayingGameState *gamestate);
 	int getFinalMen() const;
 	bool isDead() const {
 		return this->dead;

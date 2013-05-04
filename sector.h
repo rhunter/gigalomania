@@ -102,7 +102,7 @@ public:
 		for(int i=0;i<n_epochs_c+1;i++)
 			soldiers[i] = 0;
 	}
-	bool canLeaveSafely(int a_player) const;
+	bool canLeaveSafely() const;
 	void retreat(bool only_air);
 
 	static int getIndividualStrength(int i);
@@ -337,12 +337,12 @@ class Sector {
 	vector<Design *> *designs;
 
 	int getBuildingCost(Type type) const;
-	void destroyBuilding(Type building_type);
-	void destroyBuilding(Type building_type,bool silent);
+	void destroyBuilding(Type building_type,int client_player);
+	void destroyBuilding(Type building_type,bool silent,int client_player);
 
 	int getDefenceStrength() const;
-	void doCombat();
-	void doPlayer();
+	void doCombat(int client_player);
+	void doPlayer(int client_player);
 
 	Building *buildings[N_BUILDINGS];
 	Army *assembled_army;
@@ -355,11 +355,11 @@ class Sector {
 	PlayingGameState *gamestate;
 public:
 
-	Sector(PlayingGameState *gamestate, int epoch, int xpos, int ypos);
+	Sector(PlayingGameState *gamestate, int epoch, int xpos, int ypos, MapColour map_colour);
 	~Sector();
 
 	void createTower(int player,int population);
-	void destroyTower(bool nuked);
+	void destroyTower(bool nuked, int client_player);
 	bool canShutdown() const;
 	void shutdown();
 	bool isShutdown() const {
@@ -389,12 +389,12 @@ public:
 	int getStoredDefenders(int epoch) const;
 	bool useShield(Building *building,int shield);
 	int getStoredShields(int shield) const;
-	void update();
+	void update(int client_player);
 
 	int getNFeatures() const {
 		return this->features->size();
 	}
-	Feature *getFeature(int i) const {
+	const Feature *getFeature(int i) const {
 		return this->features->at(i);
 	}
 	const ParticleSystem *getParticleSystem() const {
@@ -417,19 +417,22 @@ public:
 	int getActivePlayer() const;
 
 	void setCurrentDesign(Design *current_design);
-	Design *getCurrentDesign() const;
+	const Design *getCurrentDesign() const;
 	void setCurrentManufacture(Design *current_manufacture);
-	Design *getCurrentManufacture() const;
+	const Design *getCurrentManufacture() const;
 	void inventionTimeLeft(int *halfdays,int *hours) const;
 	void manufactureTotalTime(int *halfdays,int *hours) const;
 	void manufactureTimeLeft(int *halfdays,int *hours) const;
 	bool inventionKnown(Invention::Type type,int epoch) const;
 	void trashDesign(Invention *invention);
 	void trashDesign(Design *design);
-	bool nuke(Sector *source);
+	void nukeSector(Sector *source);
 	int beingNuked(int *nuke_time) const {
 		*nuke_time = this->nuke_time;
 		return nuke_by_player;
+	}
+	bool isBeingNuked() const {
+		return nuke_by_player != -1;
 	}
 	bool isNuked() const {
 		return this->nuked;
@@ -463,13 +466,20 @@ public:
 	int getFAmount() const;
 	int getMiners(Id id) const;
 	int getBuilders(Type type) const;
-	Army *getAssembledArmy() const {
+	const Army *getAssembledArmy() const {
 		return assembled_army;
 	}
-	Army *getStoredArmy() const {
+	Army *getAssembledArmy() {
+		return assembled_army;
+	}
+	const Army *getStoredArmy() const {
 		return stored_army;
 	}
-	Army *getArmy(int player) const;
+	Army *getStoredArmy() {
+		return stored_army;
+	}
+	const Army *getArmy(int player) const;
+	Army *getArmy(int player);
 	bool enemiesPresent() const;
 	bool enemiesPresentWithBombardment() const;
 	bool enemiesPresent(int player) const;
@@ -477,7 +487,7 @@ public:
 	void returnAssembledArmy();
 	void returnArmy();
 	void returnArmy(Army *army);
-	bool moveArmy(int player, Army *army);
+	bool moveArmy(Army *army);
 	void evacuate();
 
 	//void doAIUpdate();

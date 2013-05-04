@@ -239,6 +239,9 @@ GameResult gameResult = GAMERESULT_UNDEFINED;
 
 GameStateID gameStateID = GAMESTATEID_UNDEFINED;
 int human_player = 0;
+bool isDemo() {
+	return human_player == PLAYER_DEMO;
+}
 //int enemy_player = 1;
 //GameWon gameWon = GAME_PLAYING;
 bool state_changed = false;
@@ -278,6 +281,10 @@ bool completed_island[max_islands_per_epoch_c];
 //const int n_islands_c = 10;
 Map *maps[n_epochs_c][max_islands_per_epoch_c];
 Map *map = NULL;
+
+const Map *getMap() {
+	return map;
+}
 
 Screen *screen = NULL;
 GameState *gamestate = NULL;
@@ -353,7 +360,7 @@ void Map::createSectors(PlayingGameState *gamestate, int epoch) {
 	for(int x=0;x<map_width_c;x++) {
 		for(int y=0;y<map_height_c;y++) {
 			if( sector_at[x][y] ) {
-				this->sectors[x][y] = new Sector(gamestate, epoch, x, y);
+				this->sectors[x][y] = new Sector(gamestate, epoch, x, y, map->getColour());
 				/*for(int i=0;i<N_ID;i++) {
 				this->sectors[x][y]->setElements(i, this->elements[i]);
 				}*/
@@ -628,6 +635,10 @@ void newGame() {
 
 	//n_men_store = 1000;
 	//setEpoch(9);
+}
+
+void setClientPlayer(int set_client_player) {
+	::human_player = set_client_player;
 }
 
 void nextEpoch() {
@@ -2543,7 +2554,7 @@ void setupPlayers() {
 	ASSERT( n_opponents+1 <= maps[start_epoch][selected_island]->getNSquares() );
 	int n_free = 4;
 	if( human_player != PLAYER_DEMO ) {
-		players[human_player] = new Player(human_player);
+		players[human_player] = new Player(true, human_player);
 		n_free--;
 	}
 	else {
@@ -2556,7 +2567,7 @@ void setupPlayers() {
 			for(int j=0;j<4;j++) {
 				if( players[j] == NULL ) {
 					if( indx == 0 ) {
-						players[j] = new Player(j);
+						players[j] = new Player(false, j);
 						n_free--;
 						break;
 					}
@@ -3082,15 +3093,15 @@ void setGameStateID(GameStateID state) {
 	}
 
 	if( gameStateID == GAMESTATEID_CHOOSEGAMETYPE )
-		gamestate = new ChooseGameTypeGameState();
+		gamestate = new ChooseGameTypeGameState(human_player);
 	else if( gameStateID == GAMESTATEID_CHOOSEDIFFICULTY )
-		gamestate = new ChooseDifficultyGameState();
+		gamestate = new ChooseDifficultyGameState(human_player);
 	else if( gameStateID == GAMESTATEID_CHOOSEPLAYER )
-		gamestate = new ChoosePlayerGameState();
+		gamestate = new ChoosePlayerGameState(human_player);
 	else if( gameStateID == GAMESTATEID_PLACEMEN )
-		gamestate = new PlaceMenGameState();
+		gamestate = new PlaceMenGameState(human_player);
 	else if( gameStateID == GAMESTATEID_PLAYING ) {
-		gamestate = new PlayingGameState();
+		gamestate = new PlayingGameState(human_player);
 		int map_x = static_cast<PlaceMenGameState *>(old_gamestate)->getStartMapX();
 		int map_y = static_cast<PlaceMenGameState *>(old_gamestate)->getStartMapY();
 		int n_men = human_player == PLAYER_DEMO ? 0 : players[human_player]->getNMenForThisIsland();
@@ -3098,9 +3109,9 @@ void setGameStateID(GameStateID state) {
 		static_cast<PlayingGameState *>(gamestate)->createSectors(map_x, map_y, n_men);
 	}
 	else if( gameStateID == GAMESTATEID_ENDISLAND )
-		gamestate = new EndIslandGameState();
+		gamestate = new EndIslandGameState(human_player);
 	else if( gameStateID == GAMESTATEID_GAMECOMPLETE )
-		gamestate = new GameCompleteGameState();
+		gamestate = new GameCompleteGameState(human_player);
 	else {
 		ASSERT(false);
 	}
@@ -3330,7 +3341,7 @@ void updateGame() {
 		if( gameStateID == GAMESTATEID_PLAYING ) {
 			for(int i=0;i<n_players_c;i++) {
 				if( i != human_player && players[i] != NULL )
-					players[i]->doAIUpdate(static_cast<PlayingGameState *>(gamestate));
+					players[i]->doAIUpdate(human_player, static_cast<PlayingGameState *>(gamestate));
 			}
 			//players[ enemy_player ]->doAIUpdate();
 			gamestate->update();
@@ -3340,7 +3351,7 @@ void updateGame() {
 					map->sectors[x][y]->update();*/
 					Sector *sector = map->getSector(x, y);
 					if( sector != NULL ) {
-						sector->update();
+						sector->update(human_player);
 					}
 				}
 			}

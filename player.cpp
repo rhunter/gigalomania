@@ -51,8 +51,8 @@ void PlayerType::getColour(int *r,int *g,int *b,PlayerTypeID id) {
 
 //Player::Player(int index, char *name) {
 //Player::Player(int index, int personality) {
-Player::Player(int index) :
-index(index)
+Player::Player(bool is_human, int index) :
+is_human(is_human), index(index)
 {
 	this->dead = false;
 	//this->personality = personality;
@@ -141,8 +141,9 @@ int Player::allianceLastAsked(int a, int b) {
 
 bool Player::askHuman() {
 	const int wait_time_human_c = 5000;
-	ASSERT( !isAlliance(index, human_player) );
-	ASSERT( index != human_player );
+	//ASSERT( !isAlliance(index, human_player) );
+	//ASSERT( index != human_player );
+	ASSERT( !this->is_human );
 	// whether to _consider_ asking the human player - we still have to go through the requestAlliance test afterwards
 	int time = getGameTime();
 	if( alliance_last_asked_human == -1 ) {
@@ -163,8 +164,9 @@ bool Player::requestAlliance(int player) {
 	// 'player' requests alliance with 'this'
 	const int wait_time_c = 5000;
 	ASSERT( !isAlliance(index, player) );
-	ASSERT( index != player );
-	ASSERT(this->index != human_player);
+	//ASSERT( index != player );
+	//ASSERT(this->index != human_player);
+	ASSERT( !this->is_human );
 	int last_asked = Player::allianceLastAsked(index, player);
 	int time = getGameTime();
 	if( last_asked == -1 || time >= last_asked + wait_time_c ) {
@@ -288,7 +290,7 @@ void Player::kill(PlayingGameState *gamestate) {
 	gamestate->resetShieldButtons(); // needed to update player shield buttons
 }
 
-void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
+void Player::doSectorAI(int client_player, PlayingGameState *gamestate, Sector *sector) {
 	const int MIN_POP = 5;
 	const int EVACUATE_LEVEL = 3;
 
@@ -512,9 +514,9 @@ void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
 		if( nuke_sector == NULL ) {
 			break;
 		}
-		if( sector->getStoredArmy()->getSoldiers(nuclear_epoch_c) > 0 ) {
+		if( sector->getStoredArmy()->getSoldiers(nuclear_epoch_c) > 0 && !sector->isBeingNuked() ) {
 			// nuke
-			nuke_sector->nuke(sector);
+			nuke_sector->nukeSector(sector);
 			sector->getStoredArmy()->remove(nuclear_epoch_c, 1);
 		}
 		else {
@@ -809,11 +811,11 @@ void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
 
 				if( strength + assembled_strength >= min_req || enemiesPresentWithBombardment ) {
 					ASSERT( !target_sector->isNuked() );
-					if( target_sector->getPlayer() == human_player && !target_sector->getArmy(this->index)->any(true) ) {
+					if( target_sector->getPlayer() == client_player && !target_sector->getArmy(this->index)->any(true) ) {
 						time_rate = 1; // auto-slow if attacking a player sector (but not if already being attacked by this player)
 						gamestate->refreshTimeRate();
 					}
-					bool moved_all = target_sector->moveArmy(sector->getPlayer(), sector->getAssembledArmy());
+					bool moved_all = target_sector->moveArmy(sector->getAssembledArmy());
 					ASSERT(moved_all);
 				}
 				else {
@@ -825,7 +827,7 @@ void Player::doSectorAI(PlayingGameState *gamestate, Sector *sector) {
 }
 
 
-void Player::doAIUpdate(PlayingGameState *gamestate) {
+void Player::doAIUpdate(int client_player, PlayingGameState *gamestate) {
 	if( players[index]->isDead() ) {
 		return;
 	}
@@ -878,14 +880,14 @@ void Player::doAIUpdate(PlayingGameState *gamestate) {
 				continue;
 			if( sector->getActivePlayer() == this->index ) {
 				//map->sectors[x][y]->doAIUpdate();
-				doSectorAI(gamestate, sector);
+				doSectorAI(client_player, gamestate, sector);
 			}
 			else {
 				Army *army = sector->getArmy(index);
 				if( !army->any(true) ) {
 					// no army to move
 				}
-				else if( !army->canLeaveSafely(index) ) {
+				else if( !army->canLeaveSafely() ) {
 					// can't retreat safely
 				}
 				else {
@@ -912,7 +914,7 @@ void Player::doAIUpdate(PlayingGameState *gamestate) {
 								Sector *c_sector = map->getSector(cx, cy);
 								if( c_sector != NULL && c_sector->getActivePlayer() == this->index ) {
 									ASSERT( c_sector != sector );
-									done = c_sector->moveArmy(index, army);
+									done = c_sector->moveArmy(army);
 								}
 							}
 						}
