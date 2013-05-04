@@ -1,4 +1,4 @@
-This source has been tested with Visual C++ 2010 Express Edition under Windows 7 (32 and 64 bit), GCC under Linux (Ubuntu 12.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+This source has been tested with Visual C++ Express 2012 for Desktop under Windows 7 and Windows 8, GCC under Linux (Ubuntu 12.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
 
 Linux
 =====
@@ -200,4 +200,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 29 March 2013
+Mark Harman 4 May 2013
