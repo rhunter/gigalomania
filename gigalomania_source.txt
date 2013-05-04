@@ -165,6 +165,8 @@ History
 
 Note, this history is only for changes related to the source code. See the Gigalomania readme or homepage for a full history.
 
+Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition.
+
 Version 0.26 adds the MorphOS and AmigaOS 4 ports.
 
 Version 0.25 adds the AROS port. Also no longer using Resource files for the Qt versions.
