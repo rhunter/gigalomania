@@ -160,7 +160,8 @@ const char *PanelPage::getInfoRMB() const {
 void PanelPage::free(bool free_this) {
 	for(unsigned int i=0;i<children->size();i++) {
 		PanelPage *panel = children->at(i);
-		if( !panel->survive_owner ) {
+		// panel should be non-NULL, but to satisfy VS Code Analysis...
+		if( panel != NULL && !panel->survive_owner ) {
 			if( free_this ) {
 				panel->owner = NULL; // this must be done before deletion!
 				delete panel;

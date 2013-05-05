@@ -1049,6 +1049,9 @@ Design *Sector::canBuildDesign(Invention::Type type,int epoch) const {
 	for(unsigned int i=0;i<this->designs->size() && best_design==NULL;i++) {
 		//Design *design = (Design *)this->designs->elementAt(i);
 		Design *design = this->designs->at(i);
+		// design should be non-NULL, but to satisfy VS Code Analysis...
+		if( design == NULL )
+			continue;
 		if( design->getInvention() != invention )
 			continue;
 		bool ok = canBuildDesign(design);
@@ -1157,6 +1160,9 @@ Design *Sector::knownDesign(Invention::Type type,int epoch) const {
 	//for(unsigned int i=0;i<this->designs->size();i++) {
 	for(unsigned int i=0;i<this->designs->size() && best_design==NULL;i++) {
 		Design *design = this->designs->at(i);
+		// design should be non-NULL, but to satisfy VS Code Analysis...
+		if( design == NULL )
+			continue;
 		if( design->getInvention() == invention ) {
 			//ASSERT( best_design == NULL );
 			best_design = design;

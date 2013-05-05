@@ -485,7 +485,8 @@ void Map::calculateStats() const {
 		for(int y=0;y<map_height_c;y++) {
 			if( this->sector_at[x][y] ) {
 				Sector *sector = this->sectors[x][y];
-				if( sector->getPlayer() != -1 ) {
+				if( sector->getPlayer() != -1 && players[sector->getPlayer()] != NULL ) {
+					// check for players[sector->getPlayer()] not being NULL should be redundant, but just to be safe
 					players[sector->getPlayer()]->addNDeaths( - sector->getPopulation() );
 					if( sector->isShutdown() && gameResult == GAMERESULT_WON ) {
 						//players[sector->getPlayer()]->n_suspended += sector->getPopulation();
@@ -671,7 +672,7 @@ void nextIsland() {
 	LOG("next island: %d\n", selected_island);
 
 	map = maps[start_epoch][selected_island];
-	LOG("map name: %s\n", map->getName());
+	LOG("map name: %s\n", map==NULL ? "NULL?!" : map->getName());
 	gamestate->reset();
     LOG("done reset\n");
 }
