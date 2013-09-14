@@ -19,12 +19,6 @@ namespace Gigalomania {
 		void setTitle(const char *title);
 		void clear();
 		void refresh();
-		/*const SDL_Surface *getSurface() const {
-			return this->surface;
-		}
-		SDL_Surface *getSurface() {
-			return this->surface;
-		}*/
 		int getWidth() const;
 		int getHeight() const;
 		void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
@@ -50,9 +44,4 @@ public:
 	void setQuit() {
 		quit = true;
 	}
-	/*void getMousePressed(bool *m_left, bool *m_middle, bool *m_right) const {
-		*m_left = m_left_pressed;
-		*m_middle = m_middle_pressed;
-		*m_right = m_right_pressed;
-	}*/
 };

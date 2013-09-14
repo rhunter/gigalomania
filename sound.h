@@ -20,7 +20,6 @@ void freeSound();
 
 namespace Gigalomania {
 	class Sample : public TrackedObject {
-		//FMOD::Sound *sound;
 		bool is_music;
 		Mix_Music *music;
 		Mix_Chunk *chunk;
@@ -32,8 +31,6 @@ namespace Gigalomania {
 			channel = -1;
 		}
 	public:
-		/*Sample(FMOD::Sound *sound) : sound(sound) {
-		}*/
 		Sample() : is_music(false), music(NULL), chunk(NULL) {
 			// create dummy Sample
 		}

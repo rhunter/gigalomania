@@ -17,8 +17,6 @@ namespace Gigalomania {
 		static SDL_Surface *dest_surf;
 		float scale_x, scale_y;
 
-		//unsigned char mask_r, mask_g, mask_b;
-
 		Image();
 
 		void free();
@@ -37,8 +35,6 @@ namespace Gigalomania {
 		int getScaledHeight() const {
 			return (int)(this->getHeight() / scale_y);
 		}
-		/*const SDL_Surface *getSDLSurface() const;
-		SDL_Surface *getSDLSurface();*/
 		void convertToDisplayFormat();
 		bool copyPalette(const Image *image);
 		float getScaleX() const {
@@ -66,12 +62,6 @@ namespace Gigalomania {
 		unsigned char getPixelIndex(int x,int y) const;
 		bool setPixelIndex(int x,int y,unsigned char c);
 		bool setColor(int index,unsigned char r,unsigned char g,unsigned char b);
-		//bool setMaskColor(unsigned char r,unsigned char g,unsigned char b);
-		/*void getMaskColor(unsigned char *r,unsigned char *g,unsigned char *b) {
-			*r = mask_r;
-			*g = mask_g;
-			*b = mask_b;
-		}*/
 		bool createAlphaForColor(bool mask, unsigned char mr, unsigned char mg, unsigned char mb, unsigned char ar, unsigned char ag, unsigned char ab, unsigned char alpha);
 		void scaleAlpha(float scale);
 		bool convertToHiColor(bool alpha);
@@ -100,7 +90,6 @@ namespace Gigalomania {
 		};
 		static void writeNumbers(int x,int y,Image *images[10],int number,Justify justify,bool mask);
 		static void write(int x,int y,Image *images[26],const char *text,Justify justify,bool mask);
-		//static void writeMixedCase(int x,int y,Image *large[26],Image *small[26],Image *numbers[10],char *text,Justify justify,bool mask);
 		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify,bool mask);
 
 		// SDL specific

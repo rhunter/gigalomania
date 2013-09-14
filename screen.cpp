@@ -47,9 +47,6 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 	}
 	LOG("screen opened ok\n");
 
-	//SDL_Palette *palette = background->getSDLSurface()->format->palette;
-	//SDL_SetColors(surface, palette->colors, 0, palette->ncolors);
-
 	if( mobile_ui ) {
 		SDL_ShowCursor(false); // comment out to test with system cursor, for testing purposes when ran on non-touchscreen devices
 	}
@@ -68,7 +65,6 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 
 	Image::setGraphicsOutput(surface);
 
-	//this->reset();
 	return true;
 }
 
@@ -124,7 +120,7 @@ bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, boo
 	return ( *m_left || *m_middle || *m_right );
 }
 
-Application::Application() : quit(false)/*, m_left_pressed(false), m_middle_pressed(false), m_right_pressed(false)*/ {
+Application::Application() : quit(false) {
 }
 
 Application::~Application() {
@@ -154,28 +150,22 @@ const int TICK_INTERVAL = 25; // 40 fps max
 static int next_time = 0;
 
 void wait() {
-	//int now = SDL_GetTicks();
 	int now = application->getTicks();
 	int res = 0;
 	if(next_time > now)
 		res = next_time - now;
-	//SDL_Delay(res);
 	application->delay(res);
 	next_time = now + res + TICK_INTERVAL;
 }
 
 void Application::runMainLoop() {
-	//Uint32 elapsed_time = SDL_GetTicks();
 	int elapsed_time = application->getTicks();
-
-	//lastmouseclick_time = 0;
 
 	SDL_Event event;
 	quit = false;
 	const bool print_fps = false;
 	int last_fps_time = clock();
 	const int fps_frames_c = 50;
-	//const int fps_frames_c = 1;
 	int frames = 0;
 	while(!quit) {
 		if( print_fps && frames == fps_frames_c ) {
@@ -191,8 +181,6 @@ void Application::runMainLoop() {
 		updateSound();
 
 		// draw screen
-		/*if( !paused )
-			gamestate->draw();*/
 		drawGame();
 
 		/* wait() to avoid 100% CPU - it's debatable whether we should do this,
@@ -202,7 +190,6 @@ void Application::runMainLoop() {
 		 */
 		wait();
 
-		//Uint32 new_time = SDL_GetTicks();
 		int new_time = application->getTicks();
 		if( !paused ) {
 			updateTime(new_time - elapsed_time);
@@ -212,17 +199,9 @@ void Application::runMainLoop() {
 		elapsed_time = new_time;
 
 		// user input
-		//bool handled_mouseclick_this_frame = false;
-		//if( SDL_PollEvent(&event) == 1 ) {
 		while( SDL_PollEvent(&event) == 1 ) {
-			//bool playing_game_quit = false;
 			switch (event.type) {
 			case SDL_QUIT:
-				/*if( gameStateID == GAMESTATEID_PLAYING ) {
-					static_cast<PlayingGameState *>(gamestate)->requestQuit();
-				}
-				else
-					quit = true;*/
 				// same as pressing escape
 				keypressEscape();
 				break;
@@ -235,9 +214,6 @@ void Application::runMainLoop() {
 					else if( key.sym == SDLK_p ) {
 						keypressP();
 					}
-					/*else if( key.sym == SDLK_q ) {
-						keypressQ();
-					}*/
 					break;
 				}
 			case SDL_MOUSEBUTTONDOWN:
@@ -261,49 +237,11 @@ void Application::runMainLoop() {
 					else if( m_left || m_middle || m_right ) {
 						int m_x = 0, m_y = 0;
 						screen->getMouseCoords(&m_x, &m_y);
-						/*
-						// also check state, to allow for multiple buttons held down
-						// UPDATE: not done, as this doesn't work well on Linux - best to avoid two-mouse-button actions altogether!
-						Uint8 m_b = SDL_GetMouseState(&m_x,&m_y);
-						if( ( m_b & SDL_BUTTON(1) ) != 0 )
-							m_left = true;
-						if( ( m_b & SDL_BUTTON(2) ) != 0 )
-							m_middle = true;
-						if( ( m_b & SDL_BUTTON(3) ) != 0 )
-							m_right = true;
-						*/
 						mouseClick(m_x, m_y, m_left, m_middle, m_right, true);
 					}
 
-					/*if( m_left )
-						m_left_pressed = true;
-					if( m_middle )
-						m_middle_pressed = true;
-					if( m_right )
-						m_right_pressed = true;*/
 					break;
 				}
-			/*case SDL_MOUSEBUTTONUP:
-				{
-					bool m_left = false, m_middle = false, m_right = false;
-					Uint8 button = event.button.button;
-					if( button == SDL_BUTTON_LEFT ) {
-						m_left = true;
-					}
-					else if( button == SDL_BUTTON_MIDDLE ) {
-						m_middle = true;
-					}
-					else if( button == SDL_BUTTON_RIGHT ) {
-						m_right = true;
-					}
-					if( m_left )
-						m_left_pressed = false;
-					if( m_middle )
-						m_middle_pressed = false;
-					if( m_right )
-						m_right_pressed = false;
-					break;
-				}*/
 			case SDL_ACTIVEEVENT:
 #ifndef AROS
 				// disabled for AROS, as we receive inactive events when the mouse goes outside the window!
