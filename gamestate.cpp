@@ -2072,8 +2072,11 @@ void PlayingGameState::cancelPlayerAskingAlliance() {
 	gamestate->speed_button->setImage( icon_speeds[ time_rate-1 ] );
 }*/
 
-//void PlayingGameState::requestQuit() {
 void GameState::requestQuit() {
+	application->setQuit();
+}
+
+void GameState::createQuitWindow() {
     if( confirm_window == NULL /*&& gameResult != GAMERESULT_QUIT*/ && fade == NULL ) {
 		confirm_type = CONFIRMTYPE_QUITGAME;
 		confirm_window = new PanelPage(120, 120, 64, 32);

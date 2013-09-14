@@ -189,6 +189,7 @@ protected:
     Button *confirm_no_button;
 
 	void setDefaultMouseImage();
+    void createQuitWindow();
 
 public:
 	GameState(int client_player);
@@ -198,6 +199,7 @@ public:
 	virtual void draw();
 	virtual void update() {};
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
+    virtual void requestQuit();
 
 	void fadeScreen(bool out, int delay, void (*func_finish)());
 	void whiteFlash();
@@ -207,9 +209,8 @@ public:
 	virtual void addTextEffect(TextEffect *effect) {
 		// only implemented for PlayingGameState
 	}
-    void requestQuit();
     void closeConfirmWindow();
-    bool hasRequestQuit() const {
+    bool hasConfirmWindow() const {
         return confirm_window != NULL;
     }
 };
@@ -269,6 +270,9 @@ public:
 	virtual void reset();
 	virtual void draw();
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
+    virtual void requestQuit() {
+		this->createQuitWindow();
+	}
 
 	ChooseMenPanel *getChooseMenPanel();
     /*int getOffX() const {
@@ -346,6 +350,9 @@ public:
 	virtual void draw();
 	virtual void update();
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
+    virtual void requestQuit() {
+		this->createQuitWindow();
+	}
 
 	GamePanel *getGamePanel();
 	//Sector *getCurrentSector();
@@ -383,7 +390,6 @@ public:
 	void registerDeath(int player, int epoch) {
 		n_deaths[player][epoch]++;
 	}
-    //void requestQuit();
 	void refreshTimeRate();
 
 	// functions for requesting a modification to the game world based on client user input

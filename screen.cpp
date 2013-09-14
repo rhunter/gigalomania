@@ -229,15 +229,15 @@ void Application::runMainLoop() {
 			case SDL_KEYDOWN:
 				{
 					SDL_keysym key = event.key.keysym;
-					if( key.sym == SDLK_ESCAPE ) {
+					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q ) {
 						keypressEscape();
 					}
 					else if( key.sym == SDLK_p ) {
 						keypressP();
 					}
-					else if( key.sym == SDLK_q ) {
+					/*else if( key.sym == SDLK_q ) {
 						keypressQ();
-					}
+					}*/
 					break;
 				}
 			case SDL_MOUSEBUTTONDOWN:

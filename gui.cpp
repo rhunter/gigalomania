@@ -341,7 +341,7 @@ void ChooseMenPanel::refreshLoadSaveButtons() {
 }
 
 void ChooseMenPanel::draw() {
-    if( ( this->getPage() == STATE_LOADGAME || this->getPage() == STATE_SAVEGAME ) && !this->gamestate->hasRequestQuit() ) {
+    if( ( this->getPage() == STATE_LOADGAME || this->getPage() == STATE_SAVEGAME ) && !this->gamestate->hasConfirmWindow() ) {
         // hide background
         // (if request quit, then we'll hide background after drawing the GUI)
         screen->fillRectWithAlpha(0, 0, default_width_c*scale_width, default_height_c*scale_height, 0, 0, 0, 255-32);
@@ -356,7 +356,7 @@ void ChooseMenPanel::draw() {
 		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 36, numbers_white, getMenAvailable() - this->n_men,Image::JUSTIFY_CENTRE, true);
 	}
 
-    if( this->gamestate->hasRequestQuit() ) {
+    if( this->gamestate->hasConfirmWindow() ) {
         // hide background (do here, as also want to cover the GUI)
         screen->fillRectWithAlpha(0, 0, default_width_c*scale_width, default_height_c*scale_height, 0, 0, 0, 255-32);
     }

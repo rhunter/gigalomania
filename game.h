@@ -338,7 +338,7 @@ const Map *getMap();
 
 void keypressEscape();
 void keypressP();
-void keypressQ();
+//void keypressQ();
 void mouseClick(int m_x, int m_y, bool m_left, bool m_middle, bool m_right, bool click);
 void updateGame();
 void drawGame();

@@ -3270,16 +3270,13 @@ void cleanup() {
 bool debugwindow = false;
 
 void keypressEscape() {
-    if( gameStateID == GAMESTATEID_PLACEMEN || gameStateID == GAMESTATEID_PLAYING ) {
-		/*if( !state_changed )
-		playing_game_quit = true;*/
-        //static_cast<PlayingGameState *>(gamestate)->requestQuit();
+    /*if( gameStateID == GAMESTATEID_PLACEMEN || gameStateID == GAMESTATEID_PLAYING ) {
         gamestate->requestQuit();
     }
 	else {
-		//quit = true;
 		application->setQuit();
-	}
+	}*/
+    gamestate->requestQuit();
 }
 
 void keypressP() {
@@ -3295,11 +3292,11 @@ void keypressP() {
     }
 }
 
-void keypressQ() {
+/*void keypressQ() {
 	if( gameStateID == GAMESTATEID_PLAYING && !state_changed ) {
 		static_cast<PlayingGameState *>(gamestate)->requestQuit();
 	}
-}
+}*/
 
 void mouseClick(int m_x, int m_y, bool m_left, bool m_middle, bool m_right, bool click) {
 	const int mousepress_delay = 100;
