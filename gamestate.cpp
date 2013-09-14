@@ -1730,7 +1730,8 @@ void PlayingGameState::update() {
 					int fire_random = rand() % RAND_MAX;
 					if( fire_random <= fire_prob ) {
 						// fire!
-						AmmoEffect *ammoeffect = new AmmoEffect( soldier->epoch, soldier->dir, soldier->xpos, soldier->ypos );
+						Image *image = attackers_walking[soldier->player][soldier->epoch][soldier->dir][0];
+						AmmoEffect *ammoeffect = new AmmoEffect( soldier->epoch, soldier->dir, soldier->xpos + image->getScaledWidth()/2, soldier->ypos );
 						//this->ammo_effects->add(ammoeffect);
 						this->ammo_effects->push_back(ammoeffect);
 					}

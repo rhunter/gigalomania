@@ -1282,15 +1282,16 @@ bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
 			}
 		    gfx_image->setScale(scale_width/scale_factor_w, scale_height/scale_factor_h); // so the copying will work at the right scale for the input image
 		}
-		const int width_per_frame_c = 16;
-		n_attacker_frames[epoch][dir] = gfx_image->getScaledWidth()/width_per_frame_c;
+		int height_per_frame = gfx_image->getScaledHeight();
+		int width_per_frame = height_per_frame;
+		n_attacker_frames[epoch][dir] = gfx_image->getScaledWidth()/width_per_frame;
 		//LOG("epoch %d, direction %d has %d frames\n", epoch, dir, n_attacker_frames[epoch][dir]);
 		// need to update max_attacker_frames_c if we ever want to allow more frames!
 		ASSERT( n_attacker_frames[epoch][dir] <= max_attacker_frames_c );
 		for(int player=0;player<n_players_c;player++) {
 			int n_frames = n_attacker_frames[epoch][dir];
 			for(int frame=0;frame<n_frames;frame++) {
-				attackers_walking[player][epoch][dir][frame] = gfx_image->copy(width_per_frame_c*frame, 0, width_per_frame_c, gfx_image->getScaledHeight());
+				attackers_walking[player][epoch][dir][frame] = gfx_image->copy(width_per_frame*frame, 0, width_per_frame, height_per_frame);
 				int r = 0, g = 0, b = 0;
 				PlayerType::getColour(&r, &g, &b, (PlayerType::PlayerTypeID)player);
 				attackers_walking[player][epoch][dir][frame]->remap(240, 0, 0, r, g, b);
