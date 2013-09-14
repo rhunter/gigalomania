@@ -432,6 +432,7 @@ public:
 	virtual void reset();
 	virtual void draw();
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
+    virtual void requestQuit();
 };
 
 class GameCompleteGameState : public GameState {
@@ -444,4 +445,5 @@ public:
 	virtual void reset();
 	virtual void draw();
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
+    virtual void requestQuit();
 };

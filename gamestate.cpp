@@ -2928,9 +2928,13 @@ void EndIslandGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bo
 	//bool m_right = mouse_right(m_b);
 
 	if( ( m_left || m_right ) && click && !state_changed ) {
-		state_changed = true;
-		this->fadeScreen(true, 0, returnToChooseIsland);
+		this->requestQuit();
 	}
+}
+
+void EndIslandGameState::requestQuit() {
+	state_changed = true;
+	this->fadeScreen(true, 0, returnToChooseIsland);
 }
 
 void GameCompleteGameState::reset() {
@@ -2993,7 +2997,11 @@ void GameCompleteGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 	//bool m_right = mouse_right(m_b);
 
 	if( ( m_left || m_right ) && click && !state_changed ) {
-		state_changed = true;
-		this->fadeScreen(true, 0, startNewGame);
+		this->requestQuit();
 	}
+}
+
+void GameCompleteGameState::requestQuit() {
+	state_changed = true;
+	this->fadeScreen(true, 0, startNewGame);
 }
