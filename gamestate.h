@@ -304,7 +304,8 @@ class PlayingGameState : public GameState {
     Button *confirm_no_button;*/
 	int flag_frame_step;
 	int defenders_last_frame_update;
-	int soldiers_last_time_moved;
+	int soldiers_last_time_moved_x;
+	int soldiers_last_time_moved_y;
 	int soldiers_last_time_turned;
 	int air_last_time_moved;
 	const Army *selected_army;

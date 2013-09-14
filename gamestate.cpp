@@ -33,7 +33,7 @@ using std::stringstream;
 //---------------------------------------------------------------------------
 
 const int defenders_frames_per_update_c = (int)(2.0 * ticks_per_frame_c * time_ratio_c); // consider a turn every this number of frames
-const int soldier_move_rate_c = (int)(0.4 * ticks_per_frame_c * time_ratio_c); // ticks per pixel
+const int soldier_move_rate_c = (int)(0.6 * ticks_per_frame_c * time_ratio_c); // ticks per pixel
 const int air_move_rate_c = (int)(0.2 * ticks_per_frame_c * time_ratio_c); // ticks per pixel
 const int soldier_turn_rate_c = (int)(20.0 * ticks_per_frame_c * time_ratio_c); // mean ticks per turn
 
@@ -643,7 +643,8 @@ PlayingGameState::PlayingGameState(int client_player) : GameState(client_player)
 	this->current_sector = NULL;
 	this->flag_frame_step = 0;
 	this->defenders_last_frame_update = 0;
-	this->soldiers_last_time_moved = 0;
+	this->soldiers_last_time_moved_x = 0;
+	this->soldiers_last_time_moved_y = 0;
 	this->soldiers_last_time_turned = 0;
 	this->air_last_time_moved = 0;
 
@@ -1605,11 +1606,17 @@ void PlayingGameState::update() {
 			this->smokeParticleSystem->setBirthRate(0.004f);
 		}
 	}*/
-	int move_soldiers_step = 0;
+	int move_soldiers_step_x = 0;
+	int move_soldiers_step_y = 0;
 	int move_air_step = 0;
-	while( getGameTime() - soldiers_last_time_moved > soldier_move_rate_c ) {
-		move_soldiers_step++;
-		soldiers_last_time_moved += soldier_move_rate_c;
+	// move twice as fast in x direction, to simulate 3D look
+	while( getGameTime() - soldiers_last_time_moved_x > soldier_move_rate_c ) {
+		move_soldiers_step_x++;
+		soldiers_last_time_moved_x += soldier_move_rate_c;
+	}
+	while( getGameTime() - soldiers_last_time_moved_y > 2*soldier_move_rate_c ) {
+		move_soldiers_step_y++;
+		soldiers_last_time_moved_y += 2*soldier_move_rate_c;
 	}
 	while( getGameTime() - air_last_time_moved > air_move_rate_c ) {
 		move_air_step++;
@@ -1687,7 +1694,8 @@ void PlayingGameState::update() {
 					// turn!
 					soldier->dir = (AmmoDirection)(rand() % 4);
 				}
-				if( move_soldiers_step ) {
+				int move_soldiers_step = (soldier->dir == 0 || soldier->dir == 1) ? move_soldiers_step_y : move_soldiers_step_x;
+				if( move_soldiers_step > 0  ) {
 					int step_x = 0;
 					int step_y = 0;
 					if( soldier->dir == 0 )
