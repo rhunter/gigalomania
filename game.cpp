@@ -3287,6 +3287,7 @@ void keypressP() {
         paused = !paused;
         if( paused ) {
             playSample(s_on_hold);
+
             //playSample(s_conquered); // uncomment to test chained samples
             //playSample(s_explosion, SOUND_CHANNEL_FX);
             //playSample(s_explosion);
@@ -3398,8 +3399,8 @@ void updateGame() {
 }
 
 void drawGame() {
-	if( !paused )
-		gamestate->draw();
+	// we now redraw even when paused, to display paused message
+	gamestate->draw();
 }
 
 void playGame(int n_args, char *args[]) {

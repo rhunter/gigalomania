@@ -324,7 +324,13 @@ void GameState::draw() {
 		}
 	}
 
-	//SDL_Flip(screen->getSurface());
+	if( paused ) {
+		string str = mobile_ui ? "touch screen\nto unpause game" : "press p or click\nmouse to unpause game";
+		// n.b., don't use 120 for y pos, need to avoid collision with quit game message
+		// and offset x pos slightly, to avoid overlapping with GUI
+		Image::write(120, 100, letters_small, str.c_str(), Image::JUSTIFY_LEFT, true);
+	}
+
 	screen->refresh();
 }
 
