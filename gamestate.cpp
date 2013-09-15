@@ -338,6 +338,35 @@ void GameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	this->screen_page->input(m_x, m_y, m_left, m_middle, m_right, click);
 }
 
+void GameState::requestQuit() {
+	application->setQuit();
+}
+
+void GameState::createQuitWindow() {
+    if( confirm_window == NULL /*&& gameResult != GAMERESULT_QUIT*/ && fade == NULL ) {
+		confirm_type = CONFIRMTYPE_QUITGAME;
+		confirm_window = new PanelPage(120, 120, 64, 32);
+		Button *text_button = new Button(0, 0, "REALLY QUIT", letters_small);
+		confirm_window->add(text_button);
+		confirm_yes_button = new Button(0, 16, "YES", letters_small);
+		confirm_window->add(confirm_yes_button);
+		confirm_no_button = new Button(32, 16, "NO", letters_small);
+		confirm_window->add(confirm_no_button);
+		screen_page->add(confirm_window);
+	}
+}
+
+void GameState::closeConfirmWindow() {
+    //LOG("GameState::closeConfirmWindow()\n");
+    if( confirm_window != NULL ) {
+        delete confirm_window;
+        confirm_window = NULL;
+        confirm_yes_button = NULL;
+        confirm_no_button = NULL;
+    }
+    //LOG("GameState::closeConfirmWindow() done\n");
+}
+
 ChooseGameTypeGameState::ChooseGameTypeGameState(int client_player) : GameState(client_player) {
 	this->choosegametypePanel = NULL;
 }
@@ -638,6 +667,16 @@ void PlaceMenGameState::requestNewGame() {
 	confirm_window->add(confirm_no_button);
 	this->screen_page->add(confirm_window);
 }
+
+void PlaceMenGameState::requestQuit() {
+	if( choosemenPanel->getPage() == ChooseMenPanel::STATE_CHOOSEMEN && fade == NULL ) {
+		choosemenPanel->setPage(ChooseMenPanel::STATE_CHOOSEISLAND);
+	}
+	else {
+		this->createQuitWindow();
+	}
+}
+
 
 PlayingGameState::PlayingGameState(int client_player) : GameState(client_player) {
 	this->current_sector = NULL;
@@ -2081,34 +2120,6 @@ void PlayingGameState::cancelPlayerAskingAlliance() {
 	gamestate->speed_button->setImage( icon_speeds[ time_rate-1 ] );
 }*/
 
-void GameState::requestQuit() {
-	application->setQuit();
-}
-
-void GameState::createQuitWindow() {
-    if( confirm_window == NULL /*&& gameResult != GAMERESULT_QUIT*/ && fade == NULL ) {
-		confirm_type = CONFIRMTYPE_QUITGAME;
-		confirm_window = new PanelPage(120, 120, 64, 32);
-		Button *text_button = new Button(0, 0, "REALLY QUIT", letters_small);
-		confirm_window->add(text_button);
-		confirm_yes_button = new Button(0, 16, "YES", letters_small);
-		confirm_window->add(confirm_yes_button);
-		confirm_no_button = new Button(32, 16, "NO", letters_small);
-		confirm_window->add(confirm_no_button);
-		screen_page->add(confirm_window);
-	}
-}
-
-void GameState::closeConfirmWindow() {
-    //LOG("GameState::closeConfirmWindow()\n");
-    if( confirm_window != NULL ) {
-        delete confirm_window;
-        confirm_window = NULL;
-        confirm_yes_button = NULL;
-        confirm_no_button = NULL;
-    }
-    //LOG("GameState::closeConfirmWindow() done\n");
-}
 void PlayingGameState::refreshTimeRate() {
 	speed_button->setImage( icon_speeds[ time_rate-1 ] );
 }

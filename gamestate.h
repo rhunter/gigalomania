@@ -270,9 +270,7 @@ public:
 	virtual void reset();
 	virtual void draw();
 	virtual void mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click);
-    virtual void requestQuit() {
-		this->createQuitWindow();
-	}
+    virtual void requestQuit();
 
 	ChooseMenPanel *getChooseMenPanel();
     /*int getOffX() const {
