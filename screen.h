@@ -4,10 +4,21 @@
 *   particlar game in this class.
 */
 
-struct SDL_Surface;
+#if defined(__linux) || defined(__MORPHOS__)
+#include <SDL/SDL.h>
+#else
+#include <sdl.h>
+#endif
 
 namespace Gigalomania {
 	class Screen {
+#if SDL_MAJOR_VERSION == 1
+		SDL_Surface *surface;
+#else
+		SDL_Window *sdlWindow;
+		SDL_Renderer *sdlRenderer;
+#endif
+
 	public:
 		Screen();
 		~Screen();

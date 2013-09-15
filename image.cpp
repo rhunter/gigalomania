@@ -1,14 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#if defined(__linux) || defined(__MORPHOS__)
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#else
-#include <sdl.h>
-#include <sdl_image.h>
-#endif
-
 #include <cassert>
 #include <cmath> // n.b., needed on Linux at least
 
@@ -55,12 +47,20 @@ extern const int DEBUGLEVEL;
 
 using namespace Gigalomania;
 
+#if SDL_MAJOR_VERSION == 1
 SDL_Surface *Image::dest_surf = NULL;
+#else
+SDL_Renderer *Image::sdlRenderer = NULL;
+#endif
 
 Image::Image() {
 	this->data = NULL;
 	this->need_to_free_data = NULL;
 	this->surface = NULL;
+#if SDL_MAJOR_VERSION == 1
+#else
+	this->texture = NULL;
+#endif
 	this->scale_x = 1;
 	this->scale_y = 1;
 }
@@ -74,10 +74,13 @@ void Image::free() {
 		SDL_FreeSurface(this->surface);
 		this->surface = NULL;
 	}
-	/*if( this->bitmap != NULL ) {
-	FreeImage_Free(this->bitmap);
-	this->bitmap = NULL;
-	}*/
+#if SDL_MAJOR_VERSION == 1
+#else
+	if( this->texture != NULL ) {
+		SDL_DestroyTexture(this->texture);
+		this->texture = NULL;
+	}
+#endif
 	if( need_to_free_data && this->data != NULL ) {
 		delete [] this->data;
 		this->data = NULL;
@@ -97,12 +100,20 @@ void Image::draw(int x, int y,bool mask) const {
 	dstrect.y = (short)y;
 	dstrect.w = 0;
 	dstrect.h = 0;
+#if SDL_MAJOR_VERSION == 1
 	SDL_BlitSurface(surface, &srcrect, dest_surf, &dstrect);
+#else
+	SDL_RenderCopy(sdlRenderer, texture, &srcrect, &dstrect);
+#endif
 }
 
 void Image::drawWithAlpha(int x, int y, unsigned char alpha) const {
 	// n.b., only works if the image doesn't have per-pixel alpha channel
+#if SDL_MAJOR_VERSION == 1
 	SDL_SetAlpha(this->surface, SDL_SRCALPHA|SDL_RLEACCEL, alpha);
+#else
+	SDL_SetTextureAlphaMod(texture, alpha);
+#endif
 	this->draw(x, y, false);
 }
 
@@ -338,6 +349,7 @@ bool Image::convertToHiColor(bool alpha) {
 }
 
 void Image::convertToDisplayFormat() {
+#if SDL_MAJOR_VERSION == 1
 	SDL_Surface *new_surf = NULL;
 	int bpp = this->surface->format->BitsPerPixel;
 	if( bpp == 32 && this->surface->format->Amask != 0 )
@@ -346,6 +358,9 @@ void Image::convertToDisplayFormat() {
 		new_surf = SDL_DisplayFormat(this->surface);
 	SDL_FreeSurface(this->surface);
 	this->surface = new_surf;
+#else
+	texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
+#endif
 }
 
 bool Image::copyPalette(const Image *image) {
@@ -355,7 +370,11 @@ bool Image::copyPalette(const Image *image) {
 	if( this->surface->format->palette->ncolors != image->surface->format->palette->ncolors )
 		return false;
 
+#if SDL_MAJOR_VERSION == 1
 	SDL_SetColors(this->surface, image->surface->format->palette->colors, 0, this->surface->format->palette->ncolors);
+#else
+	SDL_SetPaletteColors(this->surface->format->palette, image->surface->format->palette->colors, 0, this->surface->format->palette->ncolors);
+#endif
 	return true;
 }
 
@@ -473,7 +492,11 @@ void Image::scale(float sx,float sy) {
 		}
 		SDL_Surface *new_surf = SDL_CreateRGBSurfaceFrom(new_data, w, h, bpp, pitch, rmask, gmask, bmask, amask);
 		if( this->surface->format->palette != NULL ) {
+#if SDL_MAJOR_VERSION == 1
 			SDL_SetColors(new_surf, this->surface->format->palette->colors, 0, this->surface->format->palette->ncolors);
+#else
+			SDL_SetPaletteColors(new_surf->format->palette, this->surface->format->palette->colors, 0, this->surface->format->palette->ncolors);
+#endif
 		}
 		free();
 		this->surface = new_surf;
@@ -854,9 +877,15 @@ Image * Image::createRadial(int w,int h,float alpha_scale) {
 	return image;
 }
 
+#if SDL_MAJOR_VERSION == 1
 void Image::setGraphicsOutput(SDL_Surface *dest_surf) {
 	Image::dest_surf = dest_surf;
 }
+#else
+void Image::setGraphicsOutput(SDL_Renderer *sdlRenderer) {
+	Image::sdlRenderer = sdlRenderer;
+}
+#endif
 
 void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justify,bool mask) {
 	char buffer[16] = "";

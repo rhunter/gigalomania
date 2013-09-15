@@ -7,14 +7,26 @@
 
 using std::string;
 
-struct SDL_Surface;
+#if defined(__linux) || defined(__MORPHOS__)
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#else
+#include <sdl.h>
+#include <sdl_image.h>
+#endif
+
 
 namespace Gigalomania {
 	class Image : public TrackedObject {
 		unsigned char *data;
 		bool need_to_free_data;
 		SDL_Surface *surface;
+#if SDL_MAJOR_VERSION == 1
 		static SDL_Surface *dest_surf;
+#else
+		SDL_Texture *texture;
+		static SDL_Renderer *sdlRenderer;
+#endif
 		float scale_x, scale_y;
 
 		Image();
@@ -93,6 +105,10 @@ namespace Gigalomania {
 		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify,bool mask);
 
 		// SDL specific
+#if SDL_MAJOR_VERSION == 1
 		static void setGraphicsOutput(SDL_Surface *dest_surf);
+#else
+		static void setGraphicsOutput(SDL_Renderer *sdlRenderer);
+#endif
 	};
 }

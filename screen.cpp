@@ -1,12 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#if defined(__linux) || defined(__MORPHOS__)
-#include <SDL/SDL.h>
-#else
-#include <sdl.h>
-#endif
-
 #include <cassert>
 #include <ctime>
 
@@ -23,14 +17,13 @@
 
 //---------------------------------------------------------------------------
 
-#if SDL_MAJOR_VERSION == 1
-SDL_Surface *surface;
-#else
-SDL_Window *sdlWindow = NULL;
-SDL_Renderer *sdlRenderer = NULL;
-#endif
-
 Screen::Screen() {
+#if SDL_MAJOR_VERSION == 1
+	surface = NULL;
+#else
+	sdlWindow = NULL;
+	sdlRenderer = NULL;
+#endif
 }
 
 Screen::~Screen() {
@@ -79,7 +72,11 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 		SDL_FreeCursor(old_cursor);
 	}
 
+#if SDL_MAJOR_VERSION == 1
 	Image::setGraphicsOutput(surface);
+#else
+	Image::setGraphicsOutput(sdlRenderer);
+#endif
 
 	return true;
 }
