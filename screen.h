@@ -8,8 +8,6 @@ struct SDL_Surface;
 
 namespace Gigalomania {
 	class Screen {
-		SDL_Surface *surface;
-
 	public:
 		Screen();
 		~Screen();

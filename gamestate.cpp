@@ -145,7 +145,6 @@ FadeEffect::FadeEffect(bool white,bool out,int delay, void (*func_finish)()) : T
 	this->white = white;
 	this->out = out;
 	this->image = Image::createBlankImage(screen->getWidth(), screen->getHeight(), 24);
-	this->image->convertToDisplayFormat();
 	int r = 0, g = 0, b = 0;
 	if( white ) {
 		r = g = b = 255;
@@ -161,6 +160,7 @@ FadeEffect::FadeEffect(bool white,bool out,int delay, void (*func_finish)()) : T
 	rect.h = screen->getHeight();
 	SDL_FillRect(image->getSDLSurface(), &rect, col);*/
 	image->fillRect(0, 0, screen->getWidth(), screen->getHeight(), r, g, b);
+	this->image->convertToDisplayFormat();
 }
 
 FadeEffect::~FadeEffect() {
@@ -188,9 +188,6 @@ bool FadeEffect::render() const {
 		if( !out )
 			alpha = 1.0 - alpha;
 	}
-	/*SDL_Surface *surf = image->getSDLSurface();
-	SDL_SetAlpha(surf, SDL_SRCALPHA|SDL_RLEACCEL, (Uint8)(alpha * 255));
-	image->draw(0, 0, false);*/
 	image->drawWithAlpha(0, 0, (unsigned char)(alpha * 255));
 	if( time > length ) // we still need to draw the fade, on the last time
 		return true;

@@ -251,50 +251,6 @@ void PanelPage::drawPopups() {
 					total_lines += n_lines[j];
 				}
 
-				/*
-				//int col_outline = SDL_MapRGB(screen->getSurface()->format, 255, 255, 255);
-				int col_fill = SDL_MapRGB(screen->getSurface()->format, 0, 0, 128);
-				//int col_fill = SDL_MapRGBA(screen->getSurface()->format, 0, 0, 128, 127);
-				SDL_Rect rect;
-				rect.x = (Sint16)(off_x * scale_width);
-				rect.y = (Sint16)(popup_y - gap_y * scale_height);
-				rect.w = (Uint16)(( max_wid * w + gap_left + gap_right ) * scale_width);
-				rect.h = (Uint16)(( 2 * gap_y + h * total_lines +
-					between_lines_y * ( total_lines - 1 ) +
-					( between_texts_y - between_lines_y ) * ( n_texts - 1 ) ) * scale_height);
-				if( rect.x + rect.w >= default_width_c * scale_width ) {
-					off_x = (int)(default_width_c - 8 - rect.w/scale_width);
-					rect.x = (Sint16)(off_x * scale_width);
-					// also adjust y
-					int new_y = (int)(panel->getBottom() * scale_height);
-					if( new_y + rect.h >= default_height_c * scale_height ) {
-						new_y = (int)(panel->getTop() * scale_height - rect.h);
-					}
-					popup_y += new_y - rect.y;
-					rect.y = new_y;
-				}
-				else if( rect.y + rect.h >= default_height_c * scale_height ) {
-					int new_y = (int)(( default_height_c - 1 ) * scale_height - rect.h);
-					popup_y += new_y - rect.y;
-					rect.y = new_y;
-				}
-				//SDL_FillRect(screen->getSurface(), &rect, col_outline);
-				rect.x++;
-				rect.y++;
-				rect.w -= (Uint16)2;
-				rect.h -= (Uint16)2;
-				//SDL_FillRect(screen->getSurface(), &rect, col_fill);
-				Image *fill_rect = Image::createBlankImage(rect.w, rect.h, 24);
-				fill_rect->convertToDisplayFormat();
-				SDL_Rect rect2 = rect;
-				rect2.x = 0;
-				rect2.y = 0;
-				SDL_FillRect(fill_rect->getSDLSurface(), &rect2, col_fill);
-				SDL_SetAlpha(fill_rect->getSDLSurface(), SDL_SRCALPHA|SDL_RLEACCEL, 160);
-				fill_rect->draw(rect.x, rect.y, false);
-				//fill_rect->drawAlpha(rect.x, rect.y, 0.5);
-				delete fill_rect;*/
-
 				int rect_x = (int)(off_x * scale_width);
 				int rect_y = (int)(popup_y - gap_y * scale_height);
 				int rect_w = (int)(( max_wid * w + gap_left + gap_right ) * scale_width);
@@ -324,8 +280,8 @@ void PanelPage::drawPopups() {
 				rect_h -= 2;
 				//SDL_FillRect(screen->getSurface(), &rect, col_fill);
 				Image *fill_rect = Image::createBlankImage(rect_w, rect_h, 24);
-				fill_rect->convertToDisplayFormat();
 				fill_rect->fillRect(0, 0, rect_w, rect_h, 0, 0, 128);
+				fill_rect->convertToDisplayFormat();
 				fill_rect->drawWithAlpha(rect_x, rect_y, 160);
 				//fill_rect->drawAlpha(rect.x, rect.y, 0.5);
 				delete fill_rect;

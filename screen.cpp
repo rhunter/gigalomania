@@ -23,6 +23,13 @@
 
 //---------------------------------------------------------------------------
 
+#if SDL_MAJOR_VERSION == 1
+SDL_Surface *surface;
+#else
+SDL_Window *sdlWindow = NULL;
+SDL_Renderer *sdlRenderer = NULL;
+#endif
+
 Screen::Screen() {
 }
 
@@ -30,13 +37,18 @@ Screen::~Screen() {
 }
 
 bool Screen::canOpenFullscreen(int width, int height) {
+#if SDL_MAJOR_VERSION == 1
 	if( SDL_VideoModeOK(width, height, 32, SDL_HWSURFACE|SDL_HWPALETTE|SDL_FULLSCREEN) != 0 )
 		return true;
 	return false;
+#else
+	return true; // assume always true?
+#endif
 }
 
 bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 	LOG("Screen::open(%d, %d, %s)\n", screen_width, screen_height, fullscreen?"fullscreen":"windowed");
+#if SDL_MAJOR_VERSION == 1
 	if( fullscreen )
 		surface = SDL_SetVideoMode(screen_width, screen_height, 32, SDL_HWSURFACE|SDL_HWPALETTE|SDL_FULLSCREEN);
 	else
@@ -45,6 +57,10 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 		LOG("failed to open screen at this resolution\n");
 		return false;
 	}
+#else
+	//SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP, &sdlWindow, &sdlRenderer);
+	SDL_CreateWindowAndRenderer(screen_width, screen_height, fullscreen ? SDL_WINDOW_FULLSCREEN : 0, &sdlWindow, &sdlRenderer);
+#endif
 	LOG("screen opened ok\n");
 
 	if( mobile_ui ) {
@@ -69,43 +85,83 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 }
 
 void Screen::setTitle(const char *title) {
+#if SDL_MAJOR_VERSION == 1
 	SDL_WM_SetCaption(title, "");
+#else
+	SDL_SetWindowTitle(sdlWindow, title);
+#endif
 }
 
 void Screen::clear() {
+#if SDL_MAJOR_VERSION == 1
 	SDL_Rect rect;
 	rect.x = 0;
 	rect.y = 0;
 	rect.w = getWidth();
 	rect.h = getHeight();
 	SDL_FillRect(surface, &rect, 0);
+#else
+	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
+#endif
 }
 
 void Screen::refresh() {
-	SDL_Flip(this->surface);
+#if SDL_MAJOR_VERSION == 1
+	SDL_Flip(surface);
+#else
+	SDL_RenderPresent(sdlRenderer);
+#endif
 }
 
 int Screen::getWidth() const {
-	return this->surface->w;
+#if SDL_MAJOR_VERSION == 1
+	return surface->w;
+#else
+	int w = 0, h = 0;
+	SDL_RenderGetLogicalSize(sdlRenderer, &w, &h);
+	return w;
+#endif
 }
 
 int Screen::getHeight() const {
-	return this->surface->h;
+#if SDL_MAJOR_VERSION == 1
+	return surface->h;
+#else
+	int w = 0, h = 0;
+	SDL_RenderGetLogicalSize(sdlRenderer, &w, &h);
+	return h;
+#endif
 }
 
 void Screen::fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b) {
-	Uint32 col = SDL_MapRGB(surface->format, r, g, b);
 	SDL_Rect rect;
 	rect.x = x;
 	rect.y = y;
 	rect.w = w;
 	rect.h = h;
+#if SDL_MAJOR_VERSION == 1
+	Uint32 col = SDL_MapRGB(surface->format, r, g, b);
 	SDL_FillRect(surface, &rect, col);
+#else
+	SDL_SetRenderDrawColor(sdlRenderer, r, g, b, 255);
+	SDL_RenderFillRect(sdlRenderer, &rect);
+#endif
 }
 
 void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha) {
-	// not supported with SDL!
+#if SDL_MAJOR_VERSION == 1
+	// not supported with SDL 1.2!
 	this->fillRect(x, y, w, h, r, g, b);
+#else
+	SDL_Rect rect;
+	rect.x = x;
+	rect.y = y;
+	rect.w = w;
+	rect.h = h;
+	SDL_SetRenderDrawColor(sdlRenderer, r, g, b, alpha);
+	SDL_RenderFillRect(sdlRenderer, &rect);
+#endif
 }
 
 void Screen::getMouseCoords(int *m_x, int *m_y) {
@@ -207,7 +263,11 @@ void Application::runMainLoop() {
 				break;
 			case SDL_KEYDOWN:
 				{
+#if SDL_MAJOR_VERSION == 1
 					SDL_keysym key = event.key.keysym;
+#else
+					SDL_Keysym key = event.key.keysym;
+#endif
 					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q ) {
 						keypressEscape();
 					}
@@ -242,6 +302,7 @@ void Application::runMainLoop() {
 
 					break;
 				}
+#if SDL_MAJOR_VERSION == 1
 			case SDL_ACTIVEEVENT:
 #ifndef AROS
 				// disabled for AROS, as we receive inactive events when the mouse goes outside the window!
@@ -256,6 +317,7 @@ void Application::runMainLoop() {
 				}
 #endif
 				break;
+#endif
 			}
 		}
 		SDL_PumpEvents();
@@ -263,3 +325,5 @@ void Application::runMainLoop() {
 		updateGame();
 	}
 }
+
+//#endif
