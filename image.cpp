@@ -90,6 +90,7 @@ void Image::free() {
 void Image::draw(int x, int y,bool mask) const {
 	x = (int)(x * scale_x);
 	y = (int)(y * scale_y);
+#if SDL_MAJOR_VERSION == 1
 	SDL_Rect srcrect;
 	srcrect.x = 0;
 	srcrect.y = 0;
@@ -100,10 +101,14 @@ void Image::draw(int x, int y,bool mask) const {
 	dstrect.y = (short)y;
 	dstrect.w = 0;
 	dstrect.h = 0;
-#if SDL_MAJOR_VERSION == 1
 	SDL_BlitSurface(surface, &srcrect, dest_surf, &dstrect);
 #else
-	SDL_RenderCopy(sdlRenderer, texture, &srcrect, &dstrect);
+	SDL_Rect dstrect;
+	dstrect.x = (short)x;
+	dstrect.y = (short)y;
+	dstrect.w = (short)this->getWidth();
+	dstrect.h = (short)this->getHeight();
+	SDL_RenderCopy(sdlRenderer, texture, NULL, &dstrect);
 #endif
 }
 
@@ -360,6 +365,15 @@ void Image::convertToDisplayFormat() {
 	this->surface = new_surf;
 #else
 	texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
+	if( texture == NULL ) {
+		throw "SDL_CreateTextureFromSurface failed";
+	}
+	/*{
+		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
+		SDL_GetTextureBlendMode(texture, &blendMode);
+		LOG("texture blend mode: %d\n", blendMode);
+	}*/
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // seems to be default, but just in case
 #endif
 }
 
@@ -669,7 +683,7 @@ void Image::brighten(float sr, float sg, float sb) {
 #endif
 }
 
-void Image::fillRect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b) {
+/*void Image::fillRect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b) {
 	int col = SDL_MapRGB(this->surface->format, r, g, b);
 	SDL_Rect rect;
 	rect.x = x;
@@ -677,7 +691,7 @@ void Image::fillRect(int x, int y, int w, int h, unsigned char r, unsigned char 
 	rect.w = w;
 	rect.h = h;
 	SDL_FillRect(this->surface, &rect, col);
-}
+}*/
 
 Image *Image::copy(int x, int y, int w, int h) const {
 	//LOG("Image::copy(%d,%d,%d,%d)\n",x,y,w,h);

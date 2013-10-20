@@ -17,6 +17,7 @@ namespace Gigalomania {
 #else
 		SDL_Window *sdlWindow;
 		SDL_Renderer *sdlRenderer;
+		int width, height;
 #endif
 
 	public:

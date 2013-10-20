@@ -23,6 +23,8 @@ Screen::Screen() {
 #else
 	sdlWindow = NULL;
 	sdlRenderer = NULL;
+	width = 0;
+	height = 0;
 #endif
 }
 
@@ -52,7 +54,18 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 	}
 #else
 	//SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP, &sdlWindow, &sdlRenderer);
-	SDL_CreateWindowAndRenderer(screen_width, screen_height, fullscreen ? SDL_WINDOW_FULLSCREEN : 0, &sdlWindow, &sdlRenderer);
+	if( SDL_CreateWindowAndRenderer(screen_width, screen_height, fullscreen ? SDL_WINDOW_FULLSCREEN : 0, &sdlWindow, &sdlRenderer) != 0 ) {
+		LOG("failed to open screen at this resolution\n");
+		return false;
+	}
+	this->width = screen_width;
+	this->height = screen_height;
+	{
+		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
+		SDL_GetRenderDrawBlendMode(sdlRenderer, &blendMode);
+		LOG("render draw blend mode: %d\n", blendMode);
+	}
+	SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND); // needed for Screen::fillRectWithAlpha, as blending is off by default for drawing functions
 #endif
 	LOG("screen opened ok\n");
 
@@ -115,9 +128,10 @@ int Screen::getWidth() const {
 #if SDL_MAJOR_VERSION == 1
 	return surface->w;
 #else
-	int w = 0, h = 0;
+	/*int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(sdlRenderer, &w, &h);
-	return w;
+	return w;*/
+	return this->width;
 #endif
 }
 
@@ -125,9 +139,10 @@ int Screen::getHeight() const {
 #if SDL_MAJOR_VERSION == 1
 	return surface->h;
 #else
-	int w = 0, h = 0;
+	/*int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(sdlRenderer, &w, &h);
-	return h;
+	return h;*/
+	return this->height;
 #endif
 }
 
@@ -156,6 +171,7 @@ void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char
 	rect.y = y;
 	rect.w = w;
 	rect.h = h;
+	//LOG("fill rect %d %d %d %d\n", r, g, b, alpha);
 	SDL_SetRenderDrawColor(sdlRenderer, r, g, b, alpha);
 	SDL_RenderFillRect(sdlRenderer, &rect);
 #endif

@@ -121,7 +121,7 @@ public:
 };
 
 class FadeEffect : public TimedEffect {
-	Image *image;
+	//Image *image;
 	bool white;
 	bool out;
 public:

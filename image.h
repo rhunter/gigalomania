@@ -61,7 +61,7 @@ namespace Gigalomania {
 		void remap(unsigned char sr,unsigned char sg,unsigned char sb,unsigned char rr,unsigned char rg,unsigned char rb);
 		void reshadeRGB(int from, bool to_r, bool to_g, bool to_b);
 		void brighten(float sr, float sg, float sb);
-		void fillRect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b);
+		//void fillRect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b);
 		//void flipX();
 		Image *copy(int x,int y,int w,int h) const;
 		Image *copy() const {
