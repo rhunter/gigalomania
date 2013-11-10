@@ -193,6 +193,7 @@ Application::Application() : quit(false) {
 }
 
 Application::~Application() {
+	LOG("quit SDL\n");
 	SDL_Quit();
 }
 

@@ -365,9 +365,9 @@ void Image::convertToDisplayFormat() {
 	this->surface = new_surf;
 #else
 	texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
-	if( texture == NULL ) {
+	/*if( texture == NULL ) {
 		throw "SDL_CreateTextureFromSurface failed";
-	}
+	}*/
 	/*{
 		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
 		SDL_GetTextureBlendMode(texture, &blendMode);

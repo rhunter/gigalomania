@@ -1,12 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-/*#ifdef __linux
-#include <SDL/SDL.h>
-#else
-#include <sdl.h>
-#endif*/
-
 #include <cassert>
 #include <cerrno> // n.b., needed on Linux at least
 
@@ -886,7 +880,7 @@ bool PlayingGameState::readSectors(Map *map) {
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, map->getFilename());
 	FILE *file = fopen(fullname, "rb");
-#ifdef __linux
+#if !defined(__ANDROID__) && defined(__linux)
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, map->getFilename());

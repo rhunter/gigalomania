@@ -19,6 +19,10 @@
 #include <unistd.h> // for access
 #endif
 
+#if defined(__ANDROID__)
+#include <android/log.h>
+#endif
+
 #ifdef USING_QT
 #include <QString>
 #include <QDir>
@@ -170,6 +174,10 @@ char *oldlogfilename = NULL;
 char application_path[MAX_PATH] = "";
 char logfilename[MAX_PATH] = "";
 char oldlogfilename[MAX_PATH] = "";
+#elif defined(__ANDROID__)
+char application_path[] = "";
+char logfilename[] = "log.txt";
+char oldlogfilename[] = "log_old.txt";
 #elif __linux
 char *application_path = NULL;
 char *logfilename = NULL;
@@ -228,9 +236,9 @@ char *getApplicationFilename(const char *name) {
 }
 
 void initLogFile() {
-    // not safe to use LOG here, as logfile not initialised!
     // first need to establish full path, and create folder if necessary
     // Maemo/Meego treated as Linux as far as paths are concerned
+    LOG("initLogFile()\n"); // n.b., at this stage logging will only go to console output, not to log file
 #ifdef USING_QT
 
 #if defined(Q_OS_ANDROID)
@@ -294,6 +302,8 @@ void initLogFile() {
 		strcpy(logfilename, "log.txt");
 		strcpy(oldlogfilename, "log_old.txt");
 	}
+#elif defined(__ANDROID__)
+	// no need to do anything
 #elif __linux
 	char *homedir = getenv("HOME");
 	//char *subdir = "/.gigalomania";
@@ -345,9 +355,12 @@ void initLogFile() {
 #elif defined(Q_WS_MAEMO_5)
     // must be before __linux, as Maemo/Meego also defines __linux
     LOG("Platform: Maemo/Meego\n");
+#elif defined(__ANDROID__)
+	// must be before __linux, as Android also defines __linux
+	LOG("Platform: Android\n");
 #elif defined(Q_OS_ANDROID)
-        // must be before __linux, as Android also defines __linux
-        LOG("Platform: Android\n");
+	// must be before __linux, as Android also defines __linux
+	LOG("Platform: Android (Qt-based)\n");
 #elif __linux
 	LOG("Platform: Linux\n");
 #elif defined(__APPLE__) && defined(__MACH__)
@@ -371,6 +384,9 @@ bool log(const char *text,...) {
 	logfile = fopen(logfilename,"at+");
 	va_list vlist;
 	va_start(vlist, text);
+#if defined(__ANDROID__)
+	__android_log_vprint(ANDROID_LOG_INFO, "Gigalomania", text, vlist);
+#endif
 	if( logfile != NULL )
 		vfprintf(logfile, text, vlist);
 	if( debugwindow )

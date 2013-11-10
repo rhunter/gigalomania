@@ -8,7 +8,9 @@ using std::string;
 
 #include "resources.h"
 
-#ifdef __linux
+#if defined(__ANDROID__)
+#include <sdl_mixer.h>
+#elif defined(__linux)
 #include <SDL/SDL_mixer.h>
 #else
 #include <SDL_mixer.h>

@@ -1,12 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-/*#ifdef __linux
-#include <SDL/SDL.h>
-#else
-#include <sdl.h>
-#endif*/
-
 #include <cassert>
 
 #include "panel.h"

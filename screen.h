@@ -4,7 +4,9 @@
 *   particlar game in this class.
 */
 
-#if defined(__linux) || defined(__MORPHOS__)
+#if defined(__ANDROID__)
+#include <sdl.h>
+#elif defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else
 #include <sdl.h>

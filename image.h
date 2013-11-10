@@ -7,7 +7,10 @@
 
 using std::string;
 
-#if defined(__linux) || defined(__MORPHOS__)
+#if defined(__ANDROID__)
+#include <SDL.h>
+#include <SDL_image.h>
+#elif defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #else

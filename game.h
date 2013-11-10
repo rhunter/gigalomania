@@ -37,7 +37,7 @@ extern bool using_old_gfx;
 extern Application *application;
 
 extern char *maps_dirname;
-#ifdef __linux
+#if !defined(__ANDROID__) && defined(__linux)
 extern char *alt_maps_dirname;
 #endif
 

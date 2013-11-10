@@ -21,6 +21,8 @@ using std::stringstream;
 
 #ifdef _WIN32
 // Windows doesn't need SDL in this file
+#elif defined(__ANDROID__)
+#include <sdl.h>
 #elif defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else
@@ -73,7 +75,7 @@ Application *application = NULL;
 char *maps_dirname = "islands";
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
-#ifdef __linux
+#if !defined(__ANDROID__) && defined(__linux)
 char *alt_maps_dirname = "/usr/share/gigalomania/islands";
 #endif
 #endif
@@ -1049,7 +1051,7 @@ bool loadSamples() {
 	s_explosion = Sample::loadSample(sound_dir + "bomb.wav");
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
-#ifdef __linux
+#if !defined(__ANDROID__) && defined(__linux)
         if( s_explosion == NULL || errorSound() ) {
             if( s_explosion != NULL ) {
                 delete s_explosion;
@@ -1880,7 +1882,7 @@ bool loadImages() {
 #endif
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
-#ifdef __linux
+#if !defined(__ANDROID__) && defined(__linux)
 	if( background == NULL ) {
 		gfx_dir = "/usr/share/gigalomania/" + gfx_dir;
 		LOG("look in %s for gfx\n", gfx_dir.c_str());
@@ -2619,10 +2621,26 @@ bool openScreen(bool fullscreen) {
 		// MorphOS doesn't have latest SDL version with SDL_GetVideoInfo, so use native code!
 		getAROSScreenSize(&user_width, &user_height);
 #else
+
+#if SDL_MAJOR_VERSION == 1
 		const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
 		user_width = videoInfo->current_w;
 		user_height = videoInfo->current_h;
 		LOG("desktop is %d x %d\n", user_width, user_height);
+#else
+		SDL_DisplayMode displayMode;
+		if( SDL_GetDesktopDisplayMode(0, &displayMode) != 0 ) {
+			LOG("SDL_GetDesktopDisplayMode failed!");
+			user_width = 640;
+			user_height = 480;
+		}
+		else {
+			user_width = displayMode.w;
+			user_height = displayMode.h;
+			LOG("desktop is %d x %d\n", user_width, user_height);
+		}
+#endif
+
 #endif
 
 		// Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
@@ -2939,7 +2957,7 @@ bool readMap(char *filename) {
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, filename);
 	FILE *file = fopen(fullname, "rb");
-#ifdef __linux
+#if !defined(__ANDROID__) && defined(__linux)
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, filename);
@@ -3027,9 +3045,14 @@ bool createMaps() {
 			break;
 		}
 	}
+#elif defined(__ANDROID__)
+	// unclear how to read contents of a folder in assets, so we just hardcode the islands (not like the user can easily drop new files there)
+	readMap("alpha.map");
 #else
+
 	DIR *dir = opendir(maps_dirname);
-#ifdef __linux
+
+#if !defined(__ANDROID__) && defined(__linux)
 	if( dir == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		dir = opendir(alt_maps_dirname);
@@ -3037,6 +3060,7 @@ bool createMaps() {
 #endif
 	if( dir == NULL ) {
 		LOG("failed to open directory: %s\n", maps_dirname);
+		LOG("error: %d\n", errno);
 		return false;
 	}
 	for(;;) {
@@ -3398,6 +3422,7 @@ void drawGame() {
 }
 
 void playGame(int n_args, char *args[]) {
+    LOG("playGame()\n");
 	bool fullscreen = false;
 #ifdef _DEBUG
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );  // TEST!
@@ -3406,7 +3431,11 @@ void playGame(int n_args, char *args[]) {
 	//debugwindow = true;
 	//fullscreen = true;
 
-#if !defined(Q_OS_ANDROID)
+#if defined(__ANDROID__)
+	fullscreen = true; // always fullscreen on Android
+#endif
+
+#if !defined(Q_OS_ANDROID) && !defined(__ANDROID__)
         // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
 	for(int i=0;i<n_args;i++) {
 		if( strcmp(args[i], "fullscreen") == 0 )

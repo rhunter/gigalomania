@@ -2,7 +2,10 @@
 
 #ifndef USING_QT
 // n.b., need SDL even though we don't apparently call SDL in this file, so that main() is redefined with SDL's version
-#if defined(__linux) || defined(__MORPHOS__)
+#if defined(__ANDROID__)
+#include <sdl.h>
+#include <android/log.h>
+#elif defined(__linux) || defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else
 #include <sdl.h>
@@ -48,11 +51,17 @@ bool MyApplication::event(QEvent *event) {
 
 int main(int argc, char *argv[])
 {
+#if defined(__ANDROID__)
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "started main");
+#endif
 #ifdef USING_QT
     qDebug("Hello!");
     MyApplication app(argc, argv);
 #endif
 
     playGame(argc, argv);
+#if defined(__ANDROID__)
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "about to exit main");
+#endif
     return 0;
 }
