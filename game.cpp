@@ -55,14 +55,14 @@ using std::stringstream;
 //---------------------------------------------------------------------------
 
 // onemousebutton means UI can be used with one mouse button only
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
 bool onemousebutton = true;
 #else
 bool onemousebutton = false;
 #endif
 
 // mobile_ui means no mouse pointer
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
 bool mobile_ui = true;
 #else
 bool mobile_ui = false;
@@ -2787,6 +2787,7 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 	bool ok = true;
 	line[ strlen(line) - 1 ] = '\0'; // trim new line
 	line[ strlen(line) - 1 ] = '\0'; // trim carriage return
+	//LOG("line: %s\n", line);
 	if( *l_map == NULL ) {
 		if( line[0] != '#' ) {
 			LOG("expected first character to be '#'\n");
@@ -2921,9 +2922,11 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 	return ok;
 }
 
-bool readMap(char *filename) {
+bool readMap(const char *filename) {
+	LOG("readMap: %s\n", filename);
 	bool ok = true;
 	const int MAX_LINE = 4096;
+	//const int MAX_LINE = 64;
 	char line[MAX_LINE+1] = "";
 	Map *l_map = NULL;
 	int epoch = -1;
@@ -2956,7 +2959,8 @@ bool readMap(char *filename) {
 #else
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, filename);
-	FILE *file = fopen(fullname, "rb");
+	//FILE *file = fopen(fullname, "rb");
+	SDL_RWops *file = SDL_RWFromFile(fullname, "rb");
 #if !defined(__ANDROID__) && defined(__linux)
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
@@ -2970,20 +2974,56 @@ bool readMap(char *filename) {
 		LOG("failed to open file: %s\n", fullname);
 		return false;
 	}
+	char buffer[MAX_LINE+1] = "";
+	int buffer_offset = 0;
+	bool reached_end = false;
 	while( ok ) {
-		errno = 0;
-		if( fgets(line, MAX_LINE, file) == NULL ) {
-			if( errno ) {
-				LOG("error reading line\n");
-				ok = false;
+		if( !reached_end ) {
+			// fill up buffer
+			for(;;) {
+				int n_read = file->read(file, &buffer[buffer_offset], 1, MAX_LINE-buffer_offset);
+				//LOG("buffer offset %d , read %d\n", buffer_offset, n_read);
+				if( n_read == 0 ) {
+					// error or eof - don't quit yet, still need to finish reading buffer
+					//LOG("read all of file\n");
+					reached_end = true;
+					break;
+				}
+				else {
+					buffer[buffer_offset+n_read] = '\0';
+					if( n_read < MAX_LINE-buffer_offset ) {
+						// we didn't read all of the available buffer, and haven't reached end of file yet
+						buffer_offset += n_read;
+					}
+					else {
+						break;
+					}
+				}
 			}
+		}
+		//LOG("buffer: %s\n", buffer);
+		int newline_index = 0;
+		while( buffer[newline_index] != '\n' && buffer[newline_index] != '\0' ) {
+			line[newline_index] = buffer[newline_index];
+			newline_index++;
+		}
+		if( buffer[newline_index] == '\0' ) {
+			LOG("file has too long line: %s\n", fullname);
+			ok = false;
 			break;
 		}
-		else {
-			ok = readMapProcessLine(&epoch, &index, &l_map, line, MAX_LINE, filename);
+		line[newline_index++] = '\n';
+		line[newline_index++] = '\0';
+		ok = readMapProcessLine(&epoch, &index, &l_map, line, MAX_LINE, filename);
+		if( ok ) {
+			strcpy(buffer, &buffer[newline_index-1]);
+			if( reached_end && buffer[0] == '\0' ) {
+				break;
+			}
+			buffer_offset = MAX_LINE - (newline_index-1);
 		}
 	}
-	fclose(file);
+	file->close(file);
 #endif
     if( !ok && l_map != NULL ) {
 		LOG("delete map that was created\n");
@@ -3014,7 +3054,6 @@ bool createMaps() {
     QDir dir(QString(DEPLOYMENT_PATH) + "islands/");
     QStringList list = dir.entryList();
     foreach(const QString file, list) {
-        LOG("found file: %s\n", file.toLatin1().data());
         if( !readMap(file.toLatin1().data()) ) {
             LOG("failed reading map: %s\n", file.toLatin1().data());
             // don't fail altogether, just ignore
@@ -3030,7 +3069,6 @@ bool createMaps() {
 		return false;
 	}
 	for(;;) {
-		LOG("found file: %s\n", findFileData.cFileName);
 		if( !readMap(findFileData.cFileName) ) {
 			LOG("failed reading map: %s\n", findFileData.cFileName);
 			// don't fail altogether, just ignore
@@ -3047,7 +3085,33 @@ bool createMaps() {
 	}
 #elif defined(__ANDROID__)
 	// unclear how to read contents of a folder in assets, so we just hardcode the islands (not like the user can easily drop new files there)
+	readMap("0mega.map");
 	readMap("alpha.map");
+	readMap("binary.map");
+	readMap("castle.map");
+	readMap("devil.map");
+	readMap("eep.map");
+	readMap("final.map");
+	readMap("font.map");
+	readMap("globe.map");
+	readMap("home.map");
+	readMap("infinity.map");
+	readMap("just.map");
+	readMap("koala.map");
+	readMap("loop.map");
+	readMap("moon.map");
+	readMap("ninth.map");
+	readMap("oxygen.map");
+	readMap("quart.map");
+	readMap("rare.map");
+	readMap("semi.map");
+	readMap("toxic.map");
+	readMap("universal.map");
+	readMap("vine.map");
+	readMap("wreath.map");
+	readMap("x.map");
+	readMap("yen.map");
+	readMap("zinc.map");
 #else
 
 	DIR *dir = opendir(maps_dirname);
@@ -3074,7 +3138,6 @@ bool createMaps() {
 			}
 			break;
 		}
-		LOG("found file: %s\n", ent->d_name);
 		if( !readMap(ent->d_name) ) {
 			LOG("failed reading map: %s\n", ent->d_name);
 			// don't fail altogether, just ignore
