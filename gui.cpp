@@ -184,7 +184,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_help);
 #endif
-#if defined(Q_OS_ANDROID)
+#if defined(Q_OS_ANDROID) || defined(__ANDROID__)
 	// Applications don't quit on Android
 	this->button_quit = NULL;
 #else
@@ -210,7 +210,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_music->setActive( play_music ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_music);
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID)
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
     this->button_onemousebutton = NULL;
 #else
 	char *onemousebutton_texts[] = { "ONE MOUSE BUTTON UI", "TWO MOUSE BUTTON UI" };
