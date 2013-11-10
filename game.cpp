@@ -2922,6 +2922,53 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 	return ok;
 }
 
+bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end) {
+	if( newline_index > 1 ) {
+		strcpy(buffer, &buffer[newline_index-1]);
+		if( reached_end && buffer[0] == '\0' ) {
+			return true;
+		}
+		buffer_offset = MAX_LINE - (newline_index-1);
+	}
+	if( !reached_end ) {
+		// fill up buffer
+		for(;;) {
+			int n_read = file->read(file, &buffer[buffer_offset], 1, MAX_LINE-buffer_offset);
+			//LOG("buffer offset %d , read %d\n", buffer_offset, n_read);
+			if( n_read == 0 ) {
+				// error or eof - don't quit yet, still need to finish reading buffer
+				//LOG("read all of file\n");
+				reached_end = true;
+				break;
+			}
+			else {
+				buffer[buffer_offset+n_read] = '\0';
+				if( n_read < MAX_LINE-buffer_offset ) {
+					// we didn't read all of the available buffer, and haven't reached end of file yet
+					buffer_offset += n_read;
+				}
+				else {
+					break;
+				}
+			}
+		}
+	}
+	//LOG("buffer: %s\n", buffer);
+	newline_index = 0;
+	while( buffer[newline_index] != '\n' && buffer[newline_index] != '\0' ) {
+		line[newline_index] = buffer[newline_index];
+		newline_index++;
+	}
+	if( buffer[newline_index] == '\0' ) {
+		LOG("file has too long line\n");
+		ok = false;
+		return true;
+	}
+	line[newline_index++] = '\n';
+	line[newline_index++] = '\0';
+	return false;
+}
+
 bool readMap(const char *filename) {
 	LOG("readMap: %s\n", filename);
 	bool ok = true;
@@ -2959,6 +3006,8 @@ bool readMap(const char *filename) {
 #else
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, filename);
+	// open in binary mode, so that we parse files in an OS-independent manner
+	// (otherwise, Windows will parse "\r\n" as being "\n", but Linux will still read it as "\n")
 	//FILE *file = fopen(fullname, "rb");
 	SDL_RWops *file = SDL_RWFromFile(fullname, "rb");
 #if !defined(__ANDROID__) && defined(__linux)
@@ -2969,58 +3018,23 @@ bool readMap(const char *filename) {
 	}
 #endif
     if( file == NULL ) {
-		// open in binary mode, so that we parse files in an OS-independent manner
-		// (otherwise, Windows will parse "\r\n" as being "\n", but Linux will still read it as "\n")
 		LOG("failed to open file: %s\n", fullname);
 		return false;
 	}
 	char buffer[MAX_LINE+1] = "";
 	int buffer_offset = 0;
 	bool reached_end = false;
+	int newline_index = 0;
 	while( ok ) {
-		if( !reached_end ) {
-			// fill up buffer
-			for(;;) {
-				int n_read = file->read(file, &buffer[buffer_offset], 1, MAX_LINE-buffer_offset);
-				//LOG("buffer offset %d , read %d\n", buffer_offset, n_read);
-				if( n_read == 0 ) {
-					// error or eof - don't quit yet, still need to finish reading buffer
-					//LOG("read all of file\n");
-					reached_end = true;
-					break;
-				}
-				else {
-					buffer[buffer_offset+n_read] = '\0';
-					if( n_read < MAX_LINE-buffer_offset ) {
-						// we didn't read all of the available buffer, and haven't reached end of file yet
-						buffer_offset += n_read;
-					}
-					else {
-						break;
-					}
-				}
-			}
+		bool done = readLineFromRWOps(ok, file, buffer, line, MAX_LINE, buffer_offset, newline_index, reached_end);
+		if( !ok )  {
+			LOG("failed to read line for: %s\n", filename);
 		}
-		//LOG("buffer: %s\n", buffer);
-		int newline_index = 0;
-		while( buffer[newline_index] != '\n' && buffer[newline_index] != '\0' ) {
-			line[newline_index] = buffer[newline_index];
-			newline_index++;
-		}
-		if( buffer[newline_index] == '\0' ) {
-			LOG("file has too long line: %s\n", fullname);
-			ok = false;
+		else if( done ) {
 			break;
 		}
-		line[newline_index++] = '\n';
-		line[newline_index++] = '\0';
-		ok = readMapProcessLine(&epoch, &index, &l_map, line, MAX_LINE, filename);
-		if( ok ) {
-			strcpy(buffer, &buffer[newline_index-1]);
-			if( reached_end && buffer[0] == '\0' ) {
-				break;
-			}
-			buffer_offset = MAX_LINE - (newline_index-1);
+		else {
+			ok = readMapProcessLine(&epoch, &index, &l_map, line, MAX_LINE, filename);
 		}
 	}
 	file->close(file);
@@ -3360,7 +3374,9 @@ void keypressEscape() {
 	else {
 		application->setQuit();
 	}*/
-    gamestate->requestQuit();
+    if( !state_changed ) {
+	    gamestate->requestQuit();
+	}
 }
 
 void keypressP() {

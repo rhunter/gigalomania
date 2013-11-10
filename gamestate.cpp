@@ -888,7 +888,10 @@ bool PlayingGameState::readSectors(Map *map) {
 #else
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, map->getFilename());
-	FILE *file = fopen(fullname, "rb");
+	// open in binary mode, so that we parse files in an OS-independent manner
+	// (otherwise, Windows will parse "\r\n" as being "\n", but Linux will still read it as "\n")
+	//FILE *file = fopen(fullname, "rb");
+	SDL_RWops *file = SDL_RWFromFile(fullname, "rb");
 #if !defined(__ANDROID__) && defined(__linux)
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
@@ -897,27 +900,27 @@ bool PlayingGameState::readSectors(Map *map) {
 	}
 #endif
 	if( file == NULL ) {
-		// open in binary mode, so that we parse files in an OS-independent manner
-		// (otherwise, Windows will parse "\r\n" as being "\n", but Linux will still read it as "\n")
 		LOG("failed to open file: %s\n", fullname);
-		perror("perror returns: ");
+		//perror("perror returns: ");
 		return false;
 	}
-
+	char buffer[MAX_LINE+1] = "";
+	int buffer_offset = 0;
+	bool reached_end = false;
+	int newline_index = 0;
 	while( ok ) {
-		errno = 0;
-		if( fgets(line, MAX_LINE, file) == NULL ) {
-			if( errno ) {
-				LOG("error reading line\n");
-				ok = false;
-			}
+		bool done = readLineFromRWOps(ok, file, buffer, line, MAX_LINE, buffer_offset, newline_index, reached_end);
+		if( !ok )  {
+			LOG("failed to read line\n");
+		}
+		else if( done ) {
 			break;
 		}
 		else {
 			ok = readSectorsProcessLine(map, line, &done_header, &sec_x, &sec_y);
 		}
 	}
-	fclose(file);
+	file->close(file);
 #endif
     return ok;
 }
