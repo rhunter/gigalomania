@@ -42,9 +42,6 @@
     <ClCompile Include="screen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SDL_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

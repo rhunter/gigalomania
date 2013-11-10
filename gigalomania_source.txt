@@ -165,7 +165,7 @@ History
 
 Note, this history is only for changes related to the source code. See the Gigalomania readme or homepage for a full history.
 
-Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition.
+Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition. Aso now using SDLmain.lib instead of SDL_main.c on Windows.
 
 Version 0.26 adds the MorphOS and AmigaOS 4 ports.
 
@@ -202,4 +202,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 4 May 2013
+Mark Harman 10 November 2013
