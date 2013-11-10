@@ -34,8 +34,11 @@ namespace Gigalomania {
 		int getWidth() const;
 		int getHeight() const;
 		void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
+#if SDL_MAJOR_VERSION == 1
+		// not supported with SDL 1.2 (as SDL_FillRect can't do blending)!
+#else
 		void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
-
+#endif
 		void getMouseCoords(int *m_x, int *m_y);
 		bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
 	};

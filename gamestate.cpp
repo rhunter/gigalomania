@@ -138,7 +138,8 @@ const int whitefade_time_c = 1000;
 FadeEffect::FadeEffect(bool white,bool out,int delay, void (*func_finish)()) : TimedEffect(delay, func_finish) {
 	this->white = white;
 	this->out = out;
-	/*this->image = Image::createBlankImage(screen->getWidth(), screen->getHeight(), 24);
+#if SDL_MAJOR_VERSION == 1
+	this->image = Image::createBlankImage(screen->getWidth(), screen->getHeight(), 24);
 	int r = 0, g = 0, b = 0;
 	if( white ) {
 		r = g = b = 255;
@@ -147,11 +148,16 @@ FadeEffect::FadeEffect(bool white,bool out,int delay, void (*func_finish)()) : T
 		r = g = b = 0;
 	}
 	image->fillRect(0, 0, screen->getWidth(), screen->getHeight(), r, g, b);
-	this->image->convertToDisplayFormat();*/
+	this->image->convertToDisplayFormat();
+#else
+	image = NULL;
+#endif
 }
 
 FadeEffect::~FadeEffect() {
-	//delete image;
+#if SDL_MAJOR_VERSION == 1
+	delete image;
+#endif
 }
 
 bool FadeEffect::render() const {
@@ -175,9 +181,12 @@ bool FadeEffect::render() const {
 		if( !out )
 			alpha = 1.0 - alpha;
 	}
-	//image->drawWithAlpha(0, 0, (unsigned char)(alpha * 255));
+#if SDL_MAJOR_VERSION == 1
+	image->drawWithAlpha(0, 0, (unsigned char)(alpha * 255));
+#else
 	unsigned char value = white ? 255 : 0;
 	screen->fillRectWithAlpha(0, 0, screen->getWidth(), screen->getHeight(), value, value, value, (unsigned char)(alpha * 255));
+#endif
 	if( time > length ) // we still need to draw the fade, on the last time
 		return true;
 	return false;

@@ -161,11 +161,10 @@ void Screen::fillRect(short x, short y, short w, short h, unsigned char r, unsig
 #endif
 }
 
-void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha) {
 #if SDL_MAJOR_VERSION == 1
-	// not supported with SDL 1.2!
-	this->fillRect(x, y, w, h, r, g, b);
+// not supported with SDL 1.2 (as SDL_FillRect can't do blending)!
 #else
+void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha) {
 	SDL_Rect rect;
 	rect.x = x;
 	rect.y = y;
@@ -174,8 +173,8 @@ void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char
 	//LOG("fill rect %d %d %d %d\n", r, g, b, alpha);
 	SDL_SetRenderDrawColor(sdlRenderer, r, g, b, alpha);
 	SDL_RenderFillRect(sdlRenderer, &rect);
-#endif
 }
+#endif
 
 void Screen::getMouseCoords(int *m_x, int *m_y) {
 	SDL_GetMouseState(m_x, m_y);

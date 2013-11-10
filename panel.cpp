@@ -272,14 +272,15 @@ void PanelPage::drawPopups() {
 				rect_y++;
 				rect_w -= 2;
 				rect_h -= 2;
-				//SDL_FillRect(screen->getSurface(), &rect, col_fill);
-				/*Image *fill_rect = Image::createBlankImage(rect_w, rect_h, 24);
+#if SDL_MAJOR_VERSION == 1
+				Image *fill_rect = Image::createBlankImage(rect_w, rect_h, 24);
 				fill_rect->fillRect(0, 0, rect_w, rect_h, 0, 0, 128);
 				fill_rect->convertToDisplayFormat();
 				fill_rect->drawWithAlpha(rect_x, rect_y, 160);
-				//fill_rect->drawAlpha(rect.x, rect.y, 0.5);
-				delete fill_rect;*/
+				delete fill_rect;
+#else
 				screen->fillRectWithAlpha(rect_x, rect_y, rect_w, rect_h, 0, 0, 128, 160);
+#endif
 
 				int py = (int)(popup_y/scale_height);
 				for(int j=0;j<n_texts;j++) {

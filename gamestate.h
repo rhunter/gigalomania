@@ -121,7 +121,7 @@ public:
 };
 
 class FadeEffect : public TimedEffect {
-	//Image *image;
+	Image *image; // used by SDL 1.2 (note, we still declare for SDL 2, to avoid having to include the SDL directories to find out the SDL_MAJOR_VERSION value)
 	bool white;
 	bool out;
 public:

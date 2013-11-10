@@ -344,7 +344,11 @@ void ChooseMenPanel::draw() {
     if( ( this->getPage() == STATE_LOADGAME || this->getPage() == STATE_SAVEGAME ) && !this->gamestate->hasConfirmWindow() ) {
         // hide background
         // (if request quit, then we'll hide background after drawing the GUI)
+#if SDL_MAJOR_VERSION == 1
+        screen->fillRect(0, 0, default_width_c*scale_width, default_height_c*scale_height, 0, 0, 0);
+#else
         screen->fillRectWithAlpha(0, 0, default_width_c*scale_width, default_height_c*scale_height, 0, 0, 0, 255-32);
+#endif
     }
 
     MultiPanel::draw();
@@ -358,7 +362,11 @@ void ChooseMenPanel::draw() {
 
     if( this->gamestate->hasConfirmWindow() ) {
         // hide background (do here, as also want to cover the GUI)
+#if SDL_MAJOR_VERSION == 1
+        screen->fillRect(0, 0, default_width_c*scale_width, default_height_c*scale_height, 0, 0, 0);
+#else
         screen->fillRectWithAlpha(0, 0, default_width_c*scale_width, default_height_c*scale_height, 0, 0, 0, 255-32);
+#endif
     }
 
 }
