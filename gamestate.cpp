@@ -387,7 +387,9 @@ void ChooseGameTypeGameState::reset() {
 }
 
 void ChooseGameTypeGameState::draw() {
-	//screen->clear();
+#if defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 	background->draw(0, 0, false);
 
 	this->choosegametypePanel->draw();
@@ -430,7 +432,9 @@ void ChooseDifficultyGameState::reset() {
 }
 
 void ChooseDifficultyGameState::draw() {
-	//screen->clear();
+#if defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 	background->draw(0, 0, false);
 
 	this->choosedifficultyPanel->draw();
@@ -478,8 +482,10 @@ void ChoosePlayerGameState::reset() {
 }
 
 void ChoosePlayerGameState::draw() {
+#if defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 	//player_select->draw(0, 0, false);
-	//screen->clear();
 	background->draw(0, 0, false);
     Image::writeMixedCase(160, 16, letters_large, letters_small, NULL, "Select a Player", Image::JUSTIFY_CENTRE, true);
 
@@ -558,7 +564,11 @@ void PlaceMenGameState::reset() {
 void PlaceMenGameState::draw() {
 	char buffer[256] = "";
 
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR)
 	screen->clear(); // workaround for bug on Symbian where background doesn't show (with 4x gfx)!
+#elif defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 	background_islands->draw(0, 0, false);
 
 	if( !using_old_gfx ) {
@@ -1249,7 +1259,9 @@ void GameState::whiteFlash() {
 }
 
 void PlayingGameState::draw() {
-	//screen->clear();
+#if defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 
 	background->draw(0, 0, false);
 	//background->draw(0, 0, true);
@@ -2855,6 +2867,9 @@ void EndIslandGameState::reset() {
 }
 
 void EndIslandGameState::draw() {
+#if defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 	background->draw(0, 0, false);
 	char text[4096] = "";
 	if( gameResult == GAMERESULT_QUIT )
@@ -2961,6 +2976,9 @@ void GameCompleteGameState::reset() {
 }
 
 void GameCompleteGameState::draw() {
+#if defined(__ANDROID__)
+	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
+#endif
 	background->draw(0, 0, false);
 
 	this->screen_page->draw();
