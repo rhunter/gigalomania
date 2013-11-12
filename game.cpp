@@ -2736,11 +2736,11 @@ bool openScreen(bool fullscreen) {
 		int screen_width = 1280;
 		int screen_height = 960;
 
-		screen_width = 1280;
-		screen_height = 960;
-		while( screen_width > user_width || screen_height > user_height ) {
-			screen_width /= 2;
-			screen_height /= 2;
+		screen_width = default_width_c;
+		screen_height = default_height_c;
+		while( 2*screen_width <= user_width && 2*screen_height <= user_height ) {
+			screen_width *= 2;
+			screen_height *= 2;
 		}
 
 		scale_width = 4.0f;
