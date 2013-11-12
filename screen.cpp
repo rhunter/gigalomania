@@ -180,16 +180,38 @@ void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char
 }
 #endif
 
+#if SDL_MAJOR_VERSION == 1
+// not supported with SDL 1.2 (as SDL_FillRect can't do blending)!
+#else
+void Screen::convertWindowToLogical(int *m_x, int *m_y) {
+	SDL_Rect rect;
+	SDL_RenderGetViewport(sdlRenderer, &rect);
+	float scale_x = 0.0f, scale_y = 0.0f;
+	SDL_RenderGetScale(sdlRenderer, &scale_x, &scale_y);
+	//LOG("viewport: %d x %d : %d, %d\n", rect.x, rect.y, rect.w, rect.h);
+	//LOG("render scale: %f x %f\n", scale_x, scale_y);
+	*m_x /= scale_x;
+	*m_y /= scale_y;
+	*m_x -= rect.x;
+	*m_y -= rect.y;
+}
+#endif
+
 void Screen::getMouseCoords(int *m_x, int *m_y) {
 	SDL_GetMouseState(m_x, m_y);
 	// need to convert from window space to logical space
 #if SDL_MAJOR_VERSION == 1
 #else
-	int screen_width = 0, screen_height = 0;
+	/*int screen_width = 0, screen_height = 0;
 	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
-	//LOG("Screen size: %d, %d\n", screen_width, screen_height);
-	*m_x = (*m_x * width) / screen_width;
-	*m_y = (*m_y * height) / screen_height;
+	LOG("Logical size: %d, %d\n", width, height);
+	LOG("Screen size: %d, %d\n", screen_width, screen_height);*/
+	/*int screen_x = 0, screen_y = 0;
+	SDL_GetWindowPosition(sdlWindow, &screen_x, &screen_y);
+	LOG("Screen pos: %d, %d\n", screen_x, screen_y);*/
+	//*m_x = (*m_x * width) / screen_width;
+	//*m_y = (*m_y * height) / screen_height;
+	this->convertWindowToLogical(m_x, m_y);
 #endif
 	//LOG("Screen::getMouseCoords: %d, %d\n", *m_x, *m_y);
 }
@@ -202,10 +224,11 @@ bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, boo
 	// need to convert from window space to logical space
 #if SDL_MAJOR_VERSION == 1
 #else
-	int screen_width = 0, screen_height = 0;
+	/*int screen_width = 0, screen_height = 0;
 	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
 	*m_x = (*m_x * width) / screen_width;
-	*m_y = (*m_y * height) / screen_height;
+	*m_y = (*m_y * height) / screen_height;*/
+	this->convertWindowToLogical(m_x, m_y);
 #endif
 	//LOG("Screen::getMouseState: %d, %d\n", *m_x, *m_y);
 	return ( *m_left || *m_middle || *m_right );

@@ -20,6 +20,8 @@ namespace Gigalomania {
 		SDL_Window *sdlWindow;
 		SDL_Renderer *sdlRenderer;
 		int width, height; // this stores the logical size rather than the window size
+
+		void convertWindowToLogical(int *m_x, int *m_y);
 #endif
 
 	public:
