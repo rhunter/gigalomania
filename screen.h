@@ -19,7 +19,7 @@ namespace Gigalomania {
 #else
 		SDL_Window *sdlWindow;
 		SDL_Renderer *sdlRenderer;
-		int width, height;
+		int width, height; // this stores the logical size rather than the window size
 #endif
 
 	public:
@@ -31,6 +31,7 @@ namespace Gigalomania {
 		void setTitle(const char *title);
 		void clear();
 		void refresh();
+		// in SDL2, these return the logical size rather than the window size
 		int getWidth() const;
 		int getHeight() const;
 		void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);

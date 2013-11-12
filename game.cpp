@@ -84,7 +84,7 @@ char *alt_maps_dirname = "/usr/share/gigalomania/islands";
 
 float scale_factor_w = 1.0f; // how much the input graphics are scaled
 float scale_factor_h = 1.0f;
-float scale_width = 0.0f; // the scale of the window/graphics size wrt the default 320x240 coordinate system
+float scale_width = 0.0f; // the scale of the logical resolution or graphics size wrt the default 320x240 coordinate system
 float scale_height = 0.0f;
 
 int offset_flag_x_c = 22;
@@ -2643,6 +2643,7 @@ bool openScreen(bool fullscreen) {
 
 #endif
 
+#if SDL_MAJOR_VERSION == 1
 		// Ideally only multiples of 0.5 allowed, otherwise we get problems of fractional widths/heights/positioning
 		// (still works, though uneven spacings).
 		// We make an exception for height of 4/3, as a fairly common low end Android resolution is 480x320, and
@@ -2729,6 +2730,22 @@ bool openScreen(bool fullscreen) {
 		
 		int screen_width = (int)(scale_width * default_width_c);
 		int screen_height = (int)(scale_height * default_height_c);
+#else
+		// with SDL2, we let SDL do the scaling via SDL_RenderSetLogicalSize, so we don't have to do the scaling ourselves, and can set the screen width/height to whatever we like
+		// for windowed mode, we pick a suitable size based on the available desktop space
+		int screen_width = 1280;
+		int screen_height = 960;
+
+		screen_width = 1280;
+		screen_height = 960;
+		while( screen_width > user_width || screen_height > user_height ) {
+			screen_width /= 2;
+			screen_height /= 2;
+		}
+
+		scale_width = 4.0f;
+		scale_height = 4.0f;
+#endif
 
 		screen = new Screen();
 		if( !screen->open(screen_width, screen_height, fullscreen) )
@@ -2739,6 +2756,7 @@ bool openScreen(bool fullscreen) {
 		// fullscreen
 		screen = new Screen();
 
+#if SDL_MAJOR_VERSION == 1
 		if( screen->open(4*default_width_c, 4*default_height_c, fullscreen) ) {
 			scale_width = scale_height = 4.0f;
 			LOG("scale 4x\n");
@@ -2775,6 +2793,17 @@ bool openScreen(bool fullscreen) {
 			LOG("can't even open screen at 1x scale\n");
 			return false;
 		}
+#else
+		// with SDL2, we let SDL do the scaling via SDL_RenderSetLogicalSize, so we don't have to do the scaling ourselves
+		// for fullscreen, the supplied width/height is ignored, as we always run at the native resolution
+		scale_width = 4.0f;
+		scale_height = 4.0f;
+		if( !screen->open(0, 0, fullscreen) ) {
+			LOG("can't even open screen at 1x scale\n");
+			return false;
+		}
+#endif
+
 	}
 
 	char buffer[256] = "";

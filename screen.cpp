@@ -53,13 +53,15 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 		return false;
 	}
 #else
-	//SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP, &sdlWindow, &sdlRenderer);
-	if( SDL_CreateWindowAndRenderer(screen_width, screen_height, fullscreen ? SDL_WINDOW_FULLSCREEN : 0, &sdlWindow, &sdlRenderer) != 0 ) {
+	if( SDL_CreateWindowAndRenderer(screen_width, screen_height, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_RESIZABLE, &sdlWindow, &sdlRenderer) != 0 ) {
 		LOG("failed to open screen at this resolution\n");
 		return false;
 	}
-	this->width = screen_width;
-	this->height = screen_height;
+	this->width = scale_width*default_width_c;
+	this->height = scale_height*default_height_c;
+	LOG("width, height: %d, %d\n", width, height);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+	SDL_RenderSetLogicalSize(sdlRenderer, width, height);
 	{
 		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
 		SDL_GetRenderDrawBlendMode(sdlRenderer, &blendMode);
@@ -131,6 +133,7 @@ int Screen::getWidth() const {
 	/*int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(sdlRenderer, &w, &h);
 	return w;*/
+	//LOG("width = %d\n", width);
 	return this->width;
 #endif
 }
@@ -142,6 +145,7 @@ int Screen::getHeight() const {
 	/*int w = 0, h = 0;
 	SDL_RenderGetLogicalSize(sdlRenderer, &w, &h);
 	return h;*/
+	//LOG("height = %d\n", height);
 	return this->height;
 #endif
 }
@@ -178,6 +182,16 @@ void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char
 
 void Screen::getMouseCoords(int *m_x, int *m_y) {
 	SDL_GetMouseState(m_x, m_y);
+	// need to convert from window space to logical space
+#if SDL_MAJOR_VERSION == 1
+#else
+	int screen_width = 0, screen_height = 0;
+	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
+	//LOG("Screen size: %d, %d\n", screen_width, screen_height);
+	*m_x = (*m_x * width) / screen_width;
+	*m_y = (*m_y * height) / screen_height;
+#endif
+	//LOG("Screen::getMouseCoords: %d, %d\n", *m_x, *m_y);
 }
 
 bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right) {
@@ -185,6 +199,15 @@ bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, boo
 	*m_left = ( m_b & SDL_BUTTON(1) ) != 0;
 	*m_middle = ( m_b & SDL_BUTTON(2) ) != 0;
 	*m_right = ( m_b & SDL_BUTTON(3) ) != 0;
+	// need to convert from window space to logical space
+#if SDL_MAJOR_VERSION == 1
+#else
+	int screen_width = 0, screen_height = 0;
+	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
+	*m_x = (*m_x * width) / screen_width;
+	*m_y = (*m_y * height) / screen_height;
+#endif
+	//LOG("Screen::getMouseState: %d, %d\n", *m_x, *m_y);
 	return ( *m_left || *m_middle || *m_right );
 }
 
