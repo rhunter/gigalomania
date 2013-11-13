@@ -57,11 +57,8 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 		LOG("failed to open screen at this resolution\n");
 		return false;
 	}
-	this->width = scale_width*default_width_c;
-	this->height = scale_height*default_height_c;
-	LOG("width, height: %d, %d\n", width, height);
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
-	SDL_RenderSetLogicalSize(sdlRenderer, width, height);
+	this->width = screen_width;
+	this->height = screen_height;
 	{
 		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
 		SDL_GetRenderDrawBlendMode(sdlRenderer, &blendMode);
@@ -95,6 +92,17 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 
 	return true;
 }
+
+#if SDL_MAJOR_VERSION == 1
+#else
+void Screen::setLogicalSize(int width, int height) {
+	this->width = width;
+	this->height = height;
+	LOG("width, height: %d, %d\n", width, height);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+	SDL_RenderSetLogicalSize(sdlRenderer, width, height);
+}
+#endif
 
 void Screen::setTitle(const char *title) {
 #if SDL_MAJOR_VERSION == 1

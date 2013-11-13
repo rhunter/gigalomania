@@ -603,7 +603,7 @@ void setEpoch(int epoch) {
 
 void drawProgress(int percentage) {
 	const int width = (int)(screen->getWidth() * 0.25f);
-	const int height = 64;
+	const int height = (int)(screen->getHeight()/15.0f);
 	const int xpos = (int)(screen->getWidth()*0.5f - width*0.5f);
 	const int ypos = (int)(screen->getHeight()*0.5f - height*0.5f);
 
@@ -1311,6 +1311,22 @@ bool loadAttackersWalkingImages(const string &gfx_dir, int epoch) {
 	return true;
 }
 
+void calculateScale(const Image *image) {
+#if SDL_MAJOR_VERSION == 1
+	scale_factor_w = ((float)(scale_width*default_width_c))/(float)image->getWidth();
+	scale_factor_h = ((float)(scale_height*default_height_c))/(float)image->getHeight();
+	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
+#else
+	// with SDL 2, we don't scale the graphics, and instead set the logical size to match the graphics
+	scale_factor_w = 1.0f;
+	scale_factor_h = 1.0f;
+	scale_width = ((float)(image->getWidth()))/(float)default_width_c;
+	scale_height = ((float)(image->getHeight()))/(float)default_height_c;
+	LOG("scale width/height of logical resolution = %f X %f\n", scale_width, scale_height);
+	screen->setLogicalSize(scale_width*default_width_c, scale_height*default_height_c);
+#endif
+}
+
 bool loadOldImages() {
 	// progress should go from 0 to 80%
 	LOG("try using old graphics\n");
@@ -1321,11 +1337,9 @@ bool loadOldImages() {
 	if( background == NULL )
 		return false;
 	drawProgress(20);
-	scale_factor_w = scale_width;
-	scale_factor_h = scale_height;
-	//scale_factor_w = ((float)(scale_width*default_width_c))/;
-	//scale_factor_h = ((float)(scale_height*default_height_c))/(float)background->getHeight();
-	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
+	calculateScale(background);
+	//scale_factor_w = scale_width;
+	//scale_factor_h = scale_height;
 	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
 	processImage(background);
 
@@ -1897,9 +1911,8 @@ bool loadImages() {
 	drawProgress(20);
 	//scale_factor = ((float)(scale_width*default_width_c))/(float)player_select->getWidth();
 	//LOG("scale factor for images = %f\n", scale_factor);
-	scale_factor_w = ((float)(scale_width*default_width_c))/(float)background->getWidth();
-	scale_factor_h = ((float)(scale_height*default_height_c))/(float)background->getHeight();
-	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
+
+	calculateScale(background);
 	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
 	processImage(background);
 	drawProgress(25);
@@ -2742,9 +2755,6 @@ bool openScreen(bool fullscreen) {
 			screen_width *= 2;
 			screen_height *= 2;
 		}
-
-		scale_width = 4.0f;
-		scale_height = 4.0f;
 #endif
 
 		screen = new Screen();
@@ -2796,8 +2806,6 @@ bool openScreen(bool fullscreen) {
 #else
 		// with SDL2, we let SDL do the scaling via SDL_RenderSetLogicalSize, so we don't have to do the scaling ourselves
 		// for fullscreen, the supplied width/height is ignored, as we always run at the native resolution
-		scale_width = 4.0f;
-		scale_height = 4.0f;
 		if( !screen->open(0, 0, fullscreen) ) {
 			LOG("can't even open screen at 1x scale\n");
 			return false;
