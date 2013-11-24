@@ -91,7 +91,7 @@ copy %src%\utils.h %dst%
 copy %src%\common.h %dst%
 copy %src%\stdafx.h %dst%
 
-copy %src%\SDL_main.c %dst%
+REM copy %src%\SDL_main.c %dst%
 
 REM Qt specific files:
 
