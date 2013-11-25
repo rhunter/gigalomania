@@ -1256,9 +1256,12 @@ void processImage(Image *image, bool old_smooth = true) {
     image->scale(scale_factor_w, scale_factor_h);
     //LOG("    set scale\n");
     image->setScale(scale_width, scale_height);
-    if( using_old_gfx && old_smooth ) {
+#if SDL_MAJOR_VERSION == 1
+	// with SDL 2, we let SDL do smoothing when scaling the graphics on the GPU
+	if( using_old_gfx && old_smooth ) {
         image->smooth();
 	}
+#endif
     //LOG("    done\n");
 }
 
@@ -1323,7 +1326,7 @@ void calculateScale(const Image *image) {
 	scale_width = ((float)(image->getWidth()))/(float)default_width_c;
 	scale_height = ((float)(image->getHeight()))/(float)default_height_c;
 	LOG("scale width/height of logical resolution = %f X %f\n", scale_width, scale_height);
-	screen->setLogicalSize(scale_width*default_width_c, scale_height*default_height_c);
+	screen->setLogicalSize(scale_width*default_width_c, scale_height*default_height_c, true);
 #endif
 }
 
@@ -1332,14 +1335,26 @@ bool loadOldImages() {
 	LOG("try using old graphics\n");
 	using_old_gfx = true;
 
-	background = Image::loadImage("data/mlm_starfield");
+	background = Image::loadImage("data/mlm_sunrise");
 
 	if( background == NULL )
 		return false;
 	drawProgress(20);
-	calculateScale(background);
-	//scale_factor_w = scale_width;
-	//scale_factor_h = scale_height;
+	// do equivalent for calculateScale(), but for a 320x240 image (n.b., not 320x256)
+#if SDL_MAJOR_VERSION == 1
+	scale_factor_w = scale_width;
+	scale_factor_h = scale_height;
+	LOG("scale factor for images = %f X %f\n", scale_factor_w, scale_factor_h);
+#else
+	// with SDL 2, we don't scale the graphics, and instead set the logical size to match the graphics
+	scale_factor_w = 1.0f;
+	scale_factor_h = 1.0f;
+	scale_width = 1.0f;
+	scale_height = 1.0f;
+	LOG("scale width/height of logical resolution = %f X %f\n", scale_width, scale_height);
+	screen->setLogicalSize(scale_width*default_width_c, scale_height*default_height_c, false); // don't smooth, as doesn't look too good with old graphics
+#endif
+
 	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
 	processImage(background);
 
@@ -1380,7 +1395,10 @@ bool loadOldImages() {
 			return false;
 		}
 		convertToHiColor(land[i]);
+#if SDL_MAJOR_VERSION == 1
+		// with SDL 2, we let SDL do smoothing when scaling the graphics on the GPU
 		land[i]->smooth();
+#endif
 	}
 	delete image_slabs;
 	image_slabs = NULL;
@@ -1416,7 +1434,10 @@ bool loadOldImages() {
 	icons->setScale(scale_width, scale_height);
 	icons->setColor(0, 255, 0, 255);
 	convertToHiColor(icons);
+#if SDL_MAJOR_VERSION == 1
+	// with SDL 2, we let SDL do smoothing when scaling the graphics on the GPU
 	icons->smooth();
+#endif
 
 	for(int i=0;i<n_epochs_c;i++)
 		men[i] = icons->copy(16*i, 0, 16, 16);

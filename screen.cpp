@@ -95,11 +95,16 @@ bool Screen::open(int screen_width, int screen_height, bool fullscreen) {
 
 #if SDL_MAJOR_VERSION == 1
 #else
-void Screen::setLogicalSize(int width, int height) {
+void Screen::setLogicalSize(int width, int height, bool smooth) {
 	this->width = width;
 	this->height = height;
 	LOG("width, height: %d, %d\n", width, height);
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+	if( smooth ) {
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+	}
+	else {
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	}
 	SDL_RenderSetLogicalSize(sdlRenderer, width, height);
 }
 #endif

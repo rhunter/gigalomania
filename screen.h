@@ -32,7 +32,7 @@ namespace Gigalomania {
 		bool open(int screen_width, int screen_height, bool fullscreen);
 #if SDL_MAJOR_VERSION == 1
 #else
-		void setLogicalSize(int width, int height);
+		void setLogicalSize(int width, int height, bool smooth);
 #endif
 		void setTitle(const char *title);
 		void clear();
