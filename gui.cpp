@@ -53,7 +53,7 @@ void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, P
 }
 
 //OneMouseButtonPanel::OneMouseButtonPanel(ClickFunc *clickFunc, void *data, PanelPage *caller_button) : PanelPage(caller_button->getLeft() - 16, caller_button->getTop(), caller_button->getWidth() + 32, 64), clickFunc(clickFunc), data(data) {
-OneMouseButtonPanel::OneMouseButtonPanel(ClickFunc *clickFunc, void *data, int arg, PanelPage *caller_button) : PanelPage(caller_button->getOffsetX() - 32, caller_button->getOffsetY(), caller_button->getWidth() + 64, 32), clickFunc(clickFunc), data(data), arg(arg), caller_button(caller_button) {
+OneMouseButtonPanel::OneMouseButtonPanel(ClickFunc *clickFunc, void *data, int arg, PanelPage *caller_button) : PanelPage(caller_button->getOffsetX() - 32, caller_button->getOffsetY(), caller_button->getWidth() + 64, 32), clickFunc(clickFunc), data(data), arg(arg) {
 	this->button_left = new ImageButton(0, 0, arrow_left);
     //this->button_left->setAlpha(true, 160);
 	this->add(this->button_left);
@@ -1879,7 +1879,6 @@ x		}*/
 		else if( m_left && !click && this->button_deploy_unarmedmen->mouseOver(m_x,m_y) && n_nukes == 0 ) {
             done = true;
             // add unarmed man to assembled army
-			int n_population = gamestate->getCurrentSector()->getPopulation();
 			int n_spare = gamestate->getCurrentSector()->getAvailablePopulation();
 			int n = getNClicks();
 			ASSERT(n >= 1);

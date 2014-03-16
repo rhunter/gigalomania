@@ -362,12 +362,10 @@ void setupPlayers();
 bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int suspended[n_players_c], int *epoch, bool completed[max_islands_per_epoch_c], int slot);
 bool loadGame(int slot);
 void saveGame(int slot);
+bool validDifficulty(DifficultyLevel difficulty);
 bool validPlayer(int player);
 void addTextEffect(TextEffect *effect);
 
-static bool validDifficulty(DifficultyLevel difficulty) {
-	return difficulty >= 0 && difficulty < DIFFICULTY_N_LEVELS;
-}
 
 // game constants
 

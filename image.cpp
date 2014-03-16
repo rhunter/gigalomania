@@ -546,8 +546,6 @@ void Image::remap(unsigned char sr,unsigned char sg,unsigned char sb,unsigned ch
 	SDL_LockSurface(this->surface);
 	int w = getWidth();
 	int h = getHeight();
-	int bytesperpixel = this->surface->format->BytesPerPixel;
-	int pitch = this->surface->pitch;
 	/*int isr = (int)sr;
 	int isg = (int)sg;
 	int isb = (int)sb;
@@ -607,8 +605,6 @@ void Image::reshadeRGB(int from, bool to_r, bool to_g, bool to_b) {
 	SDL_LockSurface(this->surface);
 	int w = getWidth();
 	int h = getHeight();
-	int bytesperpixel = this->surface->format->BytesPerPixel;
-	int pitch = this->surface->pitch;
 	// faster to read in x direction! (caching?)
 	for(int y=0;y<h;y++) {
 		for(int x=0;x<w;x++) {
@@ -652,8 +648,6 @@ void Image::brighten(float sr, float sg, float sb) {
 	SDL_LockSurface(this->surface);
 	int w = getWidth();
 	int h = getHeight();
-	int bytesperpixel = this->surface->format->BytesPerPixel;
-	int pitch = this->surface->pitch;
 	// faster to read in x direction! (caching?)
 	for(int y=0;y<h;y++) {
 		for(int x=0;x<w;x++) {

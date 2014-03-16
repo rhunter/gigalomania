@@ -852,6 +852,10 @@ void saveGame(int slot) {
 	fclose(file);
 }
 
+bool validDifficulty(DifficultyLevel difficulty) {
+	return difficulty >= 0 && difficulty < DIFFICULTY_N_LEVELS;
+}
+
 bool validPlayer(int player) {
 	bool valid = player >= 0 && player < n_players_c;
 	if( !valid ) {
