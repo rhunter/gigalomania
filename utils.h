@@ -75,10 +75,6 @@ bool log(const char *text,...);
 #define ASSERT_PLAYER(player) ASSERT( validPlayer(player) );
 #endif
 
-#ifndef ASSERT_DIFFICULTY
-#define ASSERT_DIFFICULTY(difficulty) ASSERT( validDifficulty(difficulty) );
-#endif
-
 class Rect2D {
 public:
 	int x, y, w, h;

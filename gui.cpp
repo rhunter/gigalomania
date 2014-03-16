@@ -53,7 +53,7 @@ void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, P
 }
 
 //OneMouseButtonPanel::OneMouseButtonPanel(ClickFunc *clickFunc, void *data, PanelPage *caller_button) : PanelPage(caller_button->getLeft() - 16, caller_button->getTop(), caller_button->getWidth() + 32, 64), clickFunc(clickFunc), data(data) {
-OneMouseButtonPanel::OneMouseButtonPanel(ClickFunc *clickFunc, void *data, int arg, PanelPage *caller_button) : PanelPage(caller_button->getOffsetX() - 32, caller_button->getOffsetY(), caller_button->getWidth() + 64, 32), clickFunc(clickFunc), data(data), arg(arg), caller_button(caller_button) {
+OneMouseButtonPanel::OneMouseButtonPanel(ClickFunc *clickFunc, void *data, int arg, PanelPage *caller_button) : PanelPage(caller_button->getOffsetX() - 32, caller_button->getOffsetY(), caller_button->getWidth() + 64, 32), clickFunc(clickFunc), data(data), arg(arg) {
 	this->button_left = new ImageButton(0, 0, arrow_left);
     //this->button_left->setAlpha(true, 160);
 	this->add(this->button_left);
@@ -204,7 +204,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->addToPanel(STATE_OPTIONS, button_continue);
 
     //char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
-    char *music_texts[] = { "SOUND ON", "SOUND OFF" };
+    const char *music_texts[] = { "SOUND ON", "SOUND OFF" };
     this->button_music = new CycleButton((int)(mx - 4.5*fw), cy, music_texts, 2, letters_large);
     cy += step_y;
     this->button_music->setActive( play_music ? 0 : 1 );
@@ -213,7 +213,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
     this->button_onemousebutton = NULL;
 #else
-	char *onemousebutton_texts[] = { "ONE MOUSE BUTTON UI", "TWO MOUSE BUTTON UI" };
+	const char *onemousebutton_texts[] = { "ONE MOUSE BUTTON UI", "TWO MOUSE BUTTON UI" };
     this->button_onemousebutton = new CycleButton((int)(mx - 9.5*fw), cy, onemousebutton_texts, 2, letters_large);
     cy += step_y;
     this->button_onemousebutton->setActive( onemousebutton ? 0 : 1 );
@@ -1879,7 +1879,6 @@ x		}*/
 		else if( m_left && !click && this->button_deploy_unarmedmen->mouseOver(m_x,m_y) && n_nukes == 0 ) {
             done = true;
             // add unarmed man to assembled army
-			int n_population = gamestate->getCurrentSector()->getPopulation();
 			int n_spare = gamestate->getCurrentSector()->getAvailablePopulation();
 			int n = getNClicks();
 			ASSERT(n >= 1);

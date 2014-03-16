@@ -463,7 +463,7 @@ void ImageButton::draw() {
 	PanelPage::draw();
 }
 
-CycleButton::CycleButton(int x,int y,char *texts[],int n_texts,Image *font[]) : PanelPage(x, y) {
+CycleButton::CycleButton(int x,int y,const char *texts[],int n_texts,Image *font[]) : PanelPage(x, y) {
 	ASSERT( n_texts > 0 );
 	this->n_texts = n_texts;
 	this->texts = new char *[n_texts];

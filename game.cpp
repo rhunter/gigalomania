@@ -72,11 +72,11 @@ bool using_old_gfx = false;
 
 Application *application = NULL;
 
-char *maps_dirname = "islands";
+const char *maps_dirname = "islands";
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
 #if !defined(__ANDROID__) && defined(__linux)
-char *alt_maps_dirname = "/usr/share/gigalomania/islands";
+const char *alt_maps_dirname = "/usr/share/gigalomania/islands";
 #endif
 #endif
 
@@ -852,6 +852,10 @@ void saveGame(int slot) {
 	fclose(file);
 }
 
+bool validDifficulty(DifficultyLevel difficulty) {
+	return difficulty >= 0 && difficulty < DIFFICULTY_N_LEVELS;
+}
+
 bool validPlayer(int player) {
 	bool valid = player >= 0 && player < n_players_c;
 	if( !valid ) {
@@ -914,124 +918,62 @@ void playMusic() {
 }
 
 bool loadSamples() {
-	/*if( use_amigadata )
-	{
-		s_design_is_ready = loadSample("data/desready", true);
-		s_design_is_ready->setText("the design is completed");
-		s_ergo = loadSample("data/ergo", true);
-		s_ergo->setText("ergonomically terrific");
-		s_fcompleted = loadSamplesChained("data/fthe", "data/-prodrun2", NULL);
-		s_fcompleted->setText("the production run is completed");
-		s_advanced_tech = loadSample("data/teklev2", true);
-		s_advanced_tech->setText("we have advanced a tech level");
-		s_on_hold = loadSample("data/hold", true);
-		//s_on_hold->setText("putting you on hold");
-		s_running_out_of_elements = loadSample("data/nelem", true);
-		s_running_out_of_elements->setText("running out of elements");
-		s_tower_critical = loadSample("data/da-tower", true);
-		s_tower_critical->setText("the tower is almost destroyed");
-		s_sector_destroyed = loadSample("data/arsect", true);
-		s_sector_destroyed->setText("the sector has been destroyed");
-		s_mine_destroyed = loadSample("data/ndest", true);
-		s_mine_destroyed->setText("the mine is destroyed");
-		s_factory_destroyed = loadSamplesChained("data/fthe", "data/ffact", "data/fdest");
-		s_factory_destroyed->setText("the factory is destroyed");
-		s_lab_destroyed = loadSample("data/labdest", true);
-		s_lab_destroyed->setText("the lab is destroyed");
-		s_itis_all_over = loadSample("data/da-allover", true);
-		s_itis_all_over->setText("game over");
-		s_conquered = loadSamplesChained("data/arweve", "data/arconq", NULL);
-		s_conquered->setText("we have conquered the sector");
-		s_won = loadSamplesChained("data/arweve", "data/arwon", NULL);
-		s_won->setText("we have won");
-		s_weve_nuked_them = loadSamplesChained("data/arweve", "data/arnuke", NULL);
-		s_weve_nuked_them->setText("we nuked them");
-		s_weve_been_nuked = loadSample("data/da-nuked", true);
-		s_weve_been_nuked->setText("we have been nuked");
-		s_alliance_yes[0] = loadSamplesChained("data/dwhy", "data/dall", NULL);
-		s_alliance_yes[0]->setText("red team says okay");
-		s_alliance_yes[1] = loadSample("data/asisi", true);
-		s_alliance_yes[1]->setText("green team says okay");
-		s_alliance_yes[2] = loadSample("data/PVERYWELL", true);
-		s_alliance_yes[2]->setText("yellow team says okay");
-		s_alliance_yes[3] = loadSample("data/yougotit", true);
-		s_alliance_yes[3]->setText("blue team says okay");
-		s_alliance_no[0] = loadSamplesChained("data/dha", "data/NO", NULL);
-		s_alliance_no[0]->setText("red team says no");
-		s_alliance_no[1] = loadSample("data/anowork", true);
-		s_alliance_no[1]->setText("green team says no");
-		s_alliance_no[2] = loadSample("data/pno", true);
-		s_alliance_no[2]->setText("yellow team says no");
-		s_alliance_no[3] = loadSample("data/noway", true);
-		s_alliance_no[3]->setText("blue team says no");
-		s_alliance_ask[0] = loadSample("data/djoin", true);
-		s_alliance_ask[0]->setText("red team requests alliance");
-		s_alliance_ask[1] = loadSample("data/awanna", true);
-		s_alliance_ask[1]->setText("green team requests alliance");
-		s_alliance_ask[2] = loadSample("data/pmyteam", true);
-		s_alliance_ask[2]->setText("yellow team requests alliance");
-		s_alliance_ask[3] = loadSample("data/myside2", true);
-		s_alliance_ask[3]->setText("blue team requests alliance");
-		s_quit[0] = loadSamplesChained("data/dha", "data/dpath", NULL);
-		s_quit[1] = loadSample("data/alaff", true);
-		s_quit[2] = loadSample("data/pmmm2", true);
-		s_quit[3] = loadSample("data/laff", true);
-	}*/
-
-	// no longer supporting speech samples
-	s_design_is_ready = new Sample();
+	string sound_dir = "sound/";
+	s_design_is_ready = Sample::loadSample(sound_dir + "desready.wav");
 	s_design_is_ready->setText("the design is completed");
-	s_ergo = new Sample();
+	s_ergo = Sample::loadSample(sound_dir + "ergo.wav");
 	s_ergo->setText("ergonomically terrific");
-	s_fcompleted = new Sample();
+	s_fcompleted = Sample::loadSample(sound_dir + "-prodrun2.wav"); // one sample instead of the original 2
 	s_fcompleted->setText("the production run is finished");
-	s_advanced_tech = new Sample();
+	s_advanced_tech = Sample::loadSample(sound_dir + "teklev2.wav");
 	s_advanced_tech->setText("we have advanced to the next tech level");
-	s_running_out_of_elements = new Sample();
+	s_on_hold = Sample::loadSample(sound_dir + "hold.wav");
+	//s_on_hold->setText("putting you on hold");
+	s_running_out_of_elements = Sample::loadSample(sound_dir + "nelem.wav");
 	s_running_out_of_elements->setText("run out of elements");
-	s_tower_critical = new Sample();
+	s_tower_critical = Sample::loadSample(sound_dir + "da-tower.wav");
 	s_tower_critical->setText("the tower is almost destroyed");
-	s_sector_destroyed = new Sample();
+	s_sector_destroyed = Sample::loadSample(sound_dir + "arsect.wav");
 	s_sector_destroyed->setText("the sector has been destroyed");
-	s_mine_destroyed = new Sample();
+	s_mine_destroyed = Sample::loadSample(sound_dir + "ndest.wav");
 	s_mine_destroyed->setText("the mine is destroyed");
-	s_factory_destroyed = new Sample();
+	s_factory_destroyed = Sample::loadSample(sound_dir + "-fdest.wav"); //one sample instead of the original 3
 	s_factory_destroyed->setText("the factory is destroyed");
-	s_lab_destroyed = new Sample();
+	s_lab_destroyed = Sample::loadSample(sound_dir + "labdest.wav");
 	s_lab_destroyed->setText("the lab is destroyed");
-	s_itis_all_over = new Sample();
+	s_itis_all_over = Sample::loadSample(sound_dir + "da-allover.wav");
 	s_itis_all_over->setText("game over");
-	s_conquered = new Sample();
+	s_conquered = Sample::loadSample(sound_dir + "arconq.wav"); // one sample instead of the original 2
 	s_conquered->setText("we have conquered the sector");
-	s_won = new Sample();
+	s_won = Sample::loadSample(sound_dir + "arwon.wav"); // one sample instead of the original 2
 	s_won->setText("we have won");
-	s_weve_nuked_them = new Sample();
-	s_weve_nuked_them->setText("we have nuked them");
-	s_weve_been_nuked = new Sample();
+	s_weve_nuked_them = Sample::loadSample(sound_dir + "arnuke.wav"); // one sample instead of the original 2
+	s_weve_nuked_them->setText("we nuked them");
+	s_weve_been_nuked = Sample::loadSample(sound_dir + "da-nuked.wav");
 	s_weve_been_nuked->setText("we have been nuked");
-	s_alliance_yes[0] = new Sample();
+	s_alliance_yes[0] = Sample::loadSamplesChained("dwhy", "dall", NULL);
 	s_alliance_yes[0]->setText("red team says okay");
-	s_alliance_yes[1] = new Sample();
+	s_alliance_yes[1] = Sample::loadSample(sound_dir + "asisi.wav");
 	s_alliance_yes[1]->setText("green team says okay");
-	s_alliance_yes[2] = new Sample();
+	s_alliance_yes[2] = Sample::loadSample(sound_dir + "PVERYWELL.wav");
 	s_alliance_yes[2]->setText("yellow team says okay");
-	s_alliance_yes[3] = new Sample();
+	s_alliance_yes[3] = Sample::loadSample(sound_dir + "yougotit.wav");
 	s_alliance_yes[3]->setText("blue team says okay");
-	s_alliance_no[0] = new Sample();
+	s_alliance_no[0] = Sample::loadSamplesChained("dha", "NO", NULL);
 	s_alliance_no[0]->setText("red team says no");
-	s_alliance_no[1] = new Sample();
+	s_alliance_no[1] = Sample::loadSample(sound_dir + "anowork.wav");
 	s_alliance_no[1]->setText("green team says no");
-	s_alliance_no[2] = new Sample();
+	s_alliance_no[2] = Sample::loadSample(sound_dir + "pno.wav");
 	s_alliance_no[2]->setText("yellow team says no");
-	s_alliance_no[3] = new Sample();
+	s_alliance_no[3] = Sample::loadSample(sound_dir + "noway.wav");
 	s_alliance_no[3]->setText("blue team says no");
-	s_alliance_ask[0] = new Sample();
+	s_alliance_ask[0] = Sample::loadSample(sound_dir + "djoin.wav");
 	s_alliance_ask[0]->setText("red team requests alliance");
-	s_alliance_ask[1] = new Sample();
+	s_alliance_ask[1] = Sample::loadSample(sound_dir + "awanna.wav");
 	s_alliance_ask[1]->setText("green team requests alliance");
-	s_alliance_ask[2] = new Sample();
+	s_alliance_ask[2] = Sample::loadSample(sound_dir + "pmyteam.wav");
 	s_alliance_ask[2]->setText("yellow team requests alliance");
-	s_alliance_ask[3] = new Sample();
+	s_alliance_ask[3] = Sample::loadSample(sound_dir + "myside2.wav");
 	s_alliance_ask[3]->setText("blue team requests alliance");
 
 	// text messages without corresponding samples
@@ -1046,7 +988,6 @@ bool loadSamples() {
 	s_quit[2] = new Sample();
 	s_quit[3] = new Sample();
 
-	string sound_dir = "sound/";
 	// sound effects
 	s_explosion = Sample::loadSample(sound_dir + "bomb.wav");
 #ifndef USING_QT

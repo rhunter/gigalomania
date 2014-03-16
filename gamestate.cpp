@@ -2159,7 +2159,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 		ASSERT( this->alliance_no != NULL );
 		if( this->alliance_yes->mouseOver(m_x, m_y) ) {
 			ASSERT( players[player_asking_alliance] != NULL );
-			ASSERT( !players[player_asking_alliance]->isDead() != NULL );
+			ASSERT( !players[player_asking_alliance]->isDead() );
 			this->makeAlliance(player_asking_alliance, client_player);
 			// makeAlliance also cancels
 			done = true;
@@ -2553,19 +2553,21 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 						else if( flash && !isAirUnit( soldier->epoch ) ) {
 							blueEffect(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, false);
 						}
-						/*delete soldiers[i][k];
+						/* XXX: is there any reason to keep the commented-out code here?
+						delete soldiers[i][k];
 						if( k < n_soldiers[i]-1 ) {
-						//*soldiers[i][k] = *soldiers[i][ n_soldiers[i]-1 ];
-						soldiers[i][k] = soldiers[i][ n_soldiers[i]-1 ];
+							// *soldiers[i][k] = *soldiers[i][ n_soldiers[i]-1 ];
+							soldiers[i][k] = soldiers[i][ n_soldiers[i]-1 ];
 						}
 						else {
-						soldiers[i][k] = NULL;
-						}*/
-						//soldiers[i]->remove(k);
+							soldiers[i][k] = NULL;
+						}
+						*/
+						// soldiers[i]->remove(k);
 						soldiers[i]->erase(soldiers[i]->begin() + k);
 						delete soldier;
-						/*n_soldiers[i]--;
-						ASSERT(soldiers[i]->size() == n_soldiers[i]);*/
+						/* n_soldiers[i]--;
+						ASSERT(soldiers[i]->size() == n_soldiers[i]); */
 						diff++;
 						if( diff == 0 )
 							break;
@@ -2718,7 +2720,7 @@ void PlayingGameState::setFAmount(int sector_x, int sector_y, int n_famount) {
 void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_miners) {
 	Sector *sector = map->getSector(sector_x, sector_y);
 	if( sector->getActivePlayer() == client_player ) {
-		if( sector->canMine(element) != NULL ) {
+		if( sector->canMine(element) ) {
 			sector->setMiners(element, n_miners);
 		}
 	}
@@ -2727,7 +2729,7 @@ void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_
 void PlayingGameState::setNBuilders(int sector_x, int sector_y, Type type, int n_builders) {
 	Sector *sector = map->getSector(sector_x, sector_y);
 	if( sector->getActivePlayer() == client_player ) {
-		if( sector->canBuild(type) != NULL ) {
+		if( sector->canBuild(type) ) {
 			sector->setBuilders(type, n_builders);
 		}
 	}

@@ -36,9 +36,9 @@ extern bool using_old_gfx;
 
 extern Application *application;
 
-extern char *maps_dirname;
+extern const char *maps_dirname;
 #if !defined(__ANDROID__) && defined(__linux)
-extern char *alt_maps_dirname;
+extern const char *alt_maps_dirname;
 #endif
 
 extern int offset_flag_x_c;
@@ -362,12 +362,10 @@ void setupPlayers();
 bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int suspended[n_players_c], int *epoch, bool completed[max_islands_per_epoch_c], int slot);
 bool loadGame(int slot);
 void saveGame(int slot);
+bool validDifficulty(DifficultyLevel difficulty);
 bool validPlayer(int player);
 void addTextEffect(TextEffect *effect);
 
-static bool validDifficulty(DifficultyLevel difficulty) {
-	return difficulty >= 0 && difficulty < DIFFICULTY_N_LEVELS;
-}
 
 // game constants
 
