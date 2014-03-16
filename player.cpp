@@ -52,7 +52,7 @@ void PlayerType::getColour(int *r,int *g,int *b,PlayerTypeID id) {
 //Player::Player(int index, char *name) {
 //Player::Player(int index, int personality) {
 Player::Player(bool is_human, int index) :
-is_human(is_human), index(index)
+index(index), is_human(is_human)
 {
 	this->dead = false;
 	//this->personality = personality;
