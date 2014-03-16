@@ -53,6 +53,8 @@ protected:
 public:
 	ParticleSystem(const Image *image) : image(image) {
 	}
+	virtual ~ParticleSystem() {
+	}
 
 	void draw(int xpos, int ypos) const;
 	virtual void update()=0;
