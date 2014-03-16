@@ -72,11 +72,11 @@ bool using_old_gfx = false;
 
 Application *application = NULL;
 
-char *maps_dirname = "islands";
+const char *maps_dirname = "islands";
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
 #if !defined(__ANDROID__) && defined(__linux)
-char *alt_maps_dirname = "/usr/share/gigalomania/islands";
+const char *alt_maps_dirname = "/usr/share/gigalomania/islands";
 #endif
 #endif
 

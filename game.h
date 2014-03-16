@@ -36,9 +36,9 @@ extern bool using_old_gfx;
 
 extern Application *application;
 
-extern char *maps_dirname;
+extern const char *maps_dirname;
 #if !defined(__ANDROID__) && defined(__linux)
-extern char *alt_maps_dirname;
+extern const char *alt_maps_dirname;
 #endif
 
 extern int offset_flag_x_c;

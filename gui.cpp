@@ -204,7 +204,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->addToPanel(STATE_OPTIONS, button_continue);
 
     //char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
-    char *music_texts[] = { "SOUND ON", "SOUND OFF" };
+    const char *music_texts[] = { "SOUND ON", "SOUND OFF" };
     this->button_music = new CycleButton((int)(mx - 4.5*fw), cy, music_texts, 2, letters_large);
     cy += step_y;
     this->button_music->setActive( play_music ? 0 : 1 );
@@ -213,7 +213,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
     this->button_onemousebutton = NULL;
 #else
-	char *onemousebutton_texts[] = { "ONE MOUSE BUTTON UI", "TWO MOUSE BUTTON UI" };
+	const char *onemousebutton_texts[] = { "ONE MOUSE BUTTON UI", "TWO MOUSE BUTTON UI" };
     this->button_onemousebutton = new CycleButton((int)(mx - 9.5*fw), cy, onemousebutton_texts, 2, letters_large);
     cy += step_y;
     this->button_onemousebutton->setActive( onemousebutton ? 0 : 1 );

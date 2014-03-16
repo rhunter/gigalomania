@@ -179,7 +179,7 @@ namespace Gigalomania {
 		int n_texts;
 
 	public:
-		CycleButton(int x,int y,char *texts[],int n_texts,Image *font[]);
+		CycleButton(int x,int y,const char *texts[],int n_texts,Image *font[]);
 		virtual ~CycleButton();
 
 		virtual const char *getClass() const { return "CLASS_CYCLEBUTTON"; }
