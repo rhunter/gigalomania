@@ -2553,19 +2553,21 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 						else if( flash && !isAirUnit( soldier->epoch ) ) {
 							blueEffect(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, false);
 						}
-						/*delete soldiers[i][k];
+						/* XXX: is there any reason to keep the commented-out code here?
+						delete soldiers[i][k];
 						if( k < n_soldiers[i]-1 ) {
-						//*soldiers[i][k] = *soldiers[i][ n_soldiers[i]-1 ];
-						soldiers[i][k] = soldiers[i][ n_soldiers[i]-1 ];
+							// *soldiers[i][k] = *soldiers[i][ n_soldiers[i]-1 ];
+							soldiers[i][k] = soldiers[i][ n_soldiers[i]-1 ];
 						}
 						else {
-						soldiers[i][k] = NULL;
-						}*/
-						//soldiers[i]->remove(k);
+							soldiers[i][k] = NULL;
+						}
+						*/
+						// soldiers[i]->remove(k);
 						soldiers[i]->erase(soldiers[i]->begin() + k);
 						delete soldier;
-						/*n_soldiers[i]--;
-						ASSERT(soldiers[i]->size() == n_soldiers[i]);*/
+						/* n_soldiers[i]--;
+						ASSERT(soldiers[i]->size() == n_soldiers[i]); */
 						diff++;
 						if( diff == 0 )
 							break;
