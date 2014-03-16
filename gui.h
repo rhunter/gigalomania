@@ -25,7 +25,6 @@ class OneMouseButtonPanel : public PanelPage {
 	ClickFunc *clickFunc;
 	void *data;
 	int arg;
-	const PanelPage *caller_button;
     ImageButton *button_right;
     ImageButton *button_left;
 public:
