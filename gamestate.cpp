@@ -2159,7 +2159,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 		ASSERT( this->alliance_no != NULL );
 		if( this->alliance_yes->mouseOver(m_x, m_y) ) {
 			ASSERT( players[player_asking_alliance] != NULL );
-			ASSERT( !players[player_asking_alliance]->isDead() != NULL );
+			ASSERT( !players[player_asking_alliance]->isDead() );
 			this->makeAlliance(player_asking_alliance, client_player);
 			// makeAlliance also cancels
 			done = true;
@@ -2718,7 +2718,7 @@ void PlayingGameState::setFAmount(int sector_x, int sector_y, int n_famount) {
 void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_miners) {
 	Sector *sector = map->getSector(sector_x, sector_y);
 	if( sector->getActivePlayer() == client_player ) {
-		if( sector->canMine(element) != NULL ) {
+		if( sector->canMine(element) ) {
 			sector->setMiners(element, n_miners);
 		}
 	}
@@ -2727,7 +2727,7 @@ void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_
 void PlayingGameState::setNBuilders(int sector_x, int sector_y, Type type, int n_builders) {
 	Sector *sector = map->getSector(sector_x, sector_y);
 	if( sector->getActivePlayer() == client_player ) {
-		if( sector->canBuild(type) != NULL ) {
+		if( sector->canBuild(type) ) {
 			sector->setBuilders(type, n_builders);
 		}
 	}
