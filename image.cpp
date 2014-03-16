@@ -55,7 +55,7 @@ SDL_Renderer *Image::sdlRenderer = NULL;
 
 Image::Image() {
 	this->data = NULL;
-	this->need_to_free_data = NULL;
+	this->need_to_free_data = false;
 	this->surface = NULL;
 #if SDL_MAJOR_VERSION == 1
 #else
@@ -337,7 +337,7 @@ bool Image::convertToHiColor(bool alpha) {
 	CreateMask(rmask, gmask, bmask, amask);
 
 	int depth = alpha ? 32 : 24;
-	SDL_Surface *new_surf = SDL_CreateRGBSurface(NULL, this->getWidth(), this->getHeight(), depth, rmask, gmask, bmask, amask);
+	SDL_Surface *new_surf = SDL_CreateRGBSurface((Uint32) NULL, this->getWidth(), this->getHeight(), depth, rmask, gmask, bmask, amask);
 	SDL_BlitSurface(this->surface, NULL, new_surf, NULL);
 	free();
 	this->surface = new_surf;
