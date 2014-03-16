@@ -2982,7 +2982,7 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 
 bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end) {
 	if( newline_index > 1 ) {
-		strcpy(buffer, &buffer[newline_index-1]);
+		memmove(buffer, &buffer[newline_index-1], MAX_LINE-(newline_index-1));
 		if( reached_end && buffer[0] == '\0' ) {
 			return true;
 		}
