@@ -79,8 +79,6 @@ namespace Gigalomania {
 		bool setPixelIndex(int x,int y,unsigned char c);
 		bool setColor(int index,unsigned char r,unsigned char g,unsigned char b);
 		bool createAlphaForColor(bool mask, unsigned char mr, unsigned char mg, unsigned char mb, unsigned char ar, unsigned char ag, unsigned char ab, unsigned char alpha);
-		void scaleAlpha(float scale);
-		bool convertToHiColor(bool alpha);
 		void smooth();
 
 		static Image * loadImage(const char *filename);

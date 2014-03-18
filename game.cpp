@@ -217,8 +217,6 @@ Sample *s_scream = NULL;
 Sample *s_buildingdestroyed = NULL;
 Sample *s_guiclick = NULL;
 
-const unsigned char shadow_alpha_c = (unsigned char)160;
-
 const int epoch_dates[n_epochs_c] = {-10000, -2000, 1, 900, 1400, 1850, 1914, 1944, 1980, 2100};
 const char *epoch_names[n_epochs_c] = { "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH", "NINTH", "TENTH" };
 
@@ -1150,17 +1148,7 @@ bool remapLand(Image *image,MapColour colour) {
 	return true;
 }
 
-void convertToHiColor(Image *image) {
-	if( using_old_gfx ) {
-		// create alpha from color keys
-		image->createAlphaForColor(true, 255, 0, 255, 127, 0, 127, shadow_alpha_c);
-	}
-	image->convertToHiColor(false);
-}
-
 void processImage(Image *image, bool old_smooth = true) {
-    //LOG("    convert to hi color\n");
-	convertToHiColor(image);
     //LOG("    scale\n");
     image->scale(scale_factor_w, scale_factor_h);
     //LOG("    set scale\n");
@@ -1303,7 +1291,6 @@ bool loadOldImages() {
 			LOG("failed to remap land\n");
 			return false;
 		}
-		convertToHiColor(land[i]);
 #if SDL_MAJOR_VERSION == 1
 		// with SDL 2, we let SDL do smoothing when scaling the graphics on the GPU
 		land[i]->smooth();
@@ -1342,7 +1329,6 @@ bool loadOldImages() {
 	//icons->scale(scale_factor, scale_factor);
 	icons->setScale(scale_width, scale_height);
 	icons->setColor(0, 255, 0, 255);
-	convertToHiColor(icons);
 #if SDL_MAJOR_VERSION == 1
 	// with SDL 2, we let SDL do smoothing when scaling the graphics on the GPU
 	icons->smooth();
@@ -2096,9 +2082,7 @@ bool loadImages() {
 	mapsquare = icons->copy(0, 0, 17, 17);
 	flashingmapsquare = icons->copy(32, 0, 17, 17);
 	arrow_left = icons->copy(64, 0, 32, 32);
-	arrow_left->scaleAlpha(0.625f);
 	arrow_right = icons->copy(96, 0, 32, 32);
-	arrow_right->scaleAlpha(0.625f);
 
 	icons = Image::loadImage(gfx_dir + "font.png");
 	if( icons == NULL )
@@ -2181,7 +2165,6 @@ bool loadImages() {
         map_sq[MAP_GREY][0] = Image::createNoise(map_width, map_height, 4.0f, 4.0f, filter_max, filter_min, Image::NOISEMODE_PERLIN, 4);
 	}
 	for(int i=0;i<MAP_N_COLOURS;i++) {
-        convertToHiColor(map_sq[i][0]);
         map_sq[i][0]->setScale(scale_width, scale_height);
         for(int j=1;j<n_map_sq_c;j++) {
 			map_sq[i][j] = map_sq[i][0]->copy(0, 0, 16, 16);
