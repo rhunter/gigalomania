@@ -4,14 +4,18 @@ CFILES=game.cpp gamestate.cpp gui.cpp image.cpp main.cpp panel.cpp player.cpp re
 HFILES=game.h gamestate.h gui.h image.h panel.h player.h resources.h screen.h sector.h sound.h utils.h common.h stdafx.h
 OFILES=game.o gamestate.o gui.o image.o panel.o player.o resources.o screen.o sector.o sound.o utils.o main.o
 APP=gigalomania
-INC=-I ~/Library/Frameworks/SDL2.framework/Headers -I ~/Library/Frameworks/SDL2_image.framework/Headers -I ~/Library/Frameworks/SDL2_mixer.framework/Headers
-LINKPATH=-F ~/Library/Frameworks -rpath @loader_path/../Frameworks
+DESIRED_FRAMEWORK_NAMES=SDL2 SDL2_image SDL2_mixer
+POSSIBLE_FRAMEWORK_CONTAINER_PATHS=$(wildcard ~/Library/Frameworks /Library/Frameworks /System/Library/Frameworks)
+ACTUAL_FRAMEWORK_PATHS=$(foreach dir,$(POSSIBLE_FRAMEWORK_CONTAINER_PATHS),$(wildcard $(addsuffix .framework,$(addprefix $(dir)/,$(DESIRED_FRAMEWORK_NAMES)))))
+INC=$(addprefix -I,$(addsuffix /Headers,$(ACTUAL_FRAMEWORK_PATHS)))
+LINKPATH=$(addprefix -F,$(POSSIBLE_FRAMEWORK_CONTAINER_PATHS)) -rpath @loader_path/../Frameworks
 
-LIBS=-framework SDL2 -framework SDL2_image -framework SDL2_mixer
+LIBS=$(patsubst %,-framework %,$(DESIRED_FRAMEWORK_NAMES))
+FRAMEWORKS_IN_TARGET_APP_BUNDLE=$(addprefix Gigalomania.app/Contents/Frameworks/,$(notdir $(ACTUAL_FRAMEWORK_PATHS)))
 
 all: $(APP)
 
-$(APP): $(OFILES) $(HFILES) $(CFILES)
+$(APP): $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $(APP)
 
 .cpp.o:
@@ -69,15 +73,17 @@ install_meego: $(APP)
 	mkdir -p $(DESTDIR)/usr/bin/
 	cp gigalomania_mobile.sh $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
+.PHONY: uninstall_meego
 uninstall_meego:
 	rm -rf $(DESTDIR)/opt/gigalomania # -f so we don't fail if folder doesn't exist
 	rm -f $(DESTDIR)/usr/share/applications/gigalomania_maemo.desktop
 	rm -f $(DESTDIR)/usr/share/icons/hicolor/48x48/apps/gigalomania48.png
 	rm -f $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
-dist_macosx: Gigalomania.app/Contents/MacOS/gigalomania Gigalomania.app/Contents/Resources/gfx Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh Gigalomania.app/Contents/Resources/islands Gigalomania.app/Contents/Resources/sound Gigalomania.app/Contents/Resources/gamemusic.ogg Gigalomania.app/Contents/Info.plist Gigalomania.app/Contents/Resources/icon1.icns Gigalomania.app/Contents/Frameworks
+.PHONY: dist_macosx
+dist_macosx: Gigalomania.app/Contents/MacOS/gigalomania Gigalomania.app/Contents/Resources/gfx Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh Gigalomania.app/Contents/Resources/islands Gigalomania.app/Contents/Resources/sound Gigalomania.app/Contents/Resources/gamemusic.ogg Gigalomania.app/Contents/Info.plist Gigalomania.app/Contents/Resources/icon1.icns $(FRAMEWORKS_IN_TARGET_APP_BUNDLE)
 
-Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFILES) $(HFILES) $(CFILES)
+Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
 	mkdir -p $<
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $@
 
@@ -107,9 +113,9 @@ Gigalomania.app/Contents/Resources/gamemusic.ogg: gamemusic.ogg
 	mkdir -p Gigalomania.app/Contents/Resources
 	cp -r $< $@
 
-Gigalomania.app/Contents/Frameworks:
+$(FRAMEWORKS_IN_TARGET_APP_BUNDLE): $(ACTUAL_FRAMEWORK_PATHS)
 	mkdir -p $@
-	cp -r ~/Library/Frameworks/SDL2.framework ~/Library/Frameworks/SDL2_image.framework ~/Library/Frameworks/SDL2_mixer.framework $@
+	cp -r $< $@
 
 Gigalomania.app: macosx/bundle_template
 	cp -r macosx/bundle_template $@
@@ -117,3 +123,5 @@ Gigalomania.app: macosx/bundle_template
 clean:
 	rm -rf *.o
 	rm -f $(APP)
+	rm -rf Gigalomania.app
+
