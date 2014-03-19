@@ -13,6 +13,10 @@ LINKPATH=$(addprefix -F,$(POSSIBLE_FRAMEWORK_CONTAINER_PATHS)) -rpath @loader_pa
 LIBS=$(patsubst %,-framework %,$(DESIRED_FRAMEWORK_NAMES))
 FRAMEWORKS_IN_TARGET_APP_BUNDLE=$(addprefix Gigalomania.app/Contents/Frameworks/,$(notdir $(ACTUAL_FRAMEWORK_PATHS)))
 
+# cancel the implicit rule that makes the `sound` dir look like it comes from
+# `sound.o`
+%: %.o
+
 all: $(APP)
 
 $(APP): $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
@@ -90,32 +94,23 @@ Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFI
 
 Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.plist
 	mkdir -p Gigalomania.app/Contents
-	cp -r $< $@
+	cp -r $^ $@
 Gigalomania.app/Contents/Resources/icon1.icns: macosx/app_bundle_template/Contents/Resources/icon1.icns
 	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $< $@
+	cp -r $^ $@
 Gigalomania.app/Contents/MacOS:
-Gigalomania.app/Contents/Resources: Gigalomania.app/Contents/Resources/gfx Gigalomania.app/Contents/Resources/islands Gigalomania.app/Contents/Resources/sound Gigalomania.app/Contents/Resources/gamemusic.ogg
+Gigalomania.app/Contents/Resources: $(addprefix Gigalomania.app/Contents/Resources/,gfx islands sound gamemusic.ogg)
 
 Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh: macosx/app_bundle_template/Contents/MacOS/gigalomania.launcher.sh
-	cp -a $< $@
-# TODO: I'm sure there's a way to collapse all these into one rule
-Gigalomania.app/Contents/Resources/gfx: gfx
+	mkdir -p `dirname $@`
+	cp -a $^ $@
+Gigalomania.app/Contents/Resources/%: %
 	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $< $@
-Gigalomania.app/Contents/Resources/islands: islands
-	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $< $@
-Gigalomania.app/Contents/Resources/sound: sound/
-	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $< $@
-Gigalomania.app/Contents/Resources/gamemusic.ogg: gamemusic.ogg
-	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $< $@
+	cp -r $^ $@
 
 $(FRAMEWORKS_IN_TARGET_APP_BUNDLE): $(ACTUAL_FRAMEWORK_PATHS)
 	mkdir -p $@
-	cp -r $< $@
+	cp -r $^ $@
 
 Gigalomania.app: macosx/bundle_template
 	cp -r macosx/bundle_template $@
