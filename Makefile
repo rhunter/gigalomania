@@ -87,6 +87,11 @@ uninstall_meego:
 .PHONY: dist_macosx
 dist_macosx: Gigalomania.app
 
+Gigalomania.app/%: macosx/app_bundle_template/%
+	mkdir -p `dirname $@`
+	cp -RL $^ $@
+
+Gigalomania.app/Contents/Frameworks/%: %
 Gigalomania.app: \
              Gigalomania.app/Contents/Info.plist \
              Gigalomania.app/Contents/Resources/icon1.icns \
@@ -98,14 +103,8 @@ Gigalomania.app: \
              Gigalomania.app/Contents/Resources/gamemusic.ogg \
              $(FRAMEWORKS_IN_TARGET_APP_BUNDLE)
 
-Gigalomania.app/Contents/MacOS:
-	mkdir -p $@
 Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $@
-Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh: macosx/app_bundle_template/Contents/MacOS/gigalomania.launcher.sh
-	mkdir -p `dirname $@`
-	cp -a $^ $@
-
 
 Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.plist
 	mkdir -p Gigalomania.app/Contents
@@ -114,20 +113,15 @@ Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.pl
 	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 0.27" $@
 	/usr/libexec/PlistBuddy -c "Set :CFBundleGetInfoString Gigalomania\ v0.27" $@
 
-Gigalomania.app/Contents/Resources/icon1.icns: macosx/app_bundle_template/Contents/Resources/icon1.icns
-	mkdir -p Gigalomania.app/Contents/Resources
-	cp -rL $^ $@
+# Look for gfx, islands, sound etc in the build directory
 Gigalomania.app/Contents/Resources/%: %
 	mkdir -p Gigalomania.app/Contents/Resources
-	cp -rL $^ $@
+	cp -RL $^ $@
 
 vpath %.framework $(POSSIBLE_FRAMEWORK_CONTAINER_PATHS)
 Gigalomania.app/Contents/Frameworks/%: %
 	mkdir -p $@
 	cp -r $^ $@
-
-Gigalomania.app: macosx/app_bundle_template
-	cp -r macosx/app_bundle_template $@
 
 clean:
 	rm -rf *.o
