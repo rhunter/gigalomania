@@ -9,6 +9,7 @@ LINKPATH=`sdl-config --libs` -L/usr/X11R6/lib/ -L/usr/lib
 
 LIBS=-lSDL_image -lSDL_mixer
 
+.PHONY: all
 all: $(APP)
 
 $(APP): $(OFILES) $(HFILES) $(CFILES)
@@ -18,6 +19,7 @@ $(APP): $(OFILES) $(HFILES) $(CFILES)
 	$(CC) $(CCFLAGS) -O2 $(INC) -c $<
 
 # REMEMBER to update debian/dirs if the system directories that we use are changed!!!
+.PHONY: install
 install: $(APP)
 	mkdir -p $(DESTDIR)/opt/gigalomania # -p so we don't fail if folder already exists
 	cp $(APP) $(DESTDIR)/opt/gigalomania
@@ -30,12 +32,14 @@ install: $(APP)
 	cp gigalomania64.png $(DESTDIR)/usr/share/pixmaps/
 # REMEMBER to update debian/dirs if the system directories that we use are changed!!!
 
+.PHONY: uninstall
 uninstall:
 	rm -rf $(DESTDIR)/opt/gigalomania # -f so we don't fail if folder doesn't exist
 	rm -f $(DESTDIR)/usr/share/applications/gigalomania.desktop
 	rm -f $(DESTDIR)/usr/share/applications/gigalomania_fullscreen.desktop
 	rm -f $(DESTDIR)/usr/share/pixmaps/gigalomania64.png
 
+.PHONY: install_maemo
 install_maemo: $(APP)
 	mkdir -p $(DESTDIR)/opt/gigalomania # -p so we don't fail if folder already exists
 	cp $(APP) $(DESTDIR)/opt/gigalomania
@@ -50,12 +54,14 @@ install_maemo: $(APP)
 	mkdir -p $(DESTDIR)/usr/bin/
 	cp gigalomania_mobile.sh $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
+.PHONY: uninstall_maemo
 uninstall_maemo:
 	rm -rf $(DESTDIR)/opt/gigalomania # -f so we don't fail if folder doesn't exist
 	rm -f $(DESTDIR)/usr/share/applications/hildon/gigalomania_maemo.desktop
 	rm -f $(DESTDIR)/usr/share/pixmaps/gigalomania48.png
 	rm -f $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
+.PHONY: install_meego
 install_meego: $(APP)
 	mkdir -p $(DESTDIR)/opt/gigalomania # -p so we don't fail if folder already exists
 	cp $(APP) $(DESTDIR)/opt/gigalomania
@@ -69,12 +75,14 @@ install_meego: $(APP)
 	mkdir -p $(DESTDIR)/usr/bin/
 	cp gigalomania_mobile.sh $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
+.PHONY: uninstall_meego
 uninstall_meego:
 	rm -rf $(DESTDIR)/opt/gigalomania # -f so we don't fail if folder doesn't exist
 	rm -f $(DESTDIR)/usr/share/applications/gigalomania_maemo.desktop
 	rm -f $(DESTDIR)/usr/share/icons/hicolor/48x48/apps/gigalomania48.png
 	rm -f $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
+.PHONY: clean
 clean:
 	rm -rf *.o
 	rm -f $(APP)
