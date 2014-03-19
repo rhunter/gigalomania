@@ -101,7 +101,6 @@ Gigalomania.app: \
 Gigalomania.app/Contents/MacOS:
 	mkdir -p $@
 Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
-	mkdir -p $<
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $@
 Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh: macosx/app_bundle_template/Contents/MacOS/gigalomania.launcher.sh
 	mkdir -p `dirname $@`
@@ -110,16 +109,20 @@ Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh: macosx/app_bundle_templa
 
 Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.plist
 	mkdir -p Gigalomania.app/Contents
-	cp -r $^ $@
+	# TODO: replace version with actual version
+	cp -L $^ $@
+	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 0.27" $@
+	/usr/libexec/PlistBuddy -c "Set :CFBundleGetInfoString Gigalomania\ v0.27" $@
+
 Gigalomania.app/Contents/Resources/icon1.icns: macosx/app_bundle_template/Contents/Resources/icon1.icns
 	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $^ $@
-Gigalomania.app/Contents/Resources: $(addprefix Gigalomania.app/Contents/Resources/,gfx islands sound gamemusic.ogg)
+	cp -rL $^ $@
 Gigalomania.app/Contents/Resources/%: %
 	mkdir -p Gigalomania.app/Contents/Resources
-	cp -r $^ $@
+	cp -rL $^ $@
 
-$(FRAMEWORKS_IN_TARGET_APP_BUNDLE): $(ACTUAL_FRAMEWORK_PATHS)
+vpath %.framework $(POSSIBLE_FRAMEWORK_CONTAINER_PATHS)
+Gigalomania.app/Contents/Frameworks/%: %
 	mkdir -p $@
 	cp -r $^ $@
 
