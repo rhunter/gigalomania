@@ -85,11 +85,27 @@ uninstall_meego:
 	rm -f $(DESTDIR)/usr/bin/gigalomania_mobile.sh
 
 .PHONY: dist_macosx
-dist_macosx: Gigalomania.app/Contents/MacOS/gigalomania Gigalomania.app/Contents/Resources/gfx Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh Gigalomania.app/Contents/Resources/islands Gigalomania.app/Contents/Resources/sound Gigalomania.app/Contents/Resources/gamemusic.ogg Gigalomania.app/Contents/Info.plist Gigalomania.app/Contents/Resources/icon1.icns $(FRAMEWORKS_IN_TARGET_APP_BUNDLE)
+dist_macosx: Gigalomania.app
 
+Gigalomania.app: \
+             Gigalomania.app/Contents/Info.plist \
+             Gigalomania.app/Contents/Resources/icon1.icns \
+             Gigalomania.app/Contents/MacOS/gigalomania \
+             Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh \
+             Gigalomania.app/Contents/Resources/gfx \
+             Gigalomania.app/Contents/Resources/islands \
+             Gigalomania.app/Contents/Resources/sound \
+             Gigalomania.app/Contents/Resources/gamemusic.ogg \
+             $(FRAMEWORKS_IN_TARGET_APP_BUNDLE)
+
+Gigalomania.app/Contents/MacOS:
+	mkdir -p $@
 Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
 	mkdir -p $<
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $@
+Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh: macosx/app_bundle_template/Contents/MacOS/gigalomania.launcher.sh
+	mkdir -p `dirname $@`
+	cp -a $^ $@
 
 
 Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.plist
@@ -98,12 +114,7 @@ Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.pl
 Gigalomania.app/Contents/Resources/icon1.icns: macosx/app_bundle_template/Contents/Resources/icon1.icns
 	mkdir -p Gigalomania.app/Contents/Resources
 	cp -r $^ $@
-Gigalomania.app/Contents/MacOS:
 Gigalomania.app/Contents/Resources: $(addprefix Gigalomania.app/Contents/Resources/,gfx islands sound gamemusic.ogg)
-
-Gigalomania.app/Contents/MacOS/gigalomania.launcher.sh: macosx/app_bundle_template/Contents/MacOS/gigalomania.launcher.sh
-	mkdir -p `dirname $@`
-	cp -a $^ $@
 Gigalomania.app/Contents/Resources/%: %
 	mkdir -p Gigalomania.app/Contents/Resources
 	cp -r $^ $@
@@ -112,8 +123,8 @@ $(FRAMEWORKS_IN_TARGET_APP_BUNDLE): $(ACTUAL_FRAMEWORK_PATHS)
 	mkdir -p $@
 	cp -r $^ $@
 
-Gigalomania.app: macosx/bundle_template
-	cp -r macosx/bundle_template $@
+Gigalomania.app: macosx/app_bundle_template
+	cp -r macosx/app_bundle_template $@
 
 clean:
 	rm -rf *.o
