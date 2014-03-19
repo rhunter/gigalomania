@@ -103,15 +103,19 @@ Gigalomania.app: \
              Gigalomania.app/Contents/Resources/gamemusic.ogg \
              $(FRAMEWORKS_IN_TARGET_APP_BUNDLE)
 
-Gigalomania.app/Contents/MacOS/gigalomania: Gigalomania.app/Contents/MacOS $(OFILES) $(HFILES) $(CFILES) $(ACTUAL_FRAMEWORK_PATHS)
+# The actual binary -- compiled in place
+Gigalomania.app/Contents/MacOS/gigalomania: \
+            Gigalomania.app/Contents/MacOS \
+            $(OFILES) $(HFILES) $(CFILES) \
+            $(ACTUAL_FRAMEWORK_PATHS)
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $@
 
+# Fill in the app metadata with useful information
 Gigalomania.app/Contents/Info.plist: macosx/app_bundle_template/Contents/Info.plist
 	mkdir -p Gigalomania.app/Contents
 	# TODO: replace version with actual version
 	cp -L $^ $@
 	/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 0.27" $@
-	/usr/libexec/PlistBuddy -c "Set :CFBundleGetInfoString Gigalomania\ v0.27" $@
 
 # Look for gfx, islands, sound etc in the build directory
 Gigalomania.app/Contents/Resources/%: %
