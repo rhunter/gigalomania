@@ -340,7 +340,7 @@ void Application::runMainLoop() {
 #else
 					SDL_Keysym key = event.key.keysym;
 #endif
-					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q ) {
+					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q || key.sym == SDLK_AC_BACK ) { // SDLK_AC_BACK required for Android
 						keypressEscape();
 					}
 					else if( key.sym == SDLK_p ) {
