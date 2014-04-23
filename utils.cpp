@@ -175,9 +175,9 @@ char application_path[MAX_PATH] = "";
 char logfilename[MAX_PATH] = "";
 char oldlogfilename[MAX_PATH] = "";
 #elif defined(__ANDROID__)
-char application_path[] = "";
-char logfilename[] = "log.txt";
-char oldlogfilename[] = "log_old.txt";
+char application_path[] = "/sdcard/net.sourceforge.gigalomania";
+char *logfilename = NULL;
+char *oldlogfilename = NULL;
 #elif __linux
 char *application_path = NULL;
 char *logfilename = NULL;
@@ -303,7 +303,27 @@ void initLogFile() {
 		strcpy(oldlogfilename, "log_old.txt");
 	}
 #elif defined(__ANDROID__)
-	// no need to do anything
+	// create the folder if it doesn't already exist
+	bool ok = true;
+	if( access(application_path, 0) != 0 ) {
+		__android_log_print(ANDROID_LOG_INFO, "Gigalomania", "try to create data folder");
+		int res = mkdir(application_path, S_IRWXU | S_IRWXG | S_IRWXO);
+		if( res != 0 ) {
+			__android_log_print(ANDROID_LOG_INFO, "Gigalomania", "failed to create data folder");
+			ok = false;
+		}
+	}
+
+	if( ok ) {
+		logfilename = getApplicationFilename("log.txt");
+		oldlogfilename = getApplicationFilename("log_old.txt");
+	}
+	else {
+		// just save in local directory and hope for the best!
+		strcpy(application_path, "");
+		strcpy(logfilename, "log.txt");
+		strcpy(oldlogfilename, "log_old.txt");
+	}
 #elif __linux
 	char *homedir = getenv("HOME");
 	//char *subdir = "/.gigalomania";
@@ -377,6 +397,10 @@ void initLogFile() {
 #else
 	LOG("Platform: UNKNOWN\n");
 #endif
+
+	LOG("Application path: %s\n", application_path);
+	LOG("logfilename: %s\n", logfilename);
+	LOG("oldlogfilename: %s\n", oldlogfilename);
 }
 
 bool log(const char *text,...) {
