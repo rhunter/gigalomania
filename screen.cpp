@@ -389,6 +389,16 @@ void Application::runMainLoop() {
 				}
 #endif
 				break;
+#else
+			case SDL_WINDOWEVENT:
+				if( event.window.event == SDL_WINDOWEVENT_SHOWN || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ) {
+					// activate
+				}
+				else if( event.window.event == SDL_WINDOWEVENT_HIDDEN || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST ) {
+					// inactive
+					keypressP(); // automatically pause when application goes inactive
+				}
+				break;
 #endif
 			}
 		}
