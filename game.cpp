@@ -777,6 +777,7 @@ bool loadGame(int slot) {
 	if( loadGameInfo(&temp_difficulty, &temp_player, &temp_n_men_store, temp_suspended, &temp_start_epoch, temp_completed, slot) ) {
 		difficulty_level = temp_difficulty;
 		human_player = temp_player;
+		gamestate->setClientPlayer(human_player);
 		n_men_store = temp_n_men_store;
 		for(int i=0;i<n_players_c;i++)
 			n_suspended[i] = temp_suspended[i];
