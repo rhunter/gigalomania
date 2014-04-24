@@ -1902,7 +1902,7 @@ void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 	if( player != -1 ) {
 		//human_player = player;
 		//human_player = PLAYER_DEMO; // force demo mode
-		setClientPlayer(player);
+		::setClientPlayer(player);
 		setGameStateID(GAMESTATEID_PLACEMEN);
 		newGame();
 		//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
