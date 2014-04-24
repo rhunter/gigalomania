@@ -269,8 +269,18 @@ void initLogFile() {
     qDebug("oldlogfilename: %s", oldlogfilename);
 #elif _WIN32
 	bool ok = true;
-    if ( SUCCEEDED( SHGetFolderPathA( NULL, CSIDL_APPDATA,
-                                     NULL, 0, logfilename ) ) ) {
+	WCHAR logfilename_w[MAX_PATH];
+    if ( SUCCEEDED( SHGetFolderPathW( NULL, CSIDL_APPDATA,
+                                     NULL, 0, logfilename_w ) ) ) {
+		{
+			// handle unicode (e.g., for unicode user accounts)
+			int shortpath_length_w = GetShortPathNameW(logfilename_w,0,0);
+			LPWSTR shortpath_w = new WCHAR[shortpath_length_w];
+			GetShortPathNameW(logfilename_w,shortpath_w,shortpath_length_w);
+			int shortpath_length = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath_w, shortpath_length_w, 0, 0, 0, 0);
+			WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath_w, shortpath_length_w, logfilename, MAX_PATH, 0, 0);
+			delete [] shortpath_w;
+		}
         PathAppendA(logfilename, application_name);
 
 		if( access(logfilename, 0) != 0 ) {
