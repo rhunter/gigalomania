@@ -642,6 +642,9 @@ void newGame() {
 
 void setClientPlayer(int set_client_player) {
 	::human_player = set_client_player;
+	if( gamestate != NULL ) {
+		gamestate->setClientPlayer(set_client_player);
+	}
 }
 
 void nextEpoch() {
@@ -776,8 +779,7 @@ bool loadGame(int slot) {
 	bool temp_completed[max_islands_per_epoch_c];
 	if( loadGameInfo(&temp_difficulty, &temp_player, &temp_n_men_store, temp_suspended, &temp_start_epoch, temp_completed, slot) ) {
 		difficulty_level = temp_difficulty;
-		human_player = temp_player;
-		gamestate->setClientPlayer(human_player);
+		setClientPlayer(temp_player);
 		n_men_store = temp_n_men_store;
 		for(int i=0;i<n_players_c;i++)
 			n_suspended[i] = temp_suspended[i];
