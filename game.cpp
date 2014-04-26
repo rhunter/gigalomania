@@ -3248,7 +3248,6 @@ void setGameStateID(GameStateID state) {
 
 	GameState *old_gamestate = gamestate;
 	if( gamestate != NULL ) {
-		//delete gamestate; // todo: postpone until later!
 		disposeGameState();
 	}
 
@@ -3398,6 +3397,12 @@ void placeTower() {
 
 void cleanup() {
 	LOG("cleanup()\n");
+	if( gamestate != NULL ) {
+		LOG("delete gamestate %d\n", gamestate);
+		delete gamestate;
+		gamestate = NULL;
+	}
+	LOG("delete maps\n");
 	for(int i=0;i<n_epochs_c;i++) {
 		for(int j=0;j<max_islands_per_epoch_c;j++) {
 			if( maps[i][j] != NULL ) {
@@ -3408,12 +3413,15 @@ void cleanup() {
 	}
 	map = NULL;
 	if( screen != NULL ) {
+		LOG("delete screen %d\n", screen);
 		delete screen;
 		screen = NULL;
 	}
+	LOG("clean up tracked objects\n");
 	TrackedObject::cleanup();
 	// no longer need to stop music, as it's deleted as a TrackedObject
 	//stopMusic();
+	LOG("free sound\n");
 	freeSound();
 #ifdef USING_QT
         if( qt_settings != NULL ) {
@@ -3421,8 +3429,10 @@ void cleanup() {
             qt_settings = NULL;
         }
 #endif
+	LOG("delete application %d\n", application);
 	delete application;
 	application = NULL;
+	LOG("cleanup done\n");
 }
 
 //bool quit = false;
@@ -3551,7 +3561,9 @@ void updateGame() {
 	}
 
 	if( dispose_gamestate != NULL ) {
+		LOG("delete dispose_gamestate %d (current gamestate is %d)\n", dispose_gamestate, gamestate);
 		delete dispose_gamestate;
+		LOG("done delete\n");
 		dispose_gamestate = NULL;
 	}
 }
