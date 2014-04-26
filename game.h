@@ -369,6 +369,14 @@ static bool validDifficulty(DifficultyLevel difficulty) {
 	return difficulty >= 0 && difficulty < DIFFICULTY_N_LEVELS;
 }
 
+#if defined(__ANDROID__)
+
+// JNI for Android
+
+void launchUrl(string url);
+
+#endif
+
 // game constants
 
 const int SHORT_DELAY = 4000;

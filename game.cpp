@@ -3764,3 +3764,63 @@ bool playerAlive(int player) {
 	}
 	return false;
 }
+
+#if defined(__ANDROID__)
+
+// JNI for Android
+
+#include <jni.h>
+#include <android/log.h>
+
+// see http://wiki.libsdl.org/SDL_AndroidGetActivity
+
+void launchUrl(string url) {
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: launch url: %s", url.c_str());
+    // retrieve the JNI environment.
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+    if (!env)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find env");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained env");
+
+    // retrieve the Java instance of the SDLActivity
+    jobject activity = (jobject)SDL_AndroidGetActivity();
+    if (!activity)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find activity");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained activity");
+
+    // find the Java class of the activity. It should be SDLActivity or a subclass of it.
+    jclass clazz( env->GetObjectClass(activity) );
+    if (!clazz)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find class");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained class");
+
+    // find the identifier of the method to call
+    jmethodID method_id = env->GetMethodID(clazz, "launchUrl", "(Ljava/lang/String;)V");
+    if (!method_id)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find launchUrl method");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained method");
+
+    // effectively call the Java method
+	jstring str = env->NewStringUTF(url.c_str());
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: about to call static method");
+    env->CallVoidMethod( activity, method_id, str );
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: called method");
+    
+    // clean up the local references.
+    env->DeleteLocalRef(str);
+    env->DeleteLocalRef(activity);
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: done");
+}
+#endif

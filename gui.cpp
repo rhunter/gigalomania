@@ -179,7 +179,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_play = new Button((int)(mx - 5.5*fw), cy, "PLAY ISLAND", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_play);
-#ifdef USING_QT
+#if defined(USING_QT) || defined(__ANDROID__)
     this->button_help = new Button((int)(mx - 5.5*fw), cy, "ONLINE HELP", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_help);
@@ -453,13 +453,18 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
             setupPlayers();
             gamestate->closeConfirmWindow();
         }
-#ifdef USING_QT
+#if defined(USING_QT) || defined(__ANDROID__)
         else if( m_left && click && this->button_help->mouseOver(m_x, m_y) ) {
+			LOG("clicked online help\n");
             done = true;
             registerClick();
             gamestate->closeConfirmWindow();
-            qDebug("help");
-            QDesktopServices::openUrl(QUrl("http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html"));
+			char help_url[] = "http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html";
+#if defined(USING_QT)
+            QDesktopServices::openUrl(QUrl(help_url));
+#elif defined(__ANDROID__)
+			launchUrl(help_url);
+#endif
         }
 #endif
         else if( m_left && click && this->button_quit != NULL && this->button_quit->mouseOver(m_x, m_y) ) {
