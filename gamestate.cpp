@@ -256,6 +256,7 @@ GameState::GameState(int client_player) : client_player(client_player) {
 }
 
 GameState::~GameState() {
+	LOG("~GameState()\n");
 	/*for(int i=0;i<effects->size();i++) {
 		//TimedEffect *effect = (TimedEffect *)effects->get(i);
 		TimedEffect *effect = effects->at(i);
@@ -271,6 +272,7 @@ GameState::~GameState() {
 	if( this->screen_page )
 		delete screen_page;
 
+	LOG("~GameState() done\n");
 }
 
 void GameState::reset() {
@@ -367,8 +369,10 @@ ChooseGameTypeGameState::ChooseGameTypeGameState(int client_player) : GameState(
 }
 
 ChooseGameTypeGameState::~ChooseGameTypeGameState() {
+	LOG("~ChooseGameTypeGameState()\n");
 	if( this->choosegametypePanel )
 		delete choosegametypePanel;
+	LOG("~ChooseGameTypeGameState() done\n");
 }
 
 ChooseGameTypePanel *ChooseGameTypeGameState::getChooseGameTypePanel() {
@@ -412,8 +416,10 @@ ChooseDifficultyGameState::ChooseDifficultyGameState(int client_player) : GameSt
 }
 
 ChooseDifficultyGameState::~ChooseDifficultyGameState() {
+	LOG("~ChooseDifficultyGameState()\n");
 	if( this->choosedifficultyPanel )
 		delete choosedifficultyPanel;
+	LOG("~ChooseDifficultyGameState() done\n");
 }
 
 ChooseDifficultyPanel *ChooseDifficultyGameState::getChooseDifficultyPanel() {
@@ -455,6 +461,8 @@ ChoosePlayerGameState::ChoosePlayerGameState(int client_player) : GameState(clie
 }
 
 ChoosePlayerGameState::~ChoosePlayerGameState() {
+	LOG("~ChoosePlayerGameState()\n");
+	LOG("~ChoosePlayerGameState() done\n");
 }
 
 void ChoosePlayerGameState::reset() {
@@ -506,8 +514,10 @@ PlaceMenGameState::PlaceMenGameState(int client_player) : GameState(client_playe
 }
 
 PlaceMenGameState::~PlaceMenGameState() {
+	LOG("~PlaceMenGameState()\n");
 	if( this->choosemenPanel )
 		delete choosemenPanel;
+	LOG("~PlaceMenGameState() done\n");
 }
 
 ChooseMenPanel *PlaceMenGameState::getChooseMenPanel() {
@@ -741,6 +751,7 @@ PlayingGameState::PlayingGameState(int client_player) : GameState(client_player)
 }
 
 PlayingGameState::~PlayingGameState() {
+	LOG("~PlayingGameState()\n");
 	for(int i=0;i<n_players_c;i++)
 		delete this->soldiers[i];
 	for(unsigned int i=0;i<effects->size();i++) {
@@ -765,6 +776,7 @@ PlayingGameState::~PlayingGameState() {
 	}*/
 	if( this->gamePanel )
 		delete gamePanel;
+	LOG("~PlayingGameState() done\n");
 }
 
 bool PlayingGameState::readSectorsProcessLine(Map *map, char *line, bool *done_header, int *sec_x, int *sec_y) {
