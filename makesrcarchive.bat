@@ -17,7 +17,7 @@ REM Windows Visual C++ stuff:
 
 copy %src%\gigalomania.vcxproj %dst%
 copy %src%\gigalomania.vcxproj.filters %dst%
-copy %src%\gigalomania_sdl1.vcxproj %dst%
+REM copy %src%\gigalomania_sdl1.vcxproj %dst%
 copy %src%\gigalomania.sln %dst%
 copy %src%\resource.rc %dst%
 copy %src%\gigalomania.ico %dst%
