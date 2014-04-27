@@ -105,9 +105,9 @@ namespace Gigalomania {
 			JUSTIFY_CENTRE = 1,
 			JUSTIFY_RIGHT = 2,
 		};
-		static void writeNumbers(int x,int y,Image *images[10],int number,Justify justify,bool mask);
-		static void write(int x,int y,Image *images[26],const char *text,Justify justify,bool mask);
-		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify,bool mask);
+		static void writeNumbers(int x,int y,Image *images[10],int number,Justify justify);
+		static void write(int x,int y,Image *images[26],const char *text,Justify justify);
+		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify);
 
 		// SDL specific
 #if SDL_MAJOR_VERSION == 1

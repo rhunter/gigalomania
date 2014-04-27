@@ -1366,7 +1366,7 @@ void Image::setGraphicsOutput(SDL_Renderer *sdlRenderer) {
 }
 #endif
 
-void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justify,bool mask) {
+void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justify) {
 	char buffer[16] = "";
 	sprintf(buffer,"%d",number);
 	int len = strlen(buffer);
@@ -1385,11 +1385,11 @@ void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justif
 	}
 }
 
-void Image::write(int x,int y,Image *images[26],const char *text,Justify justify,bool mask) {
-	writeMixedCase(x, y, images, images, NULL, text, justify, mask);
+void Image::write(int x,int y,Image *images[26],const char *text,Justify justify) {
+	writeMixedCase(x, y, images, images, NULL, text, justify);
 }
 
-void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify,bool mask) {
+void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify) {
 	int len = strlen(text);
 	int n_lines = 0;
 	int max_wid = 0;

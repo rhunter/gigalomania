@@ -361,8 +361,8 @@ void ChooseMenPanel::draw() {
 	if( this->getPage() == STATE_CHOOSEMEN ) {
 		// draw this after the popups, so we can see it...
 		men[start_epoch]->draw( this->button_nmen->getLeft() + 4, this->button_nmen->getTop() + 16);
-		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 2, numbers_white, this->n_men,Image::JUSTIFY_CENTRE, true);
-		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 36, numbers_white, getMenAvailable() - this->n_men,Image::JUSTIFY_CENTRE, true);
+		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 2, numbers_white, this->n_men,Image::JUSTIFY_CENTRE);
+		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 36, numbers_white, getMenAvailable() - this->n_men,Image::JUSTIFY_CENTRE);
 	}
 
     if( this->gamestate->hasConfirmWindow() ) {
@@ -1203,11 +1203,11 @@ void GamePanel::setMouseState(MouseState mousestate) {
 void GamePanel::draw() {
 	if( this->c_page == STATE_SECTORCONTROL ) {
 		//Image::write(offset_panel_x_c + 8, offset_panel_y_c + 6, letters_small, map->getName(), Image::JUSTIFY_LEFT, true, scale_width, scale_height);
-		Image::writeMixedCase(offset_panel_x_c + 8, offset_panel_y_c - 1, letters_large, letters_small, NULL, getMap()->getName(), Image::JUSTIFY_LEFT, true);
+		Image::writeMixedCase(offset_panel_x_c + 8, offset_panel_y_c - 1, letters_large, letters_small, NULL, getMap()->getName(), Image::JUSTIFY_LEFT);
 		if( start_epoch != end_epoch_c ) {
 			int year = epoch_dates[gamestate->getCurrentSector()->getEpoch()];
 			bool shiny = gamestate->getCurrentSector()->getEpoch() == n_epochs_c-1;
-			Image::writeNumbers(offset_panel_x_c + 96, offset_panel_y_c, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT,true);
+			Image::writeNumbers(offset_panel_x_c + 96, offset_panel_y_c, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT);
 			Image *era = ( year < 0 ) ? icon_bc :
 				shiny ? icon_ad_shiny : icon_ad;
 			era->draw(offset_panel_x_c + 88, offset_panel_y_c + 7);
@@ -1217,31 +1217,31 @@ void GamePanel::draw() {
 			const int xpos = 8, ypos = 18;
 			//const int xpos = 40, ypos = 40;
 			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + xpos, offset_panel_y_c + ypos);
-			Image::writeNumbers(offset_panel_x_c + xpos + 8, offset_panel_y_c + ypos + 18, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(),Image::JUSTIFY_CENTRE, true);
+			Image::writeNumbers(offset_panel_x_c + xpos + 8, offset_panel_y_c + ypos + 18, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(),Image::JUSTIFY_CENTRE);
 			if( gamestate->getCurrentSector()->getCurrentDesign() != NULL ) {
-				Image::writeNumbers( this->button_ndesigners->getXCentre(), this->button_ndesigners->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_ndesigners->getXCentre(), this->button_ndesigners->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE);
 			}
 			for(int i=0;i<4;i++) {
 				Id element = (Id)this->element_index[i];
 				if( this->button_nminers[i]->isEnabled() ) {
 					ASSERT_ELEMENT_ID( this->element_index[i] );
 					int n_miners = gamestate->getCurrentSector()->getMiners( element );
-					Image::writeNumbers( this->button_nminers[i]->getXCentre(), this->button_nminers[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE,true);
+					Image::writeNumbers( this->button_nminers[i]->getXCentre(), this->button_nminers[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE);
 				}
 			}
 			if( gamestate->getCurrentSector()->getCurrentManufacture() != NULL ) {
-				Image::writeNumbers( this->button_nworkers->getXCentre(), this->button_nworkers->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nworkers->getXCentre(), this->button_nworkers->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE);
 			}
 			for(int i=0;i<N_BUILDINGS;i++) {
 				if( this->button_nbuilders[i] != NULL && this->button_nbuilders[i]->isEnabled() ) {
-					Image::writeNumbers( this->button_nbuilders[i]->getXCentre(), this->button_nbuilders[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
+					Image::writeNumbers( this->button_nbuilders[i]->getXCentre(), this->button_nbuilders[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE);
 				}
 			}
 		}
 		else if( gamestate->viewingAnyClientSector() ) {
 			ASSERT( gamestate->getCurrentSector()->isShutdown() );
 			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 40, offset_panel_y_c + 40);
-			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 58, numbers_grey, gamestate->getCurrentSector()->getPopulation(),Image::JUSTIFY_CENTRE, true);
+			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 58, numbers_grey, gamestate->getCurrentSector()->getPopulation(),Image::JUSTIFY_CENTRE);
 		}
 		else if( gamestate->getCurrentSector()->getPlayer() == -1 ) {
 			int n_players_in_sector = 0;
@@ -1257,7 +1257,7 @@ void GamePanel::draw() {
 				gamestate->getCurrentSector()->buildingTowerTimeLeft(player_in_sector, &halfdays, &hours);
 				int clock_index = hours + 1;
 				icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16);
-				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 			}
 		}
 	}
@@ -1269,13 +1269,13 @@ void GamePanel::draw() {
 		else {
 			Invention *current_invention = gamestate->getCurrentSector()->getCurrentDesign()->getInvention();
 			current_invention->getImage()->draw(offset_panel_x_c + 8, offset_panel_y_c + 16);
-			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 34, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE,true);
+			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 34, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE);
 			if( gamestate->getCurrentSector()->getDesigners() > 0 ) {
 				int halfdays = 0, hours = 0;
 				gamestate->getCurrentSector()->inventionTimeLeft(&halfdays, &hours);
 				int clock_index = hours + 1;
 				icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16);
-				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 			}
 			else {
 				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16);
@@ -1314,9 +1314,9 @@ void GamePanel::draw() {
 				int n_store = gamestate->getCurrentSector()->getStoredShields(i);
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::SHIELD, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE, true);
+						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE, true);
+						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
 					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46);
@@ -1327,15 +1327,15 @@ void GamePanel::draw() {
 	else if( this->c_page == STATE_DEFENCE ) {
 		//unarmed_man->draw(offset_panel_x_c + 8, offset_panel_y_c + 24, true);
 		men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 8, offset_panel_y_c + 24);
-		Image::writeNumbers(offset_panel_x_c + 16, offset_panel_y_c + 42, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE, true);
+		Image::writeNumbers(offset_panel_x_c + 16, offset_panel_y_c + 42, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE);
 		for(int i=0;i<n_sub_epochs;i++) {
 			if( this->button_deploy_defences[i]->isEnabled() ) {
 				int n_store = gamestate->getCurrentSector()->getStoredDefenders(start_epoch+i);
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::DEFENCE, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE, true);
+						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE, true);
+						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
 					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46);
@@ -1344,15 +1344,15 @@ void GamePanel::draw() {
 		}
 	}
 	else if( this->c_page == STATE_ATTACK ) {
-		Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8, offset_panel_y_c + 42, numbers_yellow, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE, true);
+		Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8, offset_panel_y_c + 42, numbers_yellow, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE);
 		for(int i=0;i<n_sub_epochs;i++) {
 			if( this->button_deploy_attackers[i]->isEnabled() ) {
 				int n_store = gamestate->getCurrentSector()->getStoredArmy()->getSoldiers(start_epoch+i);
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::WEAPON, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, letters_small, "OK", Image::JUSTIFY_CENTRE, true);
+						Image::write(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, numbers_yellow, n_store, Image::JUSTIFY_CENTRE, true);
+						Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
 					dash_grey->draw(offset_panel_x_c + offset_attack_x_c + 4 + space_attack_x_c*i, offset_panel_y_c + 78);
@@ -1364,7 +1364,7 @@ void GamePanel::draw() {
 		if( n_army == 0 )
 			dash_grey->draw(offset_panel_x_c + 84, offset_panel_y_c + 116);
 		else
-			Image::writeNumbers(offset_panel_x_c + 88, offset_panel_y_c + 116, numbers_orange, n_army, Image::JUSTIFY_CENTRE, true);
+			Image::writeNumbers(offset_panel_x_c + 88, offset_panel_y_c + 116, numbers_orange, n_army, Image::JUSTIFY_CENTRE);
 	}
 	else if( this->c_page == STATE_ELEMENTSTOCKS ) {
 		for(int i=0;i<4;i++) {
@@ -1378,7 +1378,7 @@ void GamePanel::draw() {
 			//int ypos = offset_panel_y_c + 38 + 28 * i;
 			int ypos = offset_panel_y_c + 40 + 28 * i;
 			if( n_elements > 0 ) {
-				Image::writeNumbers(offset_panel_x_c + 72, ypos, numbers_blue, n_elements, Image::JUSTIFY_LEFT, true);
+				Image::writeNumbers(offset_panel_x_c + 72, ypos, numbers_blue, n_elements, Image::JUSTIFY_LEFT);
 				off += 8 * n_digits(n_elements);
 			}
 			if( fraction == 1 ) {
@@ -1386,7 +1386,7 @@ void GamePanel::draw() {
 			}
 			if( this->button_nminers2[i]->isEnabled() ) {
 				int n_miners = gamestate->getCurrentSector()->getMiners( element );
-				Image::writeNumbers( this->button_nminers2[i]->getXCentre(), this->button_nminers2[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nminers2[i]->getXCentre(), this->button_nminers2[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE);
 			}
 		}
 	}
@@ -1394,13 +1394,13 @@ void GamePanel::draw() {
 		for(int i=0;i<N_BUILDINGS;i++)
 		{
 			if( this->button_nbuilders2[i] != NULL && this->button_nbuilders2[i]->isEnabled() ) {
-				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getTop() + 20, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getTop() + 20, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE);
 				if( gamestate->getCurrentSector()->getBuilders((Type)i) > 0 ) {
 					int halfdays = 0, hours = 0;
 					gamestate->getCurrentSector()->buildingTimeLeft((Type)i, &halfdays, &hours);
 					int clock_index = hours + 1;
 					icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16 + build_step_y_c*(i-1));
-					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34 + build_step_y_c*(i-1), numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34 + build_step_y_c*(i-1), numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 				}
 				else {
 					icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16 + build_step_y_c*(i-1));
@@ -1427,7 +1427,7 @@ void GamePanel::draw() {
 				icon_elements[i]->draw(offset_panel_x_c + 16, offset_panel_y_c + 32 + 18 * cnt);
 				int off = 0;
 				if( whole > 0 ) {
-					Image::writeNumbers(offset_panel_x_c + 36, offset_panel_y_c + 34 + 18 * cnt, numbers_blue, whole, Image::JUSTIFY_LEFT, true);
+					Image::writeNumbers(offset_panel_x_c + 36, offset_panel_y_c + 34 + 18 * cnt, numbers_blue, whole, Image::JUSTIFY_LEFT);
 					off += 8 * n_digits(whole);
 				}
 				if( frac == 1 ) {
@@ -1456,7 +1456,7 @@ void GamePanel::draw() {
 			Invention *current_manufacture = gamestate->getCurrentSector()->getCurrentManufacture()->getInvention();
 			this->button_famount->setImage( current_manufacture->getImage() );
 			//current_manufacture->getImage()->draw(offset_panel_x_c + 8, offset_panel_y_c + 16, true);
-			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + y0 + 20, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE,true);
+			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + y0 + 20, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE);
 			int famount = gamestate->getCurrentSector()->getFAmount();
 			int famount_x = offset_panel_x_c + 48;
 			int famount_y = offset_panel_y_c + y1 + 18;
@@ -1464,7 +1464,7 @@ void GamePanel::draw() {
 				icon_infinity->draw(famount_x - icon_infinity->getScaledWidth()/2, famount_y - 2);
 			}
 			else {
-				Image::writeNumbers(famount_x, famount_y, numbers_white, famount,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers(famount_x, famount_y, numbers_white, famount,Image::JUSTIFY_CENTRE);
 			}
 
 			if( gamestate->getCurrentSector()->getWorkers() > 0 ) {
@@ -1473,7 +1473,7 @@ void GamePanel::draw() {
 				gamestate->getCurrentSector()->manufactureTimeLeft(&halfdays, &hours);
 				gamestate->getCurrentSector()->manufactureTotalTime(&thalfdays, &thours);
 				icon_clocks[ hours+1 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y0);
-				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y0 + 18, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y0 + 18, numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 				int amount = gamestate->getCurrentSector()->getFAmount();
 				if( amount == infinity_c ) {
 					icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1);
@@ -1487,7 +1487,7 @@ void GamePanel::draw() {
 					thalfdays += thours/12;
 					thours = thours % 12;
 					icon_clocks[ thours+1 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1);
-					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y1 + 18, numbers_white, thalfdays, Image::JUSTIFY_CENTRE, true);
+					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y1 + 18, numbers_white, thalfdays, Image::JUSTIFY_CENTRE);
 				}
 			}
 			else {
