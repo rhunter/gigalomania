@@ -8,8 +8,8 @@ set dst="c:\temp\gigalomaniasrc"
 copy %src%\makewindowsarchive.bat %dst%
 copy %src%\makearosarchive %dst%
 copy %src%\makesrcarchive.bat %dst%
-copy %src%\makesymbianfolder.bat %dst%
-copy %src%\makeandroidfolder.bat %dst%
+REM copy %src%\makesymbianfolder.bat %dst%
+REM copy %src%\makeandroidfolder.bat %dst%
 copy %src%\gigalomania_source.txt %dst%
 copy %src%\readme.html %dst%
 
@@ -49,15 +49,15 @@ xcopy %src%\amigaos4 %dst%\amigaos4 /E /Y
 
 REM Qt stuff:
 
-copy %src%\gigalomania.pro %dst%
-copy %src%\deployment.pri %dst%
+REM copy %src%\gigalomania.pro %dst%
+REM copy %src%\deployment.pri %dst%
 REM copy %src%\gigalomania.qrc %dst%
 REM copy %src%\gigalomania_android.qrc %dst%
-copy %src%\gigalomania.svg %dst%
+REM copy %src%\gigalomania.svg %dst%
 
 REM Not really needed, but just to have backup of the source for gigalomania.svg:
 
-copy %src%\gigalomania_symbian.png %dst%
+REM copy %src%\gigalomania_symbian.png %dst%
 
 REM General:
 
@@ -95,15 +95,15 @@ REM copy %src%\SDL_main.c %dst%
 
 REM Qt specific files:
 
-copy %src%\mainwindow.cpp %dst%
-copy %src%\qt_image.cpp %dst%
-copy %src%\qt_screen.cpp %dst%
-copy %src%\qt_sound.cpp %dst%
+REM copy %src%\mainwindow.cpp %dst%
+REM copy %src%\qt_image.cpp %dst%
+REM copy %src%\qt_screen.cpp %dst%
+REM copy %src%\qt_sound.cpp %dst%
 
-copy %src%\mainwindow.h %dst%
-copy %src%\qt_image.h %dst%
-copy %src%\qt_screen.h %dst%
-copy %src%\qt_sound.h %dst%
+REM copy %src%\mainwindow.h %dst%
+REM copy %src%\qt_image.h %dst%
+REM copy %src%\qt_screen.h %dst%
+REM copy %src%\qt_sound.h %dst%
 
 REM also copy data folders
 
@@ -114,8 +114,8 @@ mkdir %dst%\gfx
 copy %src%\gfx\ %dst%\gfx\
 
 REM used by Symbian deployment, though has to replace gfx/ manually
-mkdir %dst%\gfx_2x
-copy %src%\gfx_2x\ %dst%\gfx_2x\
+REM mkdir %dst%\gfx_2x
+REM copy %src%\gfx_2x\ %dst%\gfx_2x\
 
 REM used by Android, though has to replace gfx/ manually
 mkdir %dst%\gfx_android_extras
@@ -130,12 +130,12 @@ copy %src%\debian\ %dst%\debian\
 mkdir %dst%\debian_maemo
 copy %src%\debian_maemo\ %dst%\debian_maemo\
 
-mkdir %dst%\androidaudio\
+REM mkdir %dst%\androidaudio\
 
-copy %src%\androidaudio\androidaudio.cpp %dst%\androidaudio
-copy %src%\androidaudio\androidaudio.h %dst%\androidaudio
-copy %src%\androidaudio\androidsoundeffect.cpp %dst%\androidaudio
-copy %src%\androidaudio\androidsoundeffect.h %dst%\androidaudio
+REM copy %src%\androidaudio\androidaudio.cpp %dst%\androidaudio
+REM copy %src%\androidaudio\androidaudio.h %dst%\androidaudio
+REM copy %src%\androidaudio\androidsoundeffect.cpp %dst%\androidaudio
+REM copy %src%\androidaudio\androidsoundeffect.h %dst%\androidaudio
 
 mkdir %dst%\android
 xcopy %src%\android %dst%\android /E /Y
