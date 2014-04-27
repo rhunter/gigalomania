@@ -1,9 +1,11 @@
-This source has been tested with Visual C++ Express 2012 for Desktop under Windows 7 and Windows 8, GCC under Linux (Ubuntu 12.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego. For Symbian and Android, this has been tested using Qt Creator under Windows 7 (32 and 64 bit).
+This source has been tested with Visual C++ Express 2012 for Desktop under Windows 8, GCC under Linux (Ubuntu 12.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego.
 
 Linux
 =====
 
 You need to install the following libraries: SDL ( http://www.libsdl.org/ ), SDL_Image ( http://www.libsdl.org/projects/SDL_image/ ), SDL_Mixer ( http://www.libsdl.org/projects/SDL_mixer/ ).
+
+Note that Gigalomania supports compiling with both SDL 1.2, and SDL 2, though at the time of writing, SDL 2 does not appear to be well supporting in Linux repositories, so these instructions assume usage of SDL 1.2.
 
 On Ubuntu and Debian, you can install the required libraries with:
 
@@ -36,15 +38,15 @@ Windows
 
 You need additional files to compile this program:
 
-SDL: sdl2.lib . See http://www.libsdl.org/ .
+SDL2: sdl2.lib . See http://www.libsdl.org/ .
 
-SDL_image: sdl_image2.lib . See http://www.libsdl.org/projects/SDL_image/ .
+SDL2_image: sdl_image2.lib . See http://www.libsdl.org/projects/SDL_image/ .
 
-SDL_mixer: sdl_mixer2.lib . See http://www.libsdl.org/projects/SDL_mixer/ .
+SDL2_mixer: sdl_mixer2.lib . See http://www.libsdl.org/projects/SDL_mixer/ .
 
 When built on Visual Studio in Release mode, you can use the makewindowsarchive.bat script to create the binary folder (in c:\temp\ ).
 
-Note that the "VC++ Directories" section of the Gigalomania projects is set to refer to the location of the SDL 2 headers on my system, so you should update this for your setup. Gigalomania can also be compiled with SDL 1.2 (use gigalomania_sdl1.vcxproj for this).
+Note that the "VC++ Directories" section of the Gigalomania projects is set to refer to the location of the SDL 2 headers on my system, so you should update this for your setup. Gigalomania can also be compiled with SDL 1.2, though SDL 2 is preferred.
 
 OS X
 ====
@@ -135,19 +137,35 @@ As with AROS, a large stack may be required (e.g., 1024000 bytes).
 
 If you want to make a binary archive, there are some icons to use in the amigaos4/ folder.
 
-Symbian
-=======
-
-Versions 0.26 and earlier supported Symbian (via Qt), but this has now been dropped for 0.27 onwards. Possibly the latest source may still compile, though this is untested.
-
 Android
 =======
 
-Use necessitas to compile for Android ( http://necessitas.kde.org/ ). This has been tested with Necessitas alpha 4 (also referred to as "beta 1"), compiled on Windows 7. You need to compile against Android API target of at least 10 (due to use of Open SLES for sound).
+You need the source archives of:
 
-Note that loading the jpegs doesn't seem to work with Necessitas, so you'll have to copy the files in gfx_android_extras/ into gfx/.
+SDL2: sdl2.lib . See http://www.libsdl.org/ .
 
-On Windows, you can use the makeandroidfolder.bat script to create a folder for Android development (in c:\temp\ ), which also replaces the jpg images with the pngs from gfx_android_extras/.
+SDL2_image: sdl_image2.lib . See http://www.libsdl.org/projects/SDL_image/ .
+
+SDL2_mixer: sdl_mixer2.lib . See http://www.libsdl.org/projects/SDL_mixer/ .
+
+I've tested this with version 2.0.0 of the SDL, SDL_image and SDL_mixer sources.
+
+See README-android.txt in the SDL source archive for some information. You need to obtain the Android SDK and Android NDK. Then create the Gigalomania folder as follows:
+
+1. Copy the android/Gigalomania project into your workspace.
+2. Copy the Gigalomania source files (*.cpp, *.h) into jni/src/
+3. Copy the gfx/, islands/ and sound/ folders into assets/
+4. Copy the source from SDL2, SDL2_image, SDL2_mixer into jni/ (so you have folders jni/SDL/, jni/SDL_image/, jni/SDL_mixer/; each of these folders should be the root folder for the SDL sources - e.g., so inside jni/SDL/ will be folders such as acinclude/, include/, src/ etc). 
+5. You need to configure the file jni/src/SDL_image/Android.mk: comment out the lines SUPPORT_WEBP and WEBP_LIBRARY_PATH (by adding a # to the start of the lines).
+6. You need to configure the file jni/src/SDL_mixer/Android.mk: comment out the lines SUPPORT_MOD_MODPLUG, MODPLUG_LIBRARY_PATH, SUPPORT_MOD_MIKMOD, MIKMOD_LIBRARY_PATH, SUPPORT_MP3_SMPEG and SMPEG_LIBRARY_PATH (by adding a # to the start of the lines).
+7. Before running from Eclipse, the native C++ files need to be compiled. On Windows, this can be done from the command prompt by cd-ing to the Gigalomania folder, and running the ndk-build.cmd command from the Android NDK (e.g.: C:\android-ndk-r9\ndk-build.cmd ). Note that this needs to be done every time you change one of the native C++ files.
+
+Note that versions 0.26 an earlier used Qt/necessitas for Android. Now Android is compiled using SDL 2.
+
+Symbian
+=======
+
+Versions 0.26 and earlier supported Symbian (via Qt), but this has now been dropped for 0.27 onwards.
 
 Source Control
 ==============
@@ -159,7 +177,7 @@ History
 
 Note, this history is only for changes related to the source code. See the Gigalomania readme or homepage for a full history.
 
-Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition. Also now using SDLmain.lib instead of SDL_main.c on Windows, and compiled with SDL 2. Symbian port now dropped.
+Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition. Also now using SDLmain.lib instead of SDL_main.c on Windows, and compiled with SDL 2. Android port now compiled using SDL 2 instead of Qt/necessitas. Symbian port now dropped.
 
 Version 0.26 adds the MorphOS and AmigaOS 4 ports.
 
@@ -196,4 +214,4 @@ Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 More info on OS X port: http://www.herzig-net.de/prog/?page=prog-macgiga
 
-Mark Harman 24 November 2013
+Mark Harman 27 April 2014
