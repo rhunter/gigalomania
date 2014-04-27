@@ -3724,7 +3724,14 @@ void playGame(int n_args, char *args[]) {
 		TrackedObject *to = TrackedObject::getTag(i);
 		if( to != NULL && strcmp( to->getClass(), "CLASS_IMAGE" ) == 0 ) {
 			Image *image = (Image *)to;
-			image->convertToDisplayFormat();
+			if( !image->convertToDisplayFormat() ) {
+				LOG("failed to convertToDisplayFormat\n");
+				cleanup();
+#ifdef _WIN32
+				MessageBoxA(NULL, "Failed to create texture images", "Error", MB_OK|MB_ICONEXCLAMATION);
+#endif
+				return;
+			}
 		}
 	}
 

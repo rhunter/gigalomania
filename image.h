@@ -50,7 +50,7 @@ namespace Gigalomania {
 		int getScaledHeight() const {
 			return (int)(this->getHeight() / scale_y);
 		}
-		void convertToDisplayFormat();
+		bool convertToDisplayFormat();
 		bool copyPalette(const Image *image);
 		float getScaleX() const {
 			return scale_x;

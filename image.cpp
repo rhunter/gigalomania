@@ -353,7 +353,7 @@ bool Image::convertToHiColor(bool alpha) {
 	return true;
 }
 
-void Image::convertToDisplayFormat() {
+bool Image::convertToDisplayFormat() {
 #if SDL_MAJOR_VERSION == 1
 	SDL_Surface *new_surf = NULL;
 	int bpp = this->surface->format->BitsPerPixel;
@@ -365,9 +365,10 @@ void Image::convertToDisplayFormat() {
 	this->surface = new_surf;
 #else
 	texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
-	/*if( texture == NULL ) {
-		throw "SDL_CreateTextureFromSurface failed";
-	}*/
+	if( texture == NULL ) {
+		LOG("SDL_CreateTextureFromSurface failed\n");
+		return false;
+	}
 	/*{
 		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
 		SDL_GetTextureBlendMode(texture, &blendMode);
@@ -375,6 +376,7 @@ void Image::convertToDisplayFormat() {
 	}*/
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // seems to be default, but just in case
 #endif
+	return true;
 }
 
 bool Image::copyPalette(const Image *image) {
