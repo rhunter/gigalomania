@@ -9,6 +9,11 @@
 #include <sstream>
 using std::stringstream;
 
+#ifdef _WIN32
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 #include "gui.h"
 #include "sector.h"
 #include "player.h"
@@ -179,7 +184,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_play = new Button((int)(mx - 5.5*fw), cy, "PLAY ISLAND", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_play);
-#if defined(USING_QT) || defined(__ANDROID__)
+#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
     this->button_help = new Button((int)(mx - 5.5*fw), cy, "ONLINE HELP", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_help);
@@ -453,7 +458,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
             setupPlayers();
             gamestate->closeConfirmWindow();
         }
-#if defined(USING_QT) || defined(__ANDROID__)
+#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
         else if( m_left && click && this->button_help->mouseOver(m_x, m_y) ) {
 			LOG("clicked online help\n");
             done = true;
@@ -462,6 +467,8 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 			char help_url[] = "http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html";
 #if defined(USING_QT)
             QDesktopServices::openUrl(QUrl(help_url));
+#elif defined(_WIN32)
+			ShellExecute(0, 0, help_url, 0, 0 , SW_SHOW );
 #elif defined(__ANDROID__)
 			launchUrl(help_url);
 #endif
