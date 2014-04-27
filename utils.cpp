@@ -331,8 +331,8 @@ void initLogFile() {
 	else {
 		// just save in local directory and hope for the best!
 		strcpy(application_path, "");
-		strcpy(logfilename, "log.txt");
-		strcpy(oldlogfilename, "log_old.txt");
+		logfilename = getApplicationFilename("log.txt");
+		oldlogfilename = getApplicationFilename("log_old.txt");
 	}
 #elif __linux
 	char *homedir = getenv("HOME");
@@ -358,8 +358,8 @@ void initLogFile() {
 	else {
 		// just save in local directory and hope for the best!
 		strcpy(application_path, "");
-		strcpy(logfilename, "log.txt");
-		strcpy(oldlogfilename, "log_old.txt");
+		logfilename = getApplicationFilename("log.txt");
+		oldlogfilename = getApplicationFilename("log_old.txt");
 	}
 #else
 	// no need to do anything
