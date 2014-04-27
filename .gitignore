@@ -16,6 +16,7 @@ Debug/
 Release/
 CreateScaledGfx-build-*/
 newgfx/
+android_qt/
 
 *.dll
 *.lib
