@@ -68,7 +68,7 @@ int Soldier::sort_soldier_pair(const void *v1,const void *v2) {
 void Feature::draw() const {
 	const int ticks_per_frame_c = 110; // tree animation looks better if offset from main animation, and if slightly slower
 	int counter = getRealTime() / ticks_per_frame_c;
-	image[counter % n_frames]->draw(xpos, ypos, true);
+	image[counter % n_frames]->draw(xpos, ypos);
 }
 
 TimedEffect::TimedEffect() {
@@ -126,7 +126,7 @@ bool AmmoEffect::render() const {
 	Image *image = attackers_ammo[epoch][dir];
 	if( x + image->getScaledWidth() >= screen->getWidth() || y + image->getScaledHeight() >= screen->getHeight() )
 		return true;
-	image->draw(x, y, true);
+	image->draw(x, y);
 	if( time > ammo_time_c )
 		return true;
 	return false;
@@ -207,7 +207,7 @@ bool FlashingSquare::render() const {
 	if( flash ) {
 		int map_x = offset_map_x_c + 16 * this->xpos;
 		int map_y = offset_map_y_c + 16 * this->ypos;
-		flashingmapsquare->draw(map_x, map_y, true);
+		flashingmapsquare->draw(map_x, map_y);
 	}
 	return false;
 }
@@ -223,7 +223,7 @@ bool AnimationEffect::render() const {
 	else {
 		if( !dir )
 			frame = n_images - 1 - frame;
-		images[frame]->draw(xpos, ypos, true);
+		images[frame]->draw(xpos, ypos);
 	}
 	return false;
 }
@@ -291,7 +291,7 @@ void GameState::setDefaultMouseImage() {
 void GameState::draw() {
 	if( mouse_image != NULL ) {
 		if( mobile_ui && mobile_ui_display_mouse ) {
-			mouse_image->draw(default_width_c - mouse_image->getScaledWidth(), 0, true);
+			mouse_image->draw(default_width_c - mouse_image->getScaledWidth(), 0);
 		}
 		else if( !mobile_ui ) {
 			int m_x = 0, m_y = 0;
@@ -300,7 +300,7 @@ void GameState::draw() {
 			m_y = (int)(m_y / scale_height);
 			m_x += mouse_off_x;
 			m_y += mouse_off_y;
-			mouse_image->draw(m_x, m_y, true);
+			mouse_image->draw(m_x, m_y);
 		}
 	}
 
@@ -394,7 +394,7 @@ void ChooseGameTypeGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 
 	this->choosegametypePanel->draw();
 
@@ -441,7 +441,7 @@ void ChooseDifficultyGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 
 	this->choosedifficultyPanel->draw();
 
@@ -494,7 +494,7 @@ void ChoosePlayerGameState::draw() {
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
 	//player_select->draw(0, 0, false);
-	background->draw(0, 0, false);
+	background->draw(0, 0);
     Image::writeMixedCase(160, 16, letters_large, letters_small, NULL, "Select a Player", Image::JUSTIFY_CENTRE, true);
 
 	this->screen_page->draw();
@@ -579,7 +579,7 @@ void PlaceMenGameState::draw() {
 #elif defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background_islands->draw(0, 0, false);
+	background_islands->draw(0, 0);
 
 	if( !using_old_gfx ) {
 		sprintf(buffer, "Gigalomania v%d %d", majorVersion, minorVersion);
@@ -609,7 +609,7 @@ void PlaceMenGameState::draw() {
 	Image::writeNumbers(cx+8, cy, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT, true);
 	Image *era = ( year < 0 ) ? icon_bc :
 		shiny ? icon_ad_shiny : icon_ad;
-	era->draw(cx+8, cy, true);
+	era->draw(cx+8, cy);
     cy += l_h + 2;
 
     if( !isDemo() && gameType == GAMETYPE_ALLISLANDS ) {
@@ -1275,7 +1275,7 @@ void PlayingGameState::draw() {
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
 
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 	//background->draw(0, 0, true);
 
 	bool no_armies = true;
@@ -1311,10 +1311,10 @@ void PlayingGameState::draw() {
 					int map_y = offset_map_y_c + 16 * y;
 					//map_sq[15]->draw(map_x, map_y, true);
 					if( map->getSector(x, y)->getPlayer() != -1 ) {
-						icon_towers[ map->getSector(x, y)->getPlayer() ]->draw(map_x + 5, map_y + 5, true);
+						icon_towers[ map->getSector(x, y)->getPlayer() ]->draw(map_x + 5, map_y + 5);
 					}
 					else if( map->getSector(x, y)->isNuked() ) {
-						icon_nuke_hole->draw(map_x + 4, map_y + 4, true);
+						icon_nuke_hole->draw(map_x + 4, map_y + 4);
 					}
 					for(int i=0;i<n_players_c;i++) {
 						Army *army = map->getSector(x, y)->getArmy(i);
@@ -1323,7 +1323,7 @@ void PlayingGameState::draw() {
 							int off_step = 5;
 							int off_step_x = ( i == 0 || i == 2 ) ? -off_step : off_step;
 							int off_step_y = ( i == 0 || i == 1 ) ? -off_step : off_step;
-							icon_armies[i]->draw(map_x + 6 + off_step_x, map_y + 6 + off_step_y, true);
+							icon_armies[i]->draw(map_x + 6 + off_step_x, map_y + 6 + off_step_y);
 						}
 					}
 				}
@@ -1331,7 +1331,7 @@ void PlayingGameState::draw() {
 		}
 		int map_x = offset_map_x_c + 16 * current_sector->getXPos();
 		int map_y = offset_map_y_c + 16 * current_sector->getYPos();
-		mapsquare->draw(map_x, map_y, true);
+		mapsquare->draw(map_x, map_y);
 	}
 	else if( this->map_display == MAPDISPLAY_UNITS ) {
 		// unit stats
@@ -1340,7 +1340,7 @@ void PlayingGameState::draw() {
 		for(int i=0;i<=n_sub_epochs;i++) {
 			Image *image = (i==0) ? unarmed_man : numbered_weapons[start_epoch + i - 1];
 			//Image *image = (i==0) ? men[start_epoch] : numbered_weapons[start_epoch + i - 1];
-			image->draw(offset_map_x_c + gap * i + extra, offset_map_y_c + 2 - 16 + 8, true);
+			image->draw(offset_map_x_c + gap * i + extra, offset_map_y_c + 2 - 16 + 8);
 		}
 		for(int i=0;i<n_players_c;i++) {
 			if( shield_buttons[i] == NULL ) {
@@ -1367,7 +1367,7 @@ void PlayingGameState::draw() {
 	}
 
 	// land area
-	land[map->getColour()]->draw(offset_land_x_c, offset_land_y_c, true);
+	land[map->getColour()]->draw(offset_land_x_c, offset_land_y_c);
 
 	// trees etc (not at front)
 	for(int i=0;i<current_sector->getNFeatures();i++) {
@@ -1384,7 +1384,7 @@ void PlayingGameState::draw() {
 	if( current_sector->getActivePlayer() != -1 )
 	{
 		if( openPitMine() )
-			icon_openpitmine->draw(offset_land_x_c + offset_openpitmine_x_c, offset_land_y_c + offset_openpitmine_y_c, true);
+			icon_openpitmine->draw(offset_land_x_c + offset_openpitmine_x_c, offset_land_y_c + offset_openpitmine_y_c);
 
 		bool rotate_defenders = false;
 		if( frame_counter - defenders_last_frame_update > defenders_frames_per_update_c ) {
@@ -1399,7 +1399,7 @@ void PlayingGameState::draw() {
 
 			// draw building
 			Image **images = building->getImages();
-			images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY(), true);
+			images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY());
 
 			if( rotate_defenders )
 				building->rotateDefenders();
@@ -1414,12 +1414,12 @@ void PlayingGameState::draw() {
 					else {
 						image = defenders[current_sector->getPlayer()][ building->getTurretMan(j) ][ building->getTurretManDir(j) ];
 					}
-					image->draw(building->getTurretButton(j)->getLeft(), building->getTurretButton(j)->getTop() - 4, true);
+					image->draw(building->getTurretButton(j)->getLeft(), building->getTurretButton(j)->getTop() - 4);
 				}
 			}
 
 			if( i == BUILDING_TOWER )
-				flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c, true);
+				flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c);
 
 			const int health_xpos = offset_land_x_c + building->getX() + 4;
 			//const int health_ypos = offset_land_y_c + building->getY() - 16;
@@ -1441,8 +1441,8 @@ void PlayingGameState::draw() {
 		Building *building = current_sector->getBuilding(BUILDING_TOWER);
 		ASSERT( building != NULL );
 		Image **images = building->getImages();
-		images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY(), true);
-		flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c, true);
+		images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY());
+		flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c);
 	}
 
 	//Vector soldier_list(n_players_c * 250);
@@ -1474,7 +1474,7 @@ void PlayingGameState::draw() {
 			//Image *image = attackers_walking[soldier->player][soldier->epoch][frame];
 			int n_frames = n_attacker_frames[soldier->epoch][soldier->dir];
 			Image *image = attackers_walking[soldier->player][soldier->epoch][soldier->dir][frame_counter % n_frames];
-			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
+			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos);
 		}
 	}
 
@@ -1521,7 +1521,7 @@ void PlayingGameState::draw() {
 				image = saucers[soldier->player][frame];
 			}
 			ASSERT(image != NULL);
-			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
+			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos);
 		}
 	}
 	delete [] soldier_list;
@@ -1539,7 +1539,7 @@ void PlayingGameState::draw() {
 		int ex = 128, ey = 144;
 		int xpos = (int)(alpha * ex + (1.0 - alpha) * sx);
 		int ypos = (int)(alpha * ey + (1.0 - alpha) * sy);
-		nukes[nuke_by_player][1]->draw(xpos, ypos, true);
+		nukes[nuke_by_player][1]->draw(xpos, ypos);
 	}
 
 	// playershields etc
@@ -2882,7 +2882,7 @@ void EndIslandGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 	char text[4096] = "";
 	if( gameResult == GAMERESULT_QUIT )
 		strcpy(text, "QUITTER");
@@ -2991,7 +2991,7 @@ void GameCompleteGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 
 	this->screen_page->draw();
 	//this->screen_page->drawPopups();

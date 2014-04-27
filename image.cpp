@@ -87,7 +87,7 @@ void Image::free() {
 	}
 }
 
-void Image::draw(int x, int y,bool mask) const {
+void Image::draw(int x, int y) const {
 	x = (int)(x * scale_x);
 	y = (int)(y * scale_y);
 #if SDL_MAJOR_VERSION == 1
@@ -119,7 +119,7 @@ void Image::drawWithAlpha(int x, int y, unsigned char alpha) const {
 #else
 	SDL_SetTextureAlphaMod(texture, alpha);
 #endif
-	this->draw(x, y, false);
+	this->draw(x, y);
 }
 
 int Image::getWidth() const {
@@ -1380,7 +1380,7 @@ void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justif
 		sx = x - w * len;
 
 	for(int i=0;i<len;i++) {
-		images[ buffer[i] - '0' ]->draw(sx, y, mask);
+		images[ buffer[i] - '0' ]->draw(sx, y);
 		sx += w;
 	}
 }
@@ -1425,14 +1425,14 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
 		else if( ch >= '0' && ch <= '9' ) {
 			ASSERT( numbers != NULL );
 			int indx = ch - '0';
-			numbers[indx]->draw(cx, y + l_h - n_h, mask);
+			numbers[indx]->draw(cx, y + l_h - n_h);
 		}
 		else if( isupper( ch ) ) {
 			int indx = ch - 'A';
-			large[indx]->draw(cx, y, mask);
+			large[indx]->draw(cx, y);
 		}
 		else {
-			little[ ch - 'a' ]->draw(cx, y + l_h - s_h, mask);
+			little[ ch - 'a' ]->draw(cx, y + l_h - s_h);
 		}
 		cx += w;
 	}

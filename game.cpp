@@ -550,20 +550,20 @@ void Map::draw(int offset_x, int offset_y) const {
 				int coast_map_x = offset_x - map_sq_coast_offset + 16 * x;
 				int coast_map_y = offset_y - map_sq_coast_offset + 16 * y;
                 //LOG("draw at: %d, %d : %d, %d\n", x, y, map_sq[colour][icon]->getWidth(), map_sq[colour][icon]->getHeight());
-                map_sq[colour][icon]->draw(map_x, map_y, true);
+                map_sq[colour][icon]->draw(map_x, map_y);
 				/*int coast = 15 - icon;
 				if( coast > 0 && coast_icons[coast-1] != NULL ) {
 				coast_icons[coast-1]->draw(map_x, map_y, true);
 				}*/
 				//LOG(">>> %d %d %d\n", icon, icon & 1, 4 & 1);
 				if( (icon & 1) == 0 && coast_icons[0] != NULL )
-					coast_icons[0]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[0]->draw(coast_map_x, coast_map_y);
 				if( (icon & 2) == 0 && coast_icons[1] != NULL )
-					coast_icons[1]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[1]->draw(coast_map_x, coast_map_y);
 				if( (icon & 4) == 0 && coast_icons[3] != NULL )
-					coast_icons[3]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[3]->draw(coast_map_x, coast_map_y);
 				if( (icon & 8) == 0 && coast_icons[7] != NULL )
-					coast_icons[7]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[7]->draw(coast_map_x, coast_map_y);
 			}
 		}
 	}

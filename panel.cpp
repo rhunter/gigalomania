@@ -284,7 +284,7 @@ void PanelPage::drawPopups() {
 
 				int py = (int)(popup_y/scale_height);
 				for(int j=0;j<n_texts;j++) {
-					icon_mice[mice_indx[j]]->draw(off_x + 4, py, true);
+					icon_mice[mice_indx[j]]->draw(off_x + 4, py);
 					Image::write(off_x + gap_left, py + (one_line[j] ? h/2 : 0), letters_small, text[j], Image::JUSTIFY_LEFT, true);
 					py += n_lines[j] * h + between_texts_y;
 				}
@@ -458,7 +458,7 @@ void ImageButton::draw() {
         else {
             image->draw(owner->getLeft() + offset_x, owner->getTop() + offset_y, true);
         }*/
-        image->draw(owner->getLeft() + offset_x, owner->getTop() + offset_y, true);
+        image->draw(owner->getLeft() + offset_x, owner->getTop() + offset_y);
     }
 	PanelPage::draw();
 }

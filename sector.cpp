@@ -75,11 +75,8 @@ Particle::Particle() : xpos(0.0f), ypos(0.0f), birth_time(0) {
 }
 
 void ParticleSystem::draw(int xpos, int ypos) const {
-	/*for(size_t i=0;i<particles.size();i++) {
-		this->image->draw(xpos + (int)particles.at(i).getX(), ypos + (int)particles.at(i).getY(), false);
-	}*/
 	for(vector<Particle>::const_iterator iter = particles.begin(); iter != particles.end(); ++iter) {
-		this->image->draw(xpos + (int)iter->getX(), ypos + (int)iter->getY(), false);
+		this->image->draw(xpos + (int)iter->getX(), ypos + (int)iter->getY());
 	}
 }
 
