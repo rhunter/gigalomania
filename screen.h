@@ -23,6 +23,11 @@ namespace Gigalomania {
 
 		void convertWindowToLogical(int *m_x, int *m_y);
 #endif
+		int m_pos_x;
+		int m_pos_y;
+		bool m_down_left;
+		bool m_down_middle;
+		bool m_down_right;
 
 	public:
 		Screen();
@@ -46,6 +51,19 @@ namespace Gigalomania {
 #else
 		void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
 #endif
+		void setMousePos(int x, int y) {
+			this->m_pos_x = x;
+			this->m_pos_y = y;
+		}
+		void setMouseLeft(bool down) {
+			this->m_down_left = down;
+		}
+		void setMouseMiddle(bool down) {
+			this->m_down_middle = down;
+		}
+		void setMouseRight(bool down) {
+			this->m_down_right = down;
+		}
 		void getMouseCoords(int *m_x, int *m_y);
 		bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
 	};

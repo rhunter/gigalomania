@@ -17,7 +17,7 @@
 
 //---------------------------------------------------------------------------
 
-Screen::Screen() {
+Screen::Screen() : m_pos_x(0), m_pos_y(0), m_down_left(false), m_down_middle(false), m_down_right(false) {
 #if SDL_MAJOR_VERSION == 1
 	surface = NULL;
 #else
@@ -230,19 +230,24 @@ void Screen::getMouseCoords(int *m_x, int *m_y) {
 }
 
 bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right) {
-	int m_b = SDL_GetMouseState(m_x, m_y);
+	// SDL_GetMouseState doesn't play well with touch events
+	/*int m_b = SDL_GetMouseState(m_x, m_y);
 	*m_left = ( m_b & SDL_BUTTON(1) ) != 0;
 	*m_middle = ( m_b & SDL_BUTTON(2) ) != 0;
 	*m_right = ( m_b & SDL_BUTTON(3) ) != 0;
 	// need to convert from window space to logical space
 #if SDL_MAJOR_VERSION == 1
 #else
-	/*int screen_width = 0, screen_height = 0;
-	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
-	*m_x = (*m_x * width) / screen_width;
-	*m_y = (*m_y * height) / screen_height;*/
 	this->convertWindowToLogical(m_x, m_y);
-#endif
+#endif*/
+	*m_x = this->m_pos_x;
+	*m_y = this->m_pos_y;
+	*m_left = this->m_down_left;
+	*m_middle = this->m_down_middle;
+	*m_right = this->m_down_right;
+	if( *m_left ) {
+		LOG("mouse down at: %d, %d\n", *m_x, *m_y);
+	}
 	//LOG("Screen::getMouseState: %d, %d\n", *m_x, *m_y);
 	return ( *m_left || *m_middle || *m_right );
 }
@@ -350,16 +355,22 @@ void Application::runMainLoop() {
 				}
 			case SDL_MOUSEBUTTONDOWN:
 				{
+					int m_x = event.button.x;
+					int m_y = event.button.y;
+					screen->setMousePos(m_x, m_y);
 					bool m_left = false, m_middle = false, m_right = false;
 					Uint8 button = event.button.button;
 					if( button == SDL_BUTTON_LEFT ) {
 						m_left = true;
+						screen->setMouseLeft(true);
 					}
 					else if( button == SDL_BUTTON_MIDDLE ) {
 						m_middle = true;
+						screen->setMouseMiddle(true);
 					}
 					else if( button == SDL_BUTTON_RIGHT ) {
 						m_right = true;
+						screen->setMouseRight(true);
 					}
 
 					if( paused ) {
@@ -367,13 +378,68 @@ void Application::runMainLoop() {
 						paused = false;
 					}
 					else if( m_left || m_middle || m_right ) {
-						int m_x = 0, m_y = 0;
-						screen->getMouseCoords(&m_x, &m_y);
+						/*int m_x = 0, m_y = 0;
+						screen->getMouseCoords(&m_x, &m_y);*/
+						LOG("received mouse click: %d, %d\n", m_x, m_y);
 						mouseClick(m_x, m_y, m_left, m_middle, m_right, true);
 					}
 
 					break;
 				}
+			case SDL_MOUSEBUTTONUP:
+				{
+					LOG("received mouse up\n");
+					Uint8 button = event.button.button;
+					if( button == SDL_BUTTON_LEFT ) {
+						screen->setMouseLeft(false);
+					}
+					else if( button == SDL_BUTTON_MIDDLE ) {
+						screen->setMouseMiddle(false);
+					}
+					else if( button == SDL_BUTTON_RIGHT ) {
+						screen->setMouseRight(false);
+					}
+					break;
+				}
+			case SDL_MOUSEMOTION:
+				{
+					int m_x = event.motion.x;
+					int m_y = event.motion.y;
+					screen->setMousePos(m_x, m_y);
+					break;
+				}
+#if SDL_MAJOR_VERSION == 1
+#else
+			// support for touchscreens
+			// when a touch even occurs, we receive SDL_FINGERDOWN
+			// when the touch is released, we receive SDL_FINGERUP, followed by SDL_MOUSEBUTTONDOWN then SDL_MOUSEBUTTONUP
+			case SDL_FINGERDOWN:
+				{
+					LOG("received fingerdown: %f , %f\n", event.tfinger.x, event.tfinger.y);
+					int m_x = (int)(event.tfinger.x*screen->getWidth());
+					int m_y = (int)(event.tfinger.y*screen->getHeight());
+					LOG("    %d, %d\n", m_x, m_y);
+					screen->setMousePos(m_x, m_y);
+					screen->setMouseLeft(true);
+					break;
+				}
+			case SDL_FINGERUP:
+				{
+					LOG("received fingerup\n");
+					screen->setMouseLeft(false);
+					// n.b., "click" is handled via SDL_MOUSEBUTTONUP
+					break;
+				}
+			case SDL_FINGERMOTION:
+				{
+					LOG("received fingermotion: %f , %f\n", event.tfinger.x, event.tfinger.y);
+					int m_x = (int)(event.tfinger.x*screen->getWidth());
+					int m_y = (int)(event.tfinger.y*screen->getHeight());
+					LOG("    %d, %d\n", m_x, m_y);
+					screen->setMousePos(m_x, m_y);
+					break;
+				}
+#endif
 #if SDL_MAJOR_VERSION == 1
 			case SDL_ACTIVEEVENT:
 #ifndef AROS
