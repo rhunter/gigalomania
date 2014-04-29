@@ -216,21 +216,15 @@ void Screen::getWindowSize(int *window_width, int *window_height) {
 
 
 void Screen::getMouseCoords(int *m_x, int *m_y) {
-	SDL_GetMouseState(m_x, m_y);
+	// SDL_GetMouseState doesn't play well with touch events
+	/*SDL_GetMouseState(m_x, m_y);
 	// need to convert from window space to logical space
 #if SDL_MAJOR_VERSION == 1
 #else
-	/*int screen_width = 0, screen_height = 0;
-	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
-	LOG("Logical size: %d, %d\n", width, height);
-	LOG("Screen size: %d, %d\n", screen_width, screen_height);*/
-	/*int screen_x = 0, screen_y = 0;
-	SDL_GetWindowPosition(sdlWindow, &screen_x, &screen_y);
-	LOG("Screen pos: %d, %d\n", screen_x, screen_y);*/
-	//*m_x = (*m_x * width) / screen_width;
-	//*m_y = (*m_y * height) / screen_height;
 	this->convertWindowToLogical(m_x, m_y);
-#endif
+#endif*/
+	*m_x = this->m_pos_x;
+	*m_y = this->m_pos_y;
 	//LOG("Screen::getMouseCoords: %d, %d\n", *m_x, *m_y);
 }
 
@@ -250,14 +244,14 @@ bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, boo
 	*m_left = this->m_down_left;
 	*m_middle = this->m_down_middle;
 	*m_right = this->m_down_right;
-	if( *m_left ) {
+	/*if( *m_left ) {
 		LOG("mouse down at: %d, %d\n", *m_x, *m_y);
-	}
+	}*/
 	//LOG("Screen::getMouseState: %d, %d\n", *m_x, *m_y);
 	return ( *m_left || *m_middle || *m_right );
 }
 
-Application::Application() : quit(false) {
+Application::Application() : quit(false), blank_mouse(false) {
 }
 
 Application::~Application() {
@@ -385,7 +379,7 @@ void Application::runMainLoop() {
 					else if( m_left || m_middle || m_right ) {
 						/*int m_x = 0, m_y = 0;
 						screen->getMouseCoords(&m_x, &m_y);*/
-						LOG("received mouse click: %d, %d\n", m_x, m_y);
+						//LOG("received mouse click: %d, %d\n", m_x, m_y);
 						mouseClick(m_x, m_y, m_left, m_middle, m_right, true);
 					}
 
@@ -393,7 +387,7 @@ void Application::runMainLoop() {
 				}
 			case SDL_MOUSEBUTTONUP:
 				{
-					LOG("received mouse up\n");
+					//LOG("received mouse up\n");
 					Uint8 button = event.button.button;
 					if( button == SDL_BUTTON_LEFT ) {
 						screen->setMouseLeft(false);
@@ -408,8 +402,17 @@ void Application::runMainLoop() {
 				}
 			case SDL_MOUSEMOTION:
 				{
+					int old_m_x = 0, old_m_y = 0;
+					screen->getMouseCoords(&old_m_x, &old_m_y);
 					int m_x = event.motion.x;
 					int m_y = event.motion.y;
+					//LOG("    mouse motion %d, %d\n", m_x, m_y);
+					//LOG("    old %d, %d\n", old_m_x, old_m_y);
+					// can't use SDL_TOUCH_MOUSEID, as event.motion.which doesn't seem to be supported for Windows 8
+					if( m_x != old_m_x || m_y != old_m_y ) {
+						//LOG("    unblank\n");
+						this->blank_mouse = false;
+					}
 					screen->setMousePos(m_x, m_y);
 					break;
 				}
@@ -420,7 +423,7 @@ void Application::runMainLoop() {
 			// when the touch is released, we receive SDL_FINGERUP, followed by SDL_MOUSEBUTTONDOWN then SDL_MOUSEBUTTONUP
 			case SDL_FINGERDOWN:
 				{
-					LOG("received fingerdown: %f , %f\n", event.tfinger.x, event.tfinger.y);
+					//LOG("received fingerdown: %f , %f\n", event.tfinger.x, event.tfinger.y);
 					int window_width = 0, window_height = 0;
 					screen->getWindowSize(&window_width, &window_height);
 					int m_x = (int)(event.tfinger.x*window_width);
@@ -430,18 +433,19 @@ void Application::runMainLoop() {
 					//LOG("    logical %d, %d\n", m_x, m_y);
 					screen->setMousePos(m_x, m_y);
 					screen->setMouseLeft(true);
+					this->blank_mouse = true;
 					break;
 				}
 			case SDL_FINGERUP:
 				{
-					LOG("received fingerup\n");
+					//LOG("received fingerup\n");
 					screen->setMouseLeft(false);
 					// n.b., "click" is handled via SDL_MOUSEBUTTONUP
 					break;
 				}
 			case SDL_FINGERMOTION:
 				{
-					LOG("received fingermotion: %f , %f\n", event.tfinger.x, event.tfinger.y);
+					//LOG("received fingermotion: %f , %f\n", event.tfinger.x, event.tfinger.y);
 					int window_width = 0, window_height = 0;
 					screen->getWindowSize(&window_width, &window_height);
 					int m_x = (int)(event.tfinger.x*window_width);

@@ -293,7 +293,7 @@ void GameState::draw() {
 		if( mobile_ui && mobile_ui_display_mouse ) {
 			mouse_image->draw(default_width_c - mouse_image->getScaledWidth(), 0);
 		}
-		else if( !mobile_ui ) {
+		else if( !mobile_ui && !application->isBlankMouse() ) {
 			int m_x = 0, m_y = 0;
 			screen->getMouseCoords(&m_x, &m_y);
 			m_x = (int)(m_x / scale_width);

@@ -71,6 +71,7 @@ namespace Gigalomania {
 
 class Application {
 	bool quit;
+	bool blank_mouse;
 
 public:
 	Application();
@@ -83,5 +84,8 @@ public:
 	void runMainLoop();
 	void setQuit() {
 		quit = true;
+	}
+	bool isBlankMouse() const {
+		return this->blank_mouse;
 	}
 };
