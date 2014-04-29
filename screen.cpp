@@ -194,7 +194,7 @@ void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char
 #endif
 
 #if SDL_MAJOR_VERSION == 1
-// not supported with SDL 1.2 (as SDL_FillRect can't do blending)!
+// not supported with SDL 1.2
 #else
 void Screen::convertWindowToLogical(int *m_x, int *m_y) {
 	SDL_Rect rect;
@@ -208,7 +208,12 @@ void Screen::convertWindowToLogical(int *m_x, int *m_y) {
 	*m_x -= rect.x;
 	*m_y -= rect.y;
 }
+
+void Screen::getWindowSize(int *window_width, int *window_height) {
+	SDL_GetWindowSize(sdlWindow, window_width, window_height);
+}
 #endif
+
 
 void Screen::getMouseCoords(int *m_x, int *m_y) {
 	SDL_GetMouseState(m_x, m_y);
@@ -416,9 +421,13 @@ void Application::runMainLoop() {
 			case SDL_FINGERDOWN:
 				{
 					LOG("received fingerdown: %f , %f\n", event.tfinger.x, event.tfinger.y);
-					int m_x = (int)(event.tfinger.x*screen->getWidth());
-					int m_y = (int)(event.tfinger.y*screen->getHeight());
-					LOG("    %d, %d\n", m_x, m_y);
+					int window_width = 0, window_height = 0;
+					screen->getWindowSize(&window_width, &window_height);
+					int m_x = (int)(event.tfinger.x*window_width);
+					int m_y = (int)(event.tfinger.y*window_height);
+					//LOG("    %d, %d\n", m_x, m_y);
+					screen->convertWindowToLogical(&m_x, &m_y);
+					//LOG("    logical %d, %d\n", m_x, m_y);
 					screen->setMousePos(m_x, m_y);
 					screen->setMouseLeft(true);
 					break;
@@ -433,9 +442,13 @@ void Application::runMainLoop() {
 			case SDL_FINGERMOTION:
 				{
 					LOG("received fingermotion: %f , %f\n", event.tfinger.x, event.tfinger.y);
-					int m_x = (int)(event.tfinger.x*screen->getWidth());
-					int m_y = (int)(event.tfinger.y*screen->getHeight());
-					LOG("    %d, %d\n", m_x, m_y);
+					int window_width = 0, window_height = 0;
+					screen->getWindowSize(&window_width, &window_height);
+					int m_x = (int)(event.tfinger.x*window_width);
+					int m_y = (int)(event.tfinger.y*window_height);
+					//LOG("    %d, %d\n", m_x, m_y);
+					screen->convertWindowToLogical(&m_x, &m_y);
+					//LOG("    logical %d, %d\n", m_x, m_y);
 					screen->setMousePos(m_x, m_y);
 					break;
 				}
