@@ -411,6 +411,8 @@ void Application::runMainLoop() {
 					// can't use SDL_TOUCH_MOUSEID, as event.motion.which doesn't seem to be supported for Windows 8
 					if( m_x != old_m_x || m_y != old_m_y ) {
 						//LOG("    unblank\n");
+						//LOG("    mouse motion %d, %d\n", m_x, m_y);
+						//LOG("    old %d, %d\n", old_m_x, old_m_y);
 						this->blank_mouse = false;
 					}
 					screen->setMousePos(m_x, m_y);
@@ -440,6 +442,7 @@ void Application::runMainLoop() {
 				{
 					//LOG("received fingerup\n");
 					screen->setMouseLeft(false);
+					this->blank_mouse = true;
 					// n.b., "click" is handled via SDL_MOUSEBUTTONUP
 					break;
 				}
@@ -454,6 +457,7 @@ void Application::runMainLoop() {
 					screen->convertWindowToLogical(&m_x, &m_y);
 					//LOG("    logical %d, %d\n", m_x, m_y);
 					screen->setMousePos(m_x, m_y);
+					this->blank_mouse = true;
 					break;
 				}
 #endif
