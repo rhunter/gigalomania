@@ -159,7 +159,8 @@ compile.</p></li>
 <p>Gigalomania should work on any non-ancient Windows, Linux or OS X PC. Gigalomania is tested on
 Windows 7 and 8 Pro (32 and 64 bit) and Ubuntu 12.04 64 bit, and with Intel Bay Trail, HD 4000 and
 NVIDIA GTX 675M graphics. Older versions ran okay on Windows XP, and with Intel GMA 3100, NVIDIA (6100, 8600GT)
-and ATI Radeon HD6570 graphics.
+and ATI Radeon HD6570 graphics. Touchscreens/tablets are also supported, this is tested on Windows 8 (tested on the
+Asus Transformer Book T100).
 (See the <a href="http://www.herzig-net.de/prog/?page=prog-macgiga">Mac OS X homepage</a> for details
 on that version.)</p>
 
@@ -198,7 +199,7 @@ It's up to you to legally obtain the game if you want this feature!</p>
   <li>Select game type "SINGLE ISLAND".</li>
 	<li>Select a player (it doesn't really matter who).</li>
 	<li>Click "PLAY ISLAND".</li>
-	<li>A number (initially '0') will appear; move the mouse over it and increase the number by clicking the right mouse button (or on touchscreen platforms, touch the number, then use the arrows that appear to increase the number of people).
+	<li>A number (initially '0') will appear; move the mouse over it and increase the number by clicking the right mouse button (or on a touchscreen, touch the number, then use the arrows that appear to increase the number of people).
   This is to select how many people you want to play the island - the more people, the easier it is. In the full game, you have a fixed number of people to use across all the islands, but for this demo you can choose as many as you like. On the first age, try about 15-20 people to begin with, then adjust accordingly for future games if you want the game to be easier or harder. Later ages will require more people.</li>
 	<li>Select one of the squares of the island shown in the top left. Each square (or "sector") has different elements in it, which affects what things you can make, and how quickly; some sectors may be better than others. When you click on a square, the game will start.</li>
   <li>
@@ -208,20 +209,20 @@ It's up to you to legally obtain the game if you want this feature!</p>
       in the corner of a square represent armies that are present in that sector. To the right of the map are
       displayed the player shields. If any armies are in the current sector, then the number of soldiers in each army for each player will
       be displayed next to the shield. Above the shields is a picture of a arrow - clicking left or right button on this
-      icon changes the speed of the game (or on touchscreen platforms, click this icon to cycle through the three rates of time).</li>
+      icon changes the speed of the game (or on a touchscreen, click this icon to cycle through the three rates of time).</li>
       <li>In the main screen area is a depiction of the current sector. This may show buildings that are in the sector,
       along with armies.</li>
       <li>To the left, below the map is the main control panel. Firstly, the name of the island and the age for the
       current sector is displayed. For sectors which you control (i.e., have a tower in), an interface is below that,
       giving you control over things which are done in this sector.</li>
       <li>Most parts of the interface should have popup help text which explains what you can do by pressing which mouse
-      buttons (though not on touchscreen platforms).</li>
+      buttons (though not on pure touchscreen platforms like Android).</li>
     </ul>
   </li>
   <li>In the main control panel to the left, click the lightbulb icon ("VIEW AND ALTER CURRENT DESIGN"). A new panel
   will appear, with three columns of icons. Select one on the right most column, e.g., the rock icon ("DESIGN A ROCK
   WEAPON"). Now some additional icons will appear just below the lightbulb, including an icon of a man, with the number
-  "0" below him. Use the right mouse button to click on the man icon, and increase the number (or on touchscreen platforms,
+  "0" below him. Use the right mouse button to click on the man icon, and increase the number (or on a touchscreen,
   click on the man icon, then use the arrows that appear) - this is the number of
   people designing the weapon you have selected. The clock will start counting down.</li>
   <li>When the design is complete, you will be told "Ergonomically terrific" or "The design is completed" at the bottom
@@ -242,10 +243,10 @@ Nokia N900).</p>
 
 <p><a name="controls"><b>Controls</b></p>
 
-<p>The game can be entirely controlled with the mouse, though additional keys are: P - [un]pause game; Escape - quit and return to start screen.
+<p>The game can be entirely controlled with the mouse or touchscreen, though additional keys are: P - [un]pause game; Escape - quit and return to start screen.
 There is also an option to enable a one mouse button interface, rather than requiring two mouse buttons - to enable, go to "Options" (from the screen
-where you select an Island to play), and click to change to "ONE MOUSE BUTTON UI". This allows playing on touchscreens, and may be preferable for some
-users (e.g., on touchpads). Note that this interface mode is always enabled for some platforms known to be touchscreen (Symbian, Maemo, Meego, Android).</p>
+where you select an Island to play), and click to change to "ONE MOUSE BUTTON UI". This may be preferable for some
+users (e.g., on touchpads). (Touchscreen-only platforms like Android don't have this option.)</p>
 
 <p><a name="gametypes"><b>Game types</b></p>
  
@@ -289,8 +290,9 @@ a measure of the current level of technology, rather than how much time has pass
     <li>"One/Two Mouse Button UI" - in two mouse button mode, the left and right mouse buttons
     are required. In one mouse button mode, only the left mouse button is required (e.g., changing
     the number of people is done by left clicking, then clicking on the left/right arrows that
-    appear). Useful for touchpads or touchscreens. (Symbian, Maemo, Meego, Android don't have this option,
-    as they are always in one mouse button mode.)</li>
+    appear). Useful for touchpads. (Note that using a touchscreen on Windows will always utilise the
+    one mouse button method or showing left/right arrows, whatever this option is; and pure
+    touchscreen platforms like Android don't have this option.)</li>
     <li>"New Game" (available in "All Islands" playing mode only) - restarts the game.</li>
     <li>"Load Game" (available in "All Islands" playing mode only) - loads a previously saved
     game.</li>
@@ -511,6 +513,7 @@ FIXED   If moving army in another sector directly to the player's tower, land
 FIXED   Animation of soldiers walking wasn't quite right.
 FIXED   User account paths with unicode characters now supported on Windows.
 FIXED   Crash on Linux if unable to create data folder in user space.
+ADDED   Full support for Windows 8 touchscreens/tablets.
 ADDED   Online help link for Windows (links to this webpage).
 UPDATED Now using SDL 2 (for Windows at least): window can be resized in
         windowed mode; faster startup due to not having to prescale graphics;
