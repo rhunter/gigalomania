@@ -409,7 +409,10 @@ void Application::runMainLoop() {
 					//LOG("    mouse motion %d, %d\n", m_x, m_y);
 					//LOG("    old %d, %d\n", old_m_x, old_m_y);
 					// can't use SDL_TOUCH_MOUSEID, as event.motion.which doesn't seem to be supported for Windows 8
-					if( m_x != old_m_x || m_y != old_m_y ) {
+					// need to allow some tolerance, as sometimes we get a rounding issue when calculating the coordinates from tfinger, when the window size isn't 1:1
+					int diff_x = abs(m_x - old_m_x);
+					int diff_y = abs(m_y - old_m_y);
+					if( diff_x > 1 || diff_y > 1 ) {
 						//LOG("    unblank\n");
 						//LOG("    mouse motion %d, %d\n", m_x, m_y);
 						//LOG("    old %d, %d\n", old_m_x, old_m_y);
