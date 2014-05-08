@@ -61,6 +61,10 @@ bool onemousebutton = true;
 bool onemousebutton = false;
 #endif
 
+bool oneMouseButtonMode() {
+	return onemousebutton || application->isBlankMouse();
+}
+
 // mobile_ui means no mouse pointer
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
 bool mobile_ui = true;

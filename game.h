@@ -31,6 +31,7 @@ typedef FSOUND_SAMPLE Sample;*/
 
 extern bool onemousebutton;
 extern bool mobile_ui;
+bool oneMouseButtonMode();
 
 extern bool using_old_gfx;
 

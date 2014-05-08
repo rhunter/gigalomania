@@ -2271,7 +2271,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 	if( !done && ( m_left || m_right ) && click && speed_button != NULL && speed_button->mouseOver(m_x, m_y) ) {
         done = true;
         registerClick();
-        if( onemousebutton ) {
+        if( oneMouseButtonMode() ) {
 			// cycle through the speeds
 			time_rate++;
 			if( time_rate > 3 )
@@ -2433,7 +2433,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 				}
 			}
 		}
-		if( !done && ( onemousebutton ? m_left : m_right ) && !clicked_fortress && army_in_sector->getTotal() > 0 ) {
+		if( !done && ( oneMouseButtonMode() ? m_left : m_right ) && !clicked_fortress && army_in_sector->getTotal() > 0 ) {
 			done = true;
             registerClick();
             //selected_army = army_in_sector;

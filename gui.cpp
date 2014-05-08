@@ -40,7 +40,7 @@ const int build_step_y_c = 40;
 
 void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, PanelPage *caller_button, bool m_left, bool m_middle, bool m_right, bool click) {
 	// wrapper function to handle one-mouse-button UI support
-	if( onemousebutton && click) {
+	if( oneMouseButtonMode() && click) {
 		LOG("open onemousebutton panel\n");
 		OneMouseButtonPanel *oneMouseButtonPanel = new OneMouseButtonPanel(clickFunc, data, arg, caller_button);
 		//panel->addToPanel(panel->getPage(), oneMouseButtonPanel);
@@ -50,7 +50,7 @@ void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, P
 			addTextEffect(new TextEffect(caller_button->getInfoLMB(), 160, caller_button->getTop(), 3000));
 		}
 	}
-	else if( !onemousebutton && !click ) {
+	else if( !oneMouseButtonMode() && !click ) {
 		//buttonNMenClick(panel, m_left, m_middle, m_right);
 		//(*clickFunc)(panel, arg, m_left, m_middle, m_right);
 		(*clickFunc)(data, arg, m_left, m_middle, m_right);
@@ -1728,7 +1728,7 @@ x		}*/
             else if( this->button_nminers[i]->mouseOver(m_x,m_y) ) {
                 done = true;
                 // if one mouse button, only allow changing via the sub-menu (otherwise problems with left/right icons going off screen)
-                if( onemousebutton ) {
+                if( oneMouseButtonMode() ) {
 					if( click ) {
 	                    registerClick();
 						addTextEffect(new TextEffect(help_elementstocks_c, help_x_c, help_y_c, help_delay_c));
@@ -1746,7 +1746,7 @@ x		}*/
             if( button_nbuilders[i] != NULL && this->button_nbuilders[i]->mouseOver(m_x,m_y) ) {
                 done = true;
                 // if one mouse button, only allow changing via the sub-menu (otherwise problems with left/right icons going off screen)
-                if( onemousebutton ) {
+                if( oneMouseButtonMode() ) {
 					if( click ) {
 	                    registerClick();
 						addTextEffect(new TextEffect(help_build_c, help_x_c, help_y_c, help_delay_c));
