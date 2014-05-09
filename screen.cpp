@@ -344,7 +344,12 @@ void Application::runMainLoop() {
 #else
 					SDL_Keysym key = event.key.keysym;
 #endif
-					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q || key.sym == SDLK_AC_BACK ) { // SDLK_AC_BACK required for Android
+					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q
+#if SDL_MAJOR_VERSION == 1
+#else
+						|| key.sym == SDLK_AC_BACK // SDLK_AC_BACK required for Android
+#endif
+						) {
 						keypressEscape();
 					}
 					else if( key.sym == SDLK_p ) {
