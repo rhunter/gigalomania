@@ -383,8 +383,8 @@ bool Image::copyPalette(const Image *image) {
 	if( this->surface->format->palette == NULL || image->surface->format->palette == NULL )
 		return false;
 
-	if( this->surface->format->palette->ncolors != image->surface->format->palette->ncolors )
-		return false;
+	/*if( this->surface->format->palette->ncolors != image->surface->format->palette->ncolors )
+		return false;*/
 
 #if SDL_MAJOR_VERSION == 1
 	SDL_SetColors(this->surface, image->surface->format->palette->colors, 0, this->surface->format->palette->ncolors);
@@ -721,7 +721,22 @@ Image *Image::copy(int x, int y, int w, int h) const {
 		copy_image->need_to_free_data = false;
 	}
 
-	unsigned char *src_data = (unsigned char *)this->surface->pixels;
+	copy_image->copyPalette(this); // must be called before SDL_BlitSurface
+
+	SDL_Rect src_rect;
+	src_rect.x = x;
+	src_rect.y = y;
+	src_rect.w = w;
+	src_rect.h = h;
+#if SDL_MAJOR_VERSION == 1
+	SDL_SetAlpha(this->surface, 0, SDL_ALPHA_OPAQUE);
+#else
+	SDL_SetSurfaceBlendMode(this->surface, SDL_BLENDMODE_NONE);
+#endif
+	if( SDL_BlitSurface(this->surface, &src_rect, copy_image->surface, NULL) < 0 ) {
+		LOG("SDL_BlitSurface failed: %s\n", SDL_GetError());
+	}
+	/*unsigned char *src_data = (unsigned char *)this->surface->pixels;
 	unsigned char *dst_data = (unsigned char *)copy_image->surface->pixels;
 	SDL_LockSurface(this->surface);
 	int bytesperpixel = this->surface->format->BytesPerPixel;
@@ -733,13 +748,15 @@ Image *Image::copy(int x, int y, int w, int h) const {
 				int dst_indx = cy * copy_image->surface->pitch + cx * bytesperpixel + i;
 				ASSERT( src_indx >= 0 && src_indx < this->surface->pitch * this->surface->h * bytesperpixel );
 				ASSERT( dst_indx >= 0 && dst_indx < copy_image->surface->pitch * copy_image->surface->h * copy_image->surface->format->BytesPerPixel );
+				//if( dst_data[ dst_indx ] != src_data[ src_indx ] ) {
+				//	LOG("not equal: %d, %d, %d: %d vs %d\n", cx, cy, i, src_data[ src_indx ], dst_data[ dst_indx ]);
+				//}
 				dst_data[ dst_indx ] = src_data[ src_indx ];
 			}
 		}
 	}
-	SDL_UnlockSurface(this->surface);
+	SDL_UnlockSurface(this->surface);*/
 
-	copy_image->copyPalette(this);
 	copy_image->scale_x = scale_x;
 	copy_image->scale_y = scale_y;
 
@@ -1206,7 +1223,7 @@ Image *Image::loadImage(const char *filename) {
 #ifdef TIMING
 	int time_s = clock();
 #endif
-	LOG("Image::loadImage(\"%s\")\n",filename);
+	//LOG("Image::loadImage(\"%s\")\n",filename); // disabled logging to improve performance on startup
 	SDL_RWops *src = SDL_RWFromFile(filename, "rb");
 	if( src == NULL ) {
 		LOG("SDL_RWFromFile failed: %s\n", SDL_GetError());

@@ -1169,90 +1169,11 @@ bool remapLand(Image *image,MapColour colour) {
 	return true;
 }
 
-#if 0
-void createAlphaShadows(Image *image,int sx, int sy) {
-	// hack to mark some shadows when using the original data files
-	//Uint32 amask = image->getSDLSurface()->format->Amask;
-	//if( image->getScaleX() != 2 || image->getScaleY() != 2 ) {
-	/*if( !image->isPaletted() ) {
-	return;
-	}*/
-	image->convertToHiColor(true);
-	SDL_Surface *surface = image->getSDLSurface();
-	SDL_LockSurface(surface);
-	int w = image->getWidth();
-	int h = image->getHeight();
-	int bytespp = surface->format->BytesPerPixel;
-	/*unsigned char mask_r = 0, mask_g = 0, mask_b = 0;
-	image->getMaskColor(&mask_r, &mask_g, &mask_b);
-	Uint32 mask_index = SDL_MapRGB(surface->format, mask_r, mask_g, mask_b);*/
-	//Uint32 mask_index = SDL_MapRGB(surface->format, 255, 0, 255);
-	Uint32 shadow_index = SDL_MapRGB(surface->format, 0, 0, 0);
-	//Uint32 amask2 = surface->format->Amask;
-	for(int x=0;x<w;x++) {
-		for(int y=0;y<h;y++) {
-			unsigned char *ptr = &((unsigned char *)surface->pixels)[ surface->pitch * y + bytespp * x ];
-			Uint32 pixel = *((Uint32 *)ptr);
-			/*if( pixel == mask_index )
-				ptr[3] = 0; // mask color
-			else*/ if( pixel == shadow_index && ( x >= sx || y >= sy ) )
-				ptr[3] = shadow_alpha_c; // shadow
-			else
-				ptr[3] = 255; // opaque
-		}
-	}
-	SDL_UnlockSurface(surface);
-	SDL_SetAlpha(surface, SDL_SRCALPHA, 255);
-	/*
-	int amask2 = surface->format->Amask;
-	image->convertToDisplayFormat();*/
-}
-
-void createAlphaShadows(int epoch,Type type,Image *image) {
-	ASSERT_ANY_EPOCH(epoch);
-	int sx = 100, sy = 100;
-	if( type == BUILDING_TOWER ) {
-		if( epoch == 0 ) {
-			sx = 46;
-			sy = 41;
-		}
-		else if( epoch == 1 ) {
-			sx = 42;
-			sy = 51;
-		}
-		else if( epoch == 2 ) {
-			sx = 46;
-			sy = 53;
-		}
-		else if( epoch == 3 ) {
-			sx = 46;
-			sy = 50;
-		}
-		else if( epoch == 4 ) {
-			sx = 45;
-			sy = 51;
-		}
-	}
-	else if( type == BUILDING_MINE ) {
-		if( epoch == 3 ) {
-			sx = 45;
-			sy = 44;
-		}
-	}
-	/*sx *= scale_width;
-	sy *= scale_height;*/
-	/*sx *= image->getScaleX();
-	sy *= image->getScaleY();*/
-	sx = (int)(sx * image->getScaleX());
-	sy = (int)(sy * image->getScaleY());
-	createAlphaShadows(image, sx, sy);
-}
-#endif
-
 void convertToHiColor(Image *image) {
-	//image->setColor(0, 255, 0, 255);
-	//image->setMaskColor(255, 0, 255);
-	image->createAlphaForColor(true, 255, 0, 255, 127, 0, 127, shadow_alpha_c);
+	if( using_old_gfx ) {
+		// create alpha from color keys
+		image->createAlphaForColor(true, 255, 0, 255, 127, 0, 127, shadow_alpha_c);
+	}
 	image->convertToHiColor(false);
 }
 
@@ -3035,7 +2956,7 @@ bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int 
 }
 
 bool readMap(const char *filename) {
-	LOG("readMap: %s\n", filename);
+	//LOG("readMap: %s\n", filename); // disabled logging to improve performance on startup
 	bool ok = true;
 	const int MAX_LINE = 4096;
 	//const int MAX_LINE = 64;
@@ -3680,6 +3601,7 @@ void playGame(int n_args, char *args[]) {
 #endif
 	}
 
+    int time_s = clock();
 	drawProgress(0);
 
 	if( ok && !loadImages() ) {
@@ -3689,6 +3611,7 @@ void playGame(int n_args, char *args[]) {
 		MessageBoxA(NULL, "Failed to load images", "Error", MB_OK|MB_ICONEXCLAMATION);
 #endif
 	}
+	LOG("time taken to load images: %d\n", clock() - time_s);
 	// loadImages takes progress up to 80%
 	if( !ok ) {
 		cleanup();
@@ -3740,6 +3663,9 @@ void playGame(int n_args, char *args[]) {
 	}
 
 	drawProgress(100);
+    int time_taken = clock() - time_s;
+	LOG("time taken to load data: %d\n", time_taken);
+
 	char buffer[256] = "";
 	sprintf(buffer, "Gigalomania, version %d.%d", majorVersion, minorVersion);
 	screen->setTitle(buffer);
