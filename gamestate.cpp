@@ -290,10 +290,11 @@ void GameState::setDefaultMouseImage() {
 
 void GameState::draw() {
 	if( mouse_image != NULL ) {
-		if( mobile_ui && mobile_ui_display_mouse ) {
+		bool touch_mode = mobile_ui || application->isBlankMouse();
+		if( touch_mode && mobile_ui_display_mouse ) {
 			mouse_image->draw(default_width_c - mouse_image->getScaledWidth(), 0);
 		}
-		else if( !mobile_ui && !application->isBlankMouse() ) {
+		else if( !touch_mode ) {
 			int m_x = 0, m_y = 0;
 			screen->getMouseCoords(&m_x, &m_y);
 			m_x = (int)(m_x / scale_width);
