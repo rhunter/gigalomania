@@ -202,6 +202,9 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_nmen = new PanelPage(mx - 12, 154, 24, 32);
     this->addToPanel(STATE_CHOOSEMEN, button_nmen);
 
+	this->button_cancel = new Button((int)(mx - 10.5*fw), 210, "CHOOSE ANOTHER ISLAND", letters_large);
+    this->addToPanel(STATE_CHOOSEMEN, button_cancel);
+
     cy = start_y;
     step_y = 26;
     this->button_continue = new Button((int)(mx - 4.0*fw), cy, "CONTINUE", letters_large);
@@ -483,17 +486,11 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	else if( this->c_page == STATE_CHOOSEMEN ) {
 		if( ( m_left || m_right ) && this->button_nmen->mouseOver(m_x, m_y) ) {
             done = true;
-            /*if( onemousebutton ) {
-				LOG("open onemousebutton panel\n");
-				OneMouseButtonPanel *oneMouseButtonPanel = new OneMouseButtonPanel(buttonNMenClick, this, button_nmen);
-				this->addToPanel(this->c_page, oneMouseButtonPanel);
-				//return;
-			}
-			else {
-				buttonNMenClick(this, m_left, m_middle, m_right);
-			}*/
-			//processClick(buttonNMenClick, this, 0, button_nmen, m_left, m_middle, m_right);
 			processClick(buttonNMenClick, this->get(this->c_page), this, 0, button_nmen, m_left, m_middle, m_right, click);
+		}
+		else if( ( m_left || m_right ) && this->button_cancel->mouseOver(m_x, m_y) ) {
+            done = true;
+			gamestate->requestQuit();
 		}
 	}
 	else if( this->c_page == STATE_OPTIONS ) {

@@ -78,6 +78,7 @@ class ChooseMenPanel : public MultiPanel {
 	Button *button_save_save[n_slots_c];
 	Button *button_save_cancel;
 	PanelPage *button_nmen;
+	Button *button_cancel;
 	int n_men;
 
 	void setInfoText();
