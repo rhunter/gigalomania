@@ -919,7 +919,7 @@ bool PlayingGameState::readSectors(Map *map) {
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, map->getFilename());
-		file = fopen(fullname, "rb");
+		file = SDL_RWFromFile(fullname, "rb");
 	}
 #endif
 	if( file == NULL ) {

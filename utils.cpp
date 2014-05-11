@@ -336,8 +336,8 @@ void initLogFile() {
 	}
 #elif __linux
 	char *homedir = getenv("HOME");
-	//char *subdir = "/.gigalomania";
-	char *subdir = "/.config/gigalomania";
+	//const char *subdir = "/.gigalomania";
+	const char *subdir = "/.config/gigalomania";
 	int len = strlen(homedir) + strlen(subdir);
 	application_path = new char[len+1];
 	sprintf(application_path, "%s%s", homedir, subdir);
@@ -416,16 +416,27 @@ void initLogFile() {
 bool log(const char *text,...) {
 	//return true;
 	logfile = fopen(logfilename,"at+");
-	va_list vlist;
-	va_start(vlist, text);
+	// n.b., on Ubuntu Linux at least, need to have a separate va_list every time we use it
 #if defined(__ANDROID__)
-	__android_log_vprint(ANDROID_LOG_INFO, "Gigalomania", text, vlist);
+	if( debugwindow ) {
+		va_list vlist;
+		va_start(vlist, text);
+		__android_log_vprint(ANDROID_LOG_INFO, "Gigalomania", text, vlist);
+		va_end(vlist);
+	}
 #endif
-	if( logfile != NULL )
+	if( logfile != NULL ) {
+		va_list vlist;
+		va_start(vlist, text);
 		vfprintf(logfile, text, vlist);
-	if( debugwindow )
+		va_end(vlist);
+	}
+	if( debugwindow ) {
+		va_list vlist;
+		va_start(vlist, text);
 		vprintf(text, vlist);
-	va_end(vlist);
+		va_end(vlist);
+	}
 
 	if( logfile != NULL )
 		fclose(logfile);

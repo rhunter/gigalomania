@@ -2910,7 +2910,10 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 
 bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end) {
 	if( newline_index > 1 ) {
-		strcpy(buffer, &buffer[newline_index-1]);
+		// not safe to use strcpy on overlapping strings (undefined behaviour)
+		int len = strlen(&buffer[newline_index-1]);
+		memmove(buffer, &buffer[newline_index-1], len);
+		buffer[len] = '\0';
 		if( reached_end && buffer[0] == '\0' ) {
 			return true;
 		}
@@ -3000,7 +3003,7 @@ bool readMap(const char *filename) {
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, filename);
-		file = fopen(fullname, "rb");
+		file = SDL_RWFromFile(fullname, "rb");
 	}
 #endif
     if( file == NULL ) {
@@ -3498,6 +3501,75 @@ void drawGame() {
 	gamestate->draw();
 }
 
+const char prefs_filename[] = "prefs";
+const char onemousebutton_key[] = "onemousebutton";
+const char play_music_key[] = "play_music";
+
+void loadPrefs() {
+	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
+	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "rb");
+	if( prefs_file != NULL ) {
+		// reset
+		play_music = false;
+		onemousebutton = false;
+
+		const int MAX_LINE = 4096;
+		char line[MAX_LINE+1] = "";
+		char buffer[MAX_LINE+1] = "";
+		int buffer_offset = 0;
+		bool reached_end = false;
+		int newline_index = 0;
+		bool ok = true;
+		while( ok ) {
+			bool done = readLineFromRWOps(ok, prefs_file, buffer, line, MAX_LINE, buffer_offset, newline_index, reached_end);
+			if( !ok )  {
+				LOG("failed to read line for: %s\n", prefs_fullfilename);
+			}
+			else if( done ) {
+				break;
+			}
+			else {
+				LOG("read prefs line: %s", line);
+				if( strncmp(line, onemousebutton_key, strlen(onemousebutton_key)) == 0 ) {
+					LOG("enable onemousebutton from prefs\n");
+					onemousebutton = true;
+				}
+				else if( strncmp(line, play_music_key, strlen(play_music_key)) == 0 ) {
+					LOG("enable play_music from prefs\n");
+					play_music = true;
+				}
+			}
+		}
+		prefs_file->close(prefs_file);
+
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
+		// force onemousebutton mode, just to be safe
+		onemousebutton = true;
+#endif
+	}
+	delete [] prefs_fullfilename;
+}
+
+void savePrefs() {
+	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
+	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "wb+");
+	if( prefs_file == NULL ) {
+		LOG("failed to open: %s\n", prefs_fullfilename);
+	}
+	else {
+		if( onemousebutton ) {
+			prefs_file->write(prefs_file, onemousebutton_key, sizeof(char), strlen(onemousebutton_key));
+			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+		}
+		if( play_music ) {
+			prefs_file->write(prefs_file, play_music_key, sizeof(char), strlen(play_music_key));
+			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+		}
+		prefs_file->close(prefs_file);
+	}
+	delete [] prefs_fullfilename;
+}
+
 void playGame(int n_args, char *args[]) {
     LOG("playGame()\n");
 	bool fullscreen = false;
@@ -3567,9 +3639,11 @@ void playGame(int n_args, char *args[]) {
             play_music = play_music_i != 0;
             LOG("qt_settings: set play_music to %d\n", play_music);
         }
+#else
+	loadPrefs();
 #endif
 
-        for(int i=0;i<n_epochs_c;i++)
+    for(int i=0;i<n_epochs_c;i++)
 		for(int j=0;j<max_islands_per_epoch_c;j++)
 			maps[i][j] = NULL;
 

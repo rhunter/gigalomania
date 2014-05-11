@@ -280,6 +280,8 @@ extern QSettings *qt_settings;
 extern const QString play_music_key_c;
 #endif
 
+void savePrefs();
+
 //#include "sector.h"
 
 class Map {

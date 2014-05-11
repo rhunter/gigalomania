@@ -411,7 +411,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	MultiPanel::input(m_x, m_y, m_left, m_middle, m_right, click);
 
 	// update from options
-	if( button_music != NULL ) {
+	/*if( button_music != NULL ) {
 		play_music = button_music->getActive() == 0;
 #ifdef USING_QT
                 // also save
@@ -421,7 +421,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
     //onemousebutton = this->onemousebuttonOn();
 	if( button_onemousebutton != NULL ) {
 		onemousebutton = button_onemousebutton->getActive() == 0;
-	}
+	}*/
 
 	if( this->hasModal() ) {
 		return;
@@ -496,7 +496,19 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	else if( this->c_page == STATE_OPTIONS ) {
 		if( m_left && click && this->button_continue->mouseOver(m_x, m_y) ) {
             done = true;
-            registerClick();
+			if( button_music != NULL ) {
+				play_music = button_music->getActive() == 0;
+#ifdef USING_QT
+				// also save
+				qt_settings->setValue(play_music_key_c, play_music ? 1 : 0);
+#endif
+			}
+			if( button_onemousebutton != NULL ) {
+				onemousebutton = button_onemousebutton->getActive() == 0;
+			}
+			savePrefs();
+
+			registerClick();
             this->c_page = STATE_CHOOSEISLAND;
 		}
 		else if( m_left && click && this->button_new != NULL && this->button_new->mouseOver(m_x, m_y) ) {
