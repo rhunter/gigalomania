@@ -19,16 +19,6 @@ using std::stringstream;
 #include <string.h>
 #endif
 
-#ifdef _WIN32
-// Windows doesn't need SDL in this file
-#elif defined(__ANDROID__)
-#include <sdl.h>
-#elif defined(__linux) || defined(__MORPHOS__)
-#include <SDL/SDL.h>
-#else
-#include <sdl.h>
-#endif
-
 #ifdef AROS
 #include <proto/dos.h>
 #endif

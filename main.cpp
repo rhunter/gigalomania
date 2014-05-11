@@ -1,15 +1,7 @@
 #include "stdafx.h"
 
-#ifndef USING_QT
-// n.b., need SDL even though we don't apparently call SDL in this file, so that main() is redefined with SDL's version
 #if defined(__ANDROID__)
-#include <sdl.h>
 #include <android/log.h>
-#elif defined(__linux) || defined(__MORPHOS__)
-#include <SDL/SDL.h>
-#else
-#include <sdl.h>
-#endif
 #endif
 
 #include "game.h"

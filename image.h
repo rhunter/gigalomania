@@ -8,13 +8,12 @@
 using std::string;
 
 #if defined(__ANDROID__)
-#include <SDL.h>
 #include <SDL_image.h>
-#elif defined(__linux) || defined(__MORPHOS__)
-#include <SDL/SDL.h>
+#elif defined(__linux)
+#include <SDL/SDL_image.h>
+#elif defined(__MORPHOS__)
 #include <SDL/SDL_image.h>
 #else
-#include <sdl.h>
 #include <sdl_image.h>
 #endif
 

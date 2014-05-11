@@ -1,14 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#if defined(__ANDROID__)
-#include <sdl.h>
-#elif defined(__linux) || defined(__MORPHOS__)
-#include <SDL/SDL.h>
-#else
-#include <sdl.h>
-#endif
-
 #include "sound.h"
 #include "utils.h"
 #include "game.h"
