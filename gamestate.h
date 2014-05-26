@@ -164,7 +164,7 @@ class TextEffect : public TimedEffect {
 	string text;
 	int duration;
 public:
-	TextEffect(string text, int xpos, int ypos, int duration) : TimedEffect(), text(text), xpos(xpos), ypos(ypos), duration(duration) {
+	TextEffect(string text, int xpos, int ypos, int duration) : TimedEffect(), xpos(xpos), ypos(ypos), text(text), duration(duration) {
 	}
 	virtual bool render() const;
 };

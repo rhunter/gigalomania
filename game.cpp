@@ -66,11 +66,11 @@ bool using_old_gfx = false;
 
 Application *application = NULL;
 
-char *maps_dirname = "islands";
+const char *maps_dirname = "islands";
 #ifndef USING_QT
     // if using Qt, we use resources even on Linux
 #if !defined(__ANDROID__) && defined(__linux)
-char *alt_maps_dirname = "/usr/share/gigalomania/islands";
+const char *alt_maps_dirname = "/usr/share/gigalomania/islands";
 #endif
 #endif
 
@@ -700,7 +700,9 @@ bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int susp
 
 	const int bufsize = 1024;
 	char buffer[bufsize+1] = "";
-	fgets(buffer, bufsize, file); // header line
+	if( fgets(buffer, bufsize, file) == NULL ) { // header line
+		return false;
+	}
 
 	// data line
 	/*for(int i=0;i<8;i++) {
