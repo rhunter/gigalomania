@@ -203,8 +203,8 @@ void Screen::convertWindowToLogical(int *m_x, int *m_y) {
 	SDL_RenderGetScale(sdlRenderer, &scale_x, &scale_y);
 	//LOG("viewport: %d x %d : %d, %d\n", rect.x, rect.y, rect.w, rect.h);
 	//LOG("render scale: %f x %f\n", scale_x, scale_y);
-	*m_x /= scale_x;
-	*m_y /= scale_y;
+	*m_x = (int)(*m_x / scale_x);
+	*m_y = (int)(*m_y / scale_y);
 	*m_x -= rect.x;
 	*m_y -= rect.y;
 }

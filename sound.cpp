@@ -147,10 +147,10 @@ void Sample::play(int ch) {
 void Sample::setVolume(float volume) {
 	if( have_sound ) {
 		if( is_music ) {
-			Mix_VolumeMusic(MIX_MAX_VOLUME*volume);
+			Mix_VolumeMusic((int)(MIX_MAX_VOLUME*volume));
 		}
 		else if( channel != -1 ) {
-			Mix_Volume(channel, MIX_MAX_VOLUME*volume);
+			Mix_Volume(channel, (int)(MIX_MAX_VOLUME*volume));
 		}
 	}
 }

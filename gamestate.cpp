@@ -1432,9 +1432,9 @@ void PlayingGameState::draw() {
 			screen->fillRectWithAlpha(scale_width*(health_xpos+1), scale_height*(health_ypos+1), scale_width*(health_width-2), scale_height*(health_height-2), 0, 0, 0, 127);
 			screen->fillRectWithAlpha(scale_width*(health_xpos+1), scale_height*(health_ypos+1), scale_width*health, scale_height*(health_height-2), 255, 0, 0, 127);*/
 			float health = (scale_width*health_width-2) * ((float)building->getHealth()) / (float)building->getMaxHealth();
-			screen->fillRect(scale_width*health_xpos, scale_height*health_ypos, scale_width*health_width, scale_height*health_height, 255, 255, 255);
-			screen->fillRect(scale_width*health_xpos+1, scale_height*health_ypos+1, scale_width*health_width-2, scale_height*health_height-2, 0, 0, 0);
-			screen->fillRect(scale_width*health_xpos+1, scale_height*health_ypos+1, health, scale_height*health_height-2, 255, 0, 0);
+			screen->fillRect((short)(scale_width*health_xpos), (short)(scale_height*health_ypos), (short)(scale_width*health_width), (short)(scale_height*health_height), 255, 255, 255);
+			screen->fillRect((short)(scale_width*health_xpos+1), (short)(scale_height*health_ypos+1), (short)(scale_width*health_width-2), (short)(scale_height*health_height-2), 0, 0, 0);
+			screen->fillRect((short)(scale_width*health_xpos+1), (short)(scale_height*health_ypos+1), (short)health, (short)(scale_height*health_height-2), 255, 0, 0);
 		}
 	}
 	else if( current_sector->getPlayer() != -1 ) {

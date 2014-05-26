@@ -1244,7 +1244,7 @@ void calculateScale(const Image *image) {
 	scale_width = ((float)(image->getWidth()))/(float)default_width_c;
 	scale_height = ((float)(image->getHeight()))/(float)default_height_c;
 	LOG("scale width/height of logical resolution = %f X %f\n", scale_width, scale_height);
-	screen->setLogicalSize(scale_width*default_width_c, scale_height*default_height_c, true);
+	screen->setLogicalSize((int)(scale_width*default_width_c), (int)(scale_height*default_height_c), true);
 #endif
 }
 
@@ -1270,7 +1270,7 @@ bool loadOldImages() {
 	scale_width = 1.0f;
 	scale_height = 1.0f;
 	LOG("scale width/height of logical resolution = %f X %f\n", scale_width, scale_height);
-	screen->setLogicalSize(scale_width*default_width_c, scale_height*default_height_c, false); // don't smooth, as doesn't look too good with old graphics
+	screen->setLogicalSize((int)(scale_width*default_width_c), (int)(scale_height*default_height_c), false); // don't smooth, as doesn't look too good with old graphics
 #endif
 
 	// nb, still scale if scale_factor==1, as this is a way of converting to 8bit
@@ -2145,15 +2145,15 @@ bool loadImages() {
 	delete icons;
 	drawProgress(50);
 
-    smoke_image = Image::createRadial(scale_width * 16, scale_height * 16, 0.5f);
+    smoke_image = Image::createRadial((int)(scale_width * 16), (int)(scale_height * 16), 0.5f);
 	processImage(smoke_image);
 
 	for(int i=0;i<n_coast_c;i++)
 		coast_icons[i] = NULL;
 	map_sq_offset = 0;
 	map_sq_coast_offset = 3;
-    int map_width = scale_width * 16;
-    int map_height = scale_height * 16;
+    int map_width = (int)(scale_width * 16);
+    int map_height = (int)(scale_height * 16);
     {
 		unsigned char filter_max[3] = {255, 192, 84};
 		unsigned char filter_min[3] = {120, 0, 0};
