@@ -685,7 +685,7 @@ void Image::brighten(float sr, float sg, float sb) {
 // If using SDL2, should just blit the rectangle directly with Screen::fillRect() or Screen::fillRectWithAlpha().
 // We need this for SDL1.2, as there Screen::fillRectWithAlpha() isn't supported (due to SDL_fillRect not supporting alpha blending in SDL 1.2)
 void Image::fillRect(int x, int y, int w, int h, unsigned char r, unsigned char g, unsigned char b) {
-	int col = SDL_MapRGB(this->surface->format, r, g, b);
+	Uint32 col = SDL_MapRGB(this->surface->format, r, g, b);
 	SDL_Rect rect;
 	rect.x = x;
 	rect.y = y;

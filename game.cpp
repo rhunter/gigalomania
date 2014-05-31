@@ -3122,6 +3122,9 @@ bool createMaps() {
 			}
 			break;
 		}
+		if(ent->d_type == DT_DIR) {
+		  continue; // we don't want to process directories like '.' and '..'
+		}
 		if( !readMap(ent->d_name) ) {
 			LOG("failed reading map: %s\n", ent->d_name);
 			// don't fail altogether, just ignore
