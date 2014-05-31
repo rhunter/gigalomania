@@ -414,7 +414,11 @@ void initLogFile() {
 }
 
 bool log(const char *text,...) {
-	//return true;
+	va_list vlist;
+	va_start(vlist, text);
+	vprintf(text, vlist);
+	va_end(vlist);
+	return true;
 	logfile = fopen(logfilename,"at+");
 	// n.b., on Ubuntu Linux at least, need to have a separate va_list every time we use it
 #if defined(__ANDROID__)

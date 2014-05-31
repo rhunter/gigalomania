@@ -15,7 +15,7 @@ $(APP): $(OFILES) $(HFILES) $(CFILES)
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $(APP)
 
 .cpp.o:
-	$(CC) $(CCFLAGS) -O2 $(INC) -c $<
+	$(CC) $(CCFLAGS) $(INC) -c $<
 
 # REMEMBER to update debian/dirs if the system directories that we use are changed!!!
 install: $(APP)
