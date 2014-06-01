@@ -195,6 +195,9 @@ public:
 	GameState(int client_player);
 	virtual ~GameState();
 
+	void setClientPlayer(int client_player) {
+		this->client_player = client_player;
+	}
 	virtual void reset();
 	virtual void draw();
 	virtual void update() {};

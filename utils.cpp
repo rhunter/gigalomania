@@ -175,9 +175,9 @@ char application_path[MAX_PATH] = "";
 char logfilename[MAX_PATH] = "";
 char oldlogfilename[MAX_PATH] = "";
 #elif defined(__ANDROID__)
-char application_path[] = "";
-char logfilename[] = "log.txt";
-char oldlogfilename[] = "log_old.txt";
+char application_path[] = "/sdcard/net.sourceforge.gigalomania";
+char *logfilename = NULL;
+char *oldlogfilename = NULL;
 #elif __linux
 char *application_path = NULL;
 char *logfilename = NULL;
@@ -269,8 +269,18 @@ void initLogFile() {
     qDebug("oldlogfilename: %s", oldlogfilename);
 #elif _WIN32
 	bool ok = true;
-    if ( SUCCEEDED( SHGetFolderPathA( NULL, CSIDL_APPDATA,
-                                     NULL, 0, logfilename ) ) ) {
+	WCHAR logfilename_w[MAX_PATH];
+    if ( SUCCEEDED( SHGetFolderPathW( NULL, CSIDL_APPDATA,
+                                     NULL, 0, logfilename_w ) ) ) {
+		{
+			// handle unicode (e.g., for unicode user accounts)
+			int shortpath_length_w = GetShortPathNameW(logfilename_w,0,0);
+			LPWSTR shortpath_w = new WCHAR[shortpath_length_w];
+			GetShortPathNameW(logfilename_w,shortpath_w,shortpath_length_w);
+			int shortpath_length = WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath_w, shortpath_length_w, 0, 0, 0, 0);
+			WideCharToMultiByte(CP_OEMCP, WC_NO_BEST_FIT_CHARS, shortpath_w, shortpath_length_w, logfilename, MAX_PATH, 0, 0);
+			delete [] shortpath_w;
+		}
         PathAppendA(logfilename, application_name);
 
 		if( access(logfilename, 0) != 0 ) {
@@ -303,11 +313,31 @@ void initLogFile() {
 		strcpy(oldlogfilename, "log_old.txt");
 	}
 #elif defined(__ANDROID__)
-	// no need to do anything
+	// create the folder if it doesn't already exist
+	bool ok = true;
+	if( access(application_path, 0) != 0 ) {
+		__android_log_print(ANDROID_LOG_INFO, "Gigalomania", "try to create data folder");
+		int res = mkdir(application_path, S_IRWXU | S_IRWXG | S_IRWXO);
+		if( res != 0 ) {
+			__android_log_print(ANDROID_LOG_INFO, "Gigalomania", "failed to create data folder");
+			ok = false;
+		}
+	}
+
+	if( ok ) {
+		logfilename = getApplicationFilename("log.txt");
+		oldlogfilename = getApplicationFilename("log_old.txt");
+	}
+	else {
+		// just save in local directory and hope for the best!
+		strcpy(application_path, "");
+		logfilename = getApplicationFilename("log.txt");
+		oldlogfilename = getApplicationFilename("log_old.txt");
+	}
 #elif __linux
 	char *homedir = getenv("HOME");
-	//char *subdir = "/.gigalomania";
-	char *subdir = "/.config/gigalomania";
+	//const char *subdir = "/.gigalomania";
+	const char *subdir = "/.config/gigalomania";
 	int len = strlen(homedir) + strlen(subdir);
 	application_path = new char[len+1];
 	sprintf(application_path, "%s%s", homedir, subdir);
@@ -328,8 +358,8 @@ void initLogFile() {
 	else {
 		// just save in local directory and hope for the best!
 		strcpy(application_path, "");
-		strcpy(logfilename, "log.txt");
-		strcpy(oldlogfilename, "log_old.txt");
+		logfilename = getApplicationFilename("log.txt");
+		oldlogfilename = getApplicationFilename("log_old.txt");
 	}
 #else
 	// no need to do anything
@@ -377,21 +407,36 @@ void initLogFile() {
 #else
 	LOG("Platform: UNKNOWN\n");
 #endif
+
+	LOG("Application path: %s\n", application_path);
+	LOG("logfilename: %s\n", logfilename);
+	LOG("oldlogfilename: %s\n", oldlogfilename);
 }
 
 bool log(const char *text,...) {
 	//return true;
 	logfile = fopen(logfilename,"at+");
-	va_list vlist;
-	va_start(vlist, text);
+	// n.b., on Ubuntu Linux at least, need to have a separate va_list every time we use it
 #if defined(__ANDROID__)
-	__android_log_vprint(ANDROID_LOG_INFO, "Gigalomania", text, vlist);
+	if( debugwindow ) {
+		va_list vlist;
+		va_start(vlist, text);
+		__android_log_vprint(ANDROID_LOG_INFO, "Gigalomania", text, vlist);
+		va_end(vlist);
+	}
 #endif
-	if( logfile != NULL )
+	if( logfile != NULL ) {
+		va_list vlist;
+		va_start(vlist, text);
 		vfprintf(logfile, text, vlist);
-	if( debugwindow )
+		va_end(vlist);
+	}
+	if( debugwindow ) {
+		va_list vlist;
+		va_start(vlist, text);
 		vprintf(text, vlist);
-	va_end(vlist);
+		va_end(vlist);
+	}
 
 	if( logfile != NULL )
 		fclose(logfile);

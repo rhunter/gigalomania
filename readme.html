@@ -84,7 +84,7 @@ For more details, see the <a href="http://www.herzig-net.de/prog/?page=prog-macg
 (Note that the latest OS X binary is version 0.24; version 0.25 should be available soon.)</p></li>
 
 <li><p>For <b>Ubuntu/Debian</b>, download the relevant binary installation from the
-<a href="https://launchpad.net/~mark-harman/+archive/gigalomania/+packages">Ubuntu packages page</a>. Gigalomania is also available from the Ubuntu Software Centre (however it takes a few weeks for the latest version to appear, so please check out the packages page for the latest version). For other Linux distributions, you have to compile from the source (see below).</p></li>
+<a href="https://launchpad.net/~mark-harman/+archive/gigalomania/+packages">Ubuntu packages page</a>. Gigalomania is also available from the Ubuntu Software Centre (however it takes a few weeks for the latest version to appear, so please check out the packages page for the latest version). For other <b>Linux distributions</b>, you have to compile from the source (see below).</p></li>
 
 <li><p>For <b>AROS x86</b>, download the <a href="http://launchpad.net/gigalomania/trunk/0.26/+download/gigalomania.i386-aros.lha">AROS archive</a>. For other AROS platforms, you have to compile from the source. The AROS x86 archive is also available on <a href="http://archives.aros-exec.org/index.php?function=showfile&file=game/strategy/gigalomania.i386-aros.lha">The AROS Archives</a> and
 <a href="http://aminet.net/package/game/strat/gigalomania.i386-aros">Aminet</a>.</p></li>
@@ -93,26 +93,13 @@ For more details, see the <a href="http://www.herzig-net.de/prog/?page=prog-macg
 
 <li><p>For <b>AmigaOS 4</b>, download from <a href="http://os4depot.net/?function=showfile&file=game/strategy/gigalomania.lha">OS4 Depot</a>.</p></li>
 
-<li><p>For <b>Nokia smartphones running Symbian</b>, download from
-<a href="http://store.ovi.com/content/256085">the Nokia Store</a>.</p></li>
-
-<!--<li><p>For <b>Nokia smartphones running Maemo</b>, see the
-<a href="http://maemo.org/packages/view/gigalomania/">Maemo packages page</a>.</p></li>-->
-
-<li><p>For <b>Nokia smartphones running Maemo</b>, this is coming soon to the Nokia Store. It is also available from maemo.org repositories.</p></li>
-
-<!--<li><p>For <b>Nokia smartphones running Meego</b>, download the
-<a href="http://launchpad.net/gigalomania/trunk/0.22/+download/gigalomania_0.22_meego_armel.deb">Meego installer</a>. (Note that the latest Meego binary is version 0.22.)</p></li>-->
-
-<li><p>For <b>Nokia smartphones running Meego</b>, this is coming soon to the Nokia Store. (Note that the latest Meego binary is version 0.22.)</p></li>
-
 <li><p>For <b>Android smartphones/tablets</b>,
 <!--download from
 <a href="https://play.google.com/store/apps/details?id=net.sourceforge.gigalomania">Google Play</a>.-->
 install the <a href="https://launchpad.net/gigalomania/trunk/0.25/+download/Gigalomania-release-aligned.apk">Android APK</a>
 on your Android device. For this to work, you must enable the installation of non-Google Play apps (from
 Settings->Security, tick "Unknown sources" to "Allow installation of apps from sources other than the Play
-Store"). Note that this game requires the
+Store"). <!--Note that this game requires the
 <a href="https://play.google.com/store/apps/details?id=org.kde.necessitas.ministro">Ministro II libraries</a>.
 If you don't have these, you should be taken to the app page automatically when you first run Gigalomania.
 Please install Ministro II, then return to Gigalomania. (Ministro is used to manage the
@@ -120,7 +107,18 @@ Please install Ministro II, then return to Gigalomania. (Ministro is used to man
 do this is that the libraries only need to be downloaded once, and are then available for all apps that use Qt.
 Like Gigalomania, Ministro is completely free and ad-free.) Ministro will download the libraries when you first
 run Gigalomania. If you get an error message such as "Ministro can not satisfy your application dependencies",
-please ensure you have enough storage space (the libraries can take up to around 25MB).</p></li>
+please ensure you have enough storage space (the libraries can take up to around 25MB).--></p></li>
+
+<li><p>For <b>Nokia smartphones running Maemo</b>, see the
+<a href="http://maemo.org/packages/view/gigalomania/">Maemo packages page</a>.</p></li>
+
+<!--<li><p>For <b>Nokia smartphones running Meego</b>, download the
+<a href="http://launchpad.net/gigalomania/trunk/0.22/+download/gigalomania_0.22_meego_armel.deb">Meego installer</a>. (Note that the latest Meego binary is version 0.22.)</p></li>-->
+
+<li><p>For <b>Nokia smartphones running Meego</b>, you have to compile from the source (see below).</p></li>
+
+<li><p>For <b>Nokia smartphones running Symbian</b>, download from
+<a href="http://store.ovi.com/content/256085">the Nokia Store</a> (note that the latest Symbian version is 0.25; Symbian is no longer supported on newer versions).</p></li>
 
 <li><p>For <b>Open Pandora</b>, download the
 <a href="http://repo.openpandora.org/?page=detail&app=gigalomania_ptitseb">binary package</a>.
@@ -159,18 +157,19 @@ compile.</p></li>
 <p><a name="requirements"><b>Requirements</b></p>
 
 <p>Gigalomania should work on any non-ancient Windows, Linux or OS X PC. Gigalomania is tested on
-Windows 7 and 8 Pro (32 and 64 bit) and Ubuntu 12.04 64 bit, and with Intel GMA 3100, HD 4000 and
-NVIDIA GTX 675M graphics. Older versions ran okay on Windows XP, and with NVIDIA (6100, 8600GT)
-and ATI Radeon HD6570 graphics.
+Windows 7 and 8 Pro (32 and 64 bit) and Ubuntu 12.04 64 bit, and with Intel Bay Trail, HD 4000 and
+NVIDIA GTX 675M graphics. Older versions ran okay on Windows XP, and with Intel GMA 3100, NVIDIA (6100, 8600GT)
+and ATI Radeon HD6570 graphics. Touchscreens/tablets are also supported, this is tested on Windows 8 (tested on the
+Asus Transformer Book T100).
 (See the <a href="http://www.herzig-net.de/prog/?page=prog-macgiga">Mac OS X homepage</a> for details
 on that version.)</p>
+
+<p>For Android, this requires Android 2.3.3, and has been tested on the Samsung Galaxy Nexus and Nexus 7 (2013).
+A resolution of at least 480x320 is recommended.</p>
 
 <p>For Nokia Symbian smartphones, this requires S60 5th edition (Symbian^1) or later (e.g.,
 Nokia 5800) - the Ovi Store should let you know if it's compatible with your phone. For Maemo,
 this has been tested on the Nokia N900. For Meego, this has been tested on the Nokia N950.</p>
-
-<p>For Android, this requires Android 2.3.3, and has been tested on the Samsung Galaxy Nexus.
-A resolution of at least 480x320 is recommended.</p>
 
 <p>If the game fails to run, or has problems, please try the following:<ul>
   <li>For Windows, make sure you have installed the required libraries/DLLs (see Windows download,
@@ -178,7 +177,7 @@ A resolution of at least 480x320 is recommended.</p>
   <li>On Linux (including the Pandora), try running from the command line (from Terminal window, type gigalomania) to see
   if that gives any informative error message.</li>
   <li>Ensure you have the latest drivers for your graphics card.</li>
-  <li>On Android, on rare occasions Ministro may fail to download the required libraries due to network or server problems - please try again later to see if the problem still persists.</li>
+  <!--<li>On Android, on rare occasions Ministro may fail to download the required libraries due to network or server problems - please try again later to see if the problem still persists.</li>-->
   <li>Please <a href="#contact">contact me</a> to report any problems.</li>
 </ul></p>
 
@@ -188,7 +187,7 @@ It's up to you to legally obtain the game if you want this feature!</p>
 
 <p><a name="windowedfullscreen"><b>Choosing windowed or fullscreen mode</b></p>
 
-<p>On non-mobile platforms, Gigalomania runs in windowed mode, in the largest window it can (up to 1280x960). On Windows and Linux, you can run
+<p>On non-mobile platforms, Gigalomania runs in windowed mode. On Windows and Linux, you can run
 "Gigalomania Fullscreen" to run in fullscreen mode. You can also force fullscreen mode on any platform by running from the commandline with the option:
  fullscreen</p>  
 
@@ -200,7 +199,7 @@ It's up to you to legally obtain the game if you want this feature!</p>
   <li>Select game type "SINGLE ISLAND".</li>
 	<li>Select a player (it doesn't really matter who).</li>
 	<li>Click "PLAY ISLAND".</li>
-	<li>A number (initially '0') will appear; move the mouse over it and increase the number by clicking the right mouse button (or on touchscreen platforms, touch the number, then use the arrows that appear to increase the number of people).
+	<li>A number (initially '0') will appear; move the mouse over it and increase the number by clicking the right mouse button (or on a touchscreen, touch the number, then use the arrows that appear to increase the number of people).
   This is to select how many people you want to play the island - the more people, the easier it is. In the full game, you have a fixed number of people to use across all the islands, but for this demo you can choose as many as you like. On the first age, try about 15-20 people to begin with, then adjust accordingly for future games if you want the game to be easier or harder. Later ages will require more people.</li>
 	<li>Select one of the squares of the island shown in the top left. Each square (or "sector") has different elements in it, which affects what things you can make, and how quickly; some sectors may be better than others. When you click on a square, the game will start.</li>
   <li>
@@ -210,20 +209,20 @@ It's up to you to legally obtain the game if you want this feature!</p>
       in the corner of a square represent armies that are present in that sector. To the right of the map are
       displayed the player shields. If any armies are in the current sector, then the number of soldiers in each army for each player will
       be displayed next to the shield. Above the shields is a picture of a arrow - clicking left or right button on this
-      icon changes the speed of the game (or on touchscreen platforms, click this icon to cycle through the three rates of time).</li>
+      icon changes the speed of the game (or on a touchscreen, click this icon to cycle through the three rates of time).</li>
       <li>In the main screen area is a depiction of the current sector. This may show buildings that are in the sector,
       along with armies.</li>
       <li>To the left, below the map is the main control panel. Firstly, the name of the island and the age for the
       current sector is displayed. For sectors which you control (i.e., have a tower in), an interface is below that,
       giving you control over things which are done in this sector.</li>
       <li>Most parts of the interface should have popup help text which explains what you can do by pressing which mouse
-      buttons (though not on touchscreen platforms).</li>
+      buttons (though not on pure touchscreen platforms like Android).</li>
     </ul>
   </li>
   <li>In the main control panel to the left, click the lightbulb icon ("VIEW AND ALTER CURRENT DESIGN"). A new panel
   will appear, with three columns of icons. Select one on the right most column, e.g., the rock icon ("DESIGN A ROCK
   WEAPON"). Now some additional icons will appear just below the lightbulb, including an icon of a man, with the number
-  "0" below him. Use the right mouse button to click on the man icon, and increase the number (or on touchscreen platforms,
+  "0" below him. Use the right mouse button to click on the man icon, and increase the number (or on a touchscreen,
   click on the man icon, then use the arrows that appear) - this is the number of
   people designing the weapon you have selected. The clock will start counting down.</li>
   <li>When the design is complete, you will be told "Ergonomically terrific" or "The design is completed" at the bottom
@@ -244,10 +243,10 @@ Nokia N900).</p>
 
 <p><a name="controls"><b>Controls</b></p>
 
-<p>The game can be entirely controlled with the mouse, though additional keys are: P - [un]pause game; Escape - quit and return to start screen.
+<p>The game can be entirely controlled with the mouse or touchscreen, though additional keys are: P - [un]pause game; Escape - quit and return to start screen.
 There is also an option to enable a one mouse button interface, rather than requiring two mouse buttons - to enable, go to "Options" (from the screen
-where you select an Island to play), and click to change to "ONE MOUSE BUTTON UI". This allows playing on touchscreens, and may be preferable for some
-users (e.g., on touchpads). Note that this interface mode is always enabled for some platforms known to be touchscreen (Symbian, Maemo, Meego, Android).</p>
+where you select an Island to play), and click to change to "ONE MOUSE BUTTON UI". This may be preferable for some
+users (e.g., on touchpads). (Touchscreen-only platforms like Android don't have this option.)</p>
 
 <p><a name="gametypes"><b>Game types</b></p>
  
@@ -286,12 +285,14 @@ a measure of the current level of technology, rather than how much time has pass
   play.</li>
   <li>"Options" - displays a sub menu as follows:<ul>
     <li>"Continue" - return to the main menu.</li>
-    <li>"Sound On/Off" - whether sound is currently enabled - click to change this.</li>
+    <li>"Sound On/Off" - whether sound is currently enabled - click to change this (note that on
+    Android, you can also change the sound volume by using the volume keys on your device).</li>
     <li>"One/Two Mouse Button UI" - in two mouse button mode, the left and right mouse buttons
     are required. In one mouse button mode, only the left mouse button is required (e.g., changing
     the number of people is done by left clicking, then clicking on the left/right arrows that
-    appear). Useful for touchpads or touchscreens. (Symbian, Maemo, Meego, Android don't have this option,
-    as they are always in one mouse button mode.)</li>
+    appear). Useful for touchpads. (Note that using a touchscreen on Windows will always utilise the
+    one mouse button method or showing left/right arrows, whatever this option is; and pure
+    touchscreen platforms like Android don't have this option.)</li>
     <li>"New Game" (available in "All Islands" playing mode only) - restarts the game.</li>
     <li>"Load Game" (available in "All Islands" playing mode only) - loads a previously saved
     game.</li>
@@ -490,7 +491,7 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <p>If you would like to contribute to Gigalomania, there are various ways you can help:<ul>
 <li><b>Musicians</b> - Some music would be nice to add to the game. Note that if you place an OGG music file "gamemusic.ogg" in the main folder, it will play during the game (at least for Windows/OS X/Linux). More sound effects would also be useful to have.</li>
 <li><b>Graphics artists</b> - I have a graphics artist working on some images, though there's no reason why there couldn't be additional graphics sets for different styles, so feel free to contribute. Please contact me if you want info on the expected graphics formats, or things like additional data files (e.g., the POV Ray files for the building graphics).</li>
-<li><b>Porting</b> - Feel free to port Gigalomania to other platforms - it should be easy to port to any OS that supports SDL or Qt. If you send me the files, I can integrate them into the main source. (Please check the Git repository on Sourceforge for the latest version to work with.)</li>
+<li><b>Porting</b> - Feel free to port Gigalomania to other platforms - it should be easy to port to any OS that supports SDL. If you send me the files, I can integrate them into the main source. (Please check the Git repository on Sourceforge for the latest version to work with.)</li>
 <li><b>Tell people about it!</b> - If you like the game, then please feel free to tell other
        people about it, on your blog/Twitter/website/etc :)</li>
 <li><b>Give me a nice rating :)</b> (On Nokia/Android stores, or other hosting sites...)
@@ -510,13 +511,22 @@ FIXED   If moving army in another sector directly to the player's tower, if
 FIXED   If moving army in another sector directly to the player's tower, land
         soldiers should not be able to cross sea.
 FIXED   Animation of soldiers walking wasn't quite right.
+FIXED   User account paths with unicode characters now supported on Windows.
+FIXED   Crash on Linux if unable to create data folder in user space.
+ADDED   Full support for Windows 8 touchscreens/tablets.
+ADDED   New button to return to choosing island screen, after clicking to play
+        an island.
+ADDED   Online help link for Windows (links to this webpage).
 UPDATED Now using SDL 2 (for Windows at least): window can be resized in
         windowed mode; faster startup due to not having to prescale graphics;
         no longer have to change PC's resolution when running in fullscreen
         mode.
 UPDATED Now using SDL 2 for Android instead of Qt: no longer requires Ministro
         app; now properly scales to fullscreen (and takes full advantage of
-        devices with FullHD displays or higher).
+        devices with FullHD displays or higher); now supports using device's
+        volume keys to change volume.
+UPDATED Faster startup time.
+UPDATED Options (sound and one mouse button mode) now saved.
 UPDATED Message displayed when game paused; mouse pointer no longer frozen when
         paused.
 UPDATED Pressing quit (Escape or close button) on game win/lose/quit screen goes

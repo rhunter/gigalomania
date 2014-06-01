@@ -17,15 +17,20 @@ REM copy %src%\fmod.dll %dst%
 REM copy %src%\fmodex.dll %dst%
 REM copy %src%\FreeImage.dll %dst%
 
-copy %src%\SDL.dll %dst%
+REM copy %src%\SDL.dll %dst%
+copy %src%\SDL2.dll %dst%
 
-copy %src%\SDL_image.dll %dst%
-copy %src%\jpeg.dll %dst%
-copy %src%\libtiff.dll %dst%
-copy %src%\libpng12.dll %dst%
+REM copy %src%\SDL_image.dll %dst%
+copy %src%\SDL2_image.dll %dst%
+REM copy %src%\jpeg.dll %dst%
+REM copy %src%\libtiff.dll %dst%
+REM copy %src%\libpng12.dll %dst%
+copy %src%\libjpeg-9.dll %dst%
+copy %src%\libpng16-16.dll %dst%
 copy %src%\zlib1.dll %dst%
 
-copy %src%\SDL_mixer.dll %dst%
+REM copy %src%\SDL_mixer.dll %dst%
+copy %src%\SDL2_mixer.dll %dst%
 copy %src%\libogg-0.dll %dst%
 copy %src%\libvorbis-0.dll %dst%
 copy %src%\libvorbisfile-3.dll %dst%

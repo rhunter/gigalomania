@@ -68,7 +68,7 @@ int Soldier::sort_soldier_pair(const void *v1,const void *v2) {
 void Feature::draw() const {
 	const int ticks_per_frame_c = 110; // tree animation looks better if offset from main animation, and if slightly slower
 	int counter = getRealTime() / ticks_per_frame_c;
-	image[counter % n_frames]->draw(xpos, ypos, true);
+	image[counter % n_frames]->draw(xpos, ypos);
 }
 
 TimedEffect::TimedEffect() {
@@ -126,7 +126,7 @@ bool AmmoEffect::render() const {
 	Image *image = attackers_ammo[epoch][dir];
 	if( x + image->getScaledWidth() >= screen->getWidth() || y + image->getScaledHeight() >= screen->getHeight() )
 		return true;
-	image->draw(x, y, true);
+	image->draw(x, y);
 	if( time > ammo_time_c )
 		return true;
 	return false;
@@ -207,7 +207,7 @@ bool FlashingSquare::render() const {
 	if( flash ) {
 		int map_x = offset_map_x_c + 16 * this->xpos;
 		int map_y = offset_map_y_c + 16 * this->ypos;
-		flashingmapsquare->draw(map_x, map_y, true);
+		flashingmapsquare->draw(map_x, map_y);
 	}
 	return false;
 }
@@ -223,7 +223,7 @@ bool AnimationEffect::render() const {
 	else {
 		if( !dir )
 			frame = n_images - 1 - frame;
-		images[frame]->draw(xpos, ypos, true);
+		images[frame]->draw(xpos, ypos);
 	}
 	return false;
 }
@@ -234,7 +234,7 @@ bool TextEffect::render() const {
 		return false;
 	else if( time > duration )
 		return true;
-	Image::write(xpos, ypos, letters_small, text.c_str(), Image::JUSTIFY_CENTRE, true);
+	Image::write(xpos, ypos, letters_small, text.c_str(), Image::JUSTIFY_CENTRE);
 	return false;
 }
 
@@ -256,6 +256,7 @@ GameState::GameState(int client_player) : client_player(client_player) {
 }
 
 GameState::~GameState() {
+	LOG("~GameState()\n");
 	/*for(int i=0;i<effects->size();i++) {
 		//TimedEffect *effect = (TimedEffect *)effects->get(i);
 		TimedEffect *effect = effects->at(i);
@@ -271,6 +272,7 @@ GameState::~GameState() {
 	if( this->screen_page )
 		delete screen_page;
 
+	LOG("~GameState() done\n");
 }
 
 void GameState::reset() {
@@ -288,17 +290,18 @@ void GameState::setDefaultMouseImage() {
 
 void GameState::draw() {
 	if( mouse_image != NULL ) {
-		if( mobile_ui && mobile_ui_display_mouse ) {
-			mouse_image->draw(default_width_c - mouse_image->getScaledWidth(), 0, true);
+		bool touch_mode = mobile_ui || application->isBlankMouse();
+		if( touch_mode && mobile_ui_display_mouse ) {
+			mouse_image->draw(default_width_c - mouse_image->getScaledWidth(), 0);
 		}
-		else if( !mobile_ui ) {
+		else if( !touch_mode ) {
 			int m_x = 0, m_y = 0;
 			screen->getMouseCoords(&m_x, &m_y);
 			m_x = (int)(m_x / scale_width);
 			m_y = (int)(m_y / scale_height);
 			m_x += mouse_off_x;
 			m_y += mouse_off_y;
-			mouse_image->draw(m_x, m_y, true);
+			mouse_image->draw(m_x, m_y);
 		}
 	}
 
@@ -323,7 +326,7 @@ void GameState::draw() {
 		string str = mobile_ui ? "touch screen\nto unpause game" : "press p or click\nmouse to unpause game";
 		// n.b., don't use 120 for y pos, need to avoid collision with quit game message
 		// and offset x pos slightly, to avoid overlapping with GUI
-		Image::write(120, 100, letters_small, str.c_str(), Image::JUSTIFY_LEFT, true);
+		Image::write(120, 100, letters_small, str.c_str(), Image::JUSTIFY_LEFT);
 	}
 
 	screen->refresh();
@@ -367,8 +370,10 @@ ChooseGameTypeGameState::ChooseGameTypeGameState(int client_player) : GameState(
 }
 
 ChooseGameTypeGameState::~ChooseGameTypeGameState() {
+	LOG("~ChooseGameTypeGameState()\n");
 	if( this->choosegametypePanel )
 		delete choosegametypePanel;
+	LOG("~ChooseGameTypeGameState() done\n");
 }
 
 ChooseGameTypePanel *ChooseGameTypeGameState::getChooseGameTypePanel() {
@@ -390,7 +395,7 @@ void ChooseGameTypeGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 
 	this->choosegametypePanel->draw();
 
@@ -412,8 +417,10 @@ ChooseDifficultyGameState::ChooseDifficultyGameState(int client_player) : GameSt
 }
 
 ChooseDifficultyGameState::~ChooseDifficultyGameState() {
+	LOG("~ChooseDifficultyGameState()\n");
 	if( this->choosedifficultyPanel )
 		delete choosedifficultyPanel;
+	LOG("~ChooseDifficultyGameState() done\n");
 }
 
 ChooseDifficultyPanel *ChooseDifficultyGameState::getChooseDifficultyPanel() {
@@ -435,7 +442,7 @@ void ChooseDifficultyGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 
 	this->choosedifficultyPanel->draw();
 
@@ -455,6 +462,8 @@ ChoosePlayerGameState::ChoosePlayerGameState(int client_player) : GameState(clie
 }
 
 ChoosePlayerGameState::~ChoosePlayerGameState() {
+	LOG("~ChoosePlayerGameState()\n");
+	LOG("~ChoosePlayerGameState() done\n");
 }
 
 void ChoosePlayerGameState::reset() {
@@ -486,8 +495,8 @@ void ChoosePlayerGameState::draw() {
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
 	//player_select->draw(0, 0, false);
-	background->draw(0, 0, false);
-    Image::writeMixedCase(160, 16, letters_large, letters_small, NULL, "Select a Player", Image::JUSTIFY_CENTRE, true);
+	background->draw(0, 0);
+    Image::writeMixedCase(160, 16, letters_large, letters_small, NULL, "Select a Player", Image::JUSTIFY_CENTRE);
 
 	this->screen_page->draw();
 
@@ -506,8 +515,10 @@ PlaceMenGameState::PlaceMenGameState(int client_player) : GameState(client_playe
 }
 
 PlaceMenGameState::~PlaceMenGameState() {
+	LOG("~PlaceMenGameState()\n");
 	if( this->choosemenPanel )
 		delete choosemenPanel;
+	LOG("~PlaceMenGameState() done\n");
 }
 
 ChooseMenPanel *PlaceMenGameState::getChooseMenPanel() {
@@ -569,11 +580,11 @@ void PlaceMenGameState::draw() {
 #elif defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background_islands->draw(0, 0, false);
+	background_islands->draw(0, 0);
 
 	if( !using_old_gfx ) {
 		sprintf(buffer, "Gigalomania v%d %d", majorVersion, minorVersion);
-	    Image::writeMixedCase(160, 228, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE, true);
+	    Image::writeMixedCase(160, 228, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE);
 	}
 
     /*this->choosemenPanel->draw();
@@ -586,20 +597,20 @@ void PlaceMenGameState::draw() {
 	const int cx = this->off_x;
     //int cy = 100;
     int cy = 120;
-    Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, map->getName(), Image::JUSTIFY_CENTRE, true);
+    Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, map->getName(), Image::JUSTIFY_CENTRE);
 	cy += s_h + 2;
-	Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, "of the", Image::JUSTIFY_CENTRE, true);
+	Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, "of the", Image::JUSTIFY_CENTRE);
 	cy += l_h + 2;
 	sprintf(buffer, "%s AGE", epoch_names[start_epoch]);
-	Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, buffer, Image::JUSTIFY_CENTRE, true);
+	Image::writeMixedCase(cx, cy, letters_large, letters_small, NULL, buffer, Image::JUSTIFY_CENTRE);
     cy += l_h + 2;
 
 	int year = epoch_dates[start_epoch];
 	bool shiny = start_epoch == n_epochs_c-1;
-	Image::writeNumbers(cx+8, cy, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT, true);
+	Image::writeNumbers(cx+8, cy, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT);
 	Image *era = ( year < 0 ) ? icon_bc :
 		shiny ? icon_ad_shiny : icon_ad;
-	era->draw(cx+8, cy, true);
+	era->draw(cx+8, cy);
     cy += l_h + 2;
 
     if( !isDemo() && gameType == GAMETYPE_ALLISLANDS ) {
@@ -607,7 +618,7 @@ void PlaceMenGameState::draw() {
         if( n_suspended > 0 )
 		{
 			sprintf(buffer, "Saved Men %d", n_suspended);
-            Image::writeMixedCase(cx, cy, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE, true);
+            Image::writeMixedCase(cx, cy, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE);
 		}
 	}
 
@@ -623,15 +634,15 @@ void PlaceMenGameState::draw() {
 
 	if( choosemenPanel->getPage() == ChooseMenPanel::STATE_CHOOSEMEN ) {
 		cy = 60;
-		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "Click on the icon below", Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "Click on the icon below", Image::JUSTIFY_CENTRE);
 		cy += l_h + 2;
-		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to choose how many men", Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to choose how many men", Image::JUSTIFY_CENTRE);
 		cy += l_h + 2;
-		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to play with", Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to play with", Image::JUSTIFY_CENTRE);
 		cy += l_h + 2;
-		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "then click on the map", Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "then click on the map", Image::JUSTIFY_CENTRE);
 		cy += l_h + 2;
-		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to the left", Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(200, cy, letters_large, letters_small, NULL, "to the left", Image::JUSTIFY_CENTRE);
 		cy += l_h + 2;
 	}
 
@@ -741,6 +752,7 @@ PlayingGameState::PlayingGameState(int client_player) : GameState(client_player)
 }
 
 PlayingGameState::~PlayingGameState() {
+	LOG("~PlayingGameState()\n");
 	for(int i=0;i<n_players_c;i++)
 		delete this->soldiers[i];
 	for(unsigned int i=0;i<effects->size();i++) {
@@ -765,6 +777,7 @@ PlayingGameState::~PlayingGameState() {
 	}*/
 	if( this->gamePanel )
 		delete gamePanel;
+	LOG("~PlayingGameState() done\n");
 }
 
 bool PlayingGameState::readSectorsProcessLine(Map *map, char *line, bool *done_header, int *sec_x, int *sec_y) {
@@ -906,7 +919,7 @@ bool PlayingGameState::readSectors(Map *map) {
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, map->getFilename());
-		file = fopen(fullname, "rb");
+		file = SDL_RWFromFile(fullname, "rb");
 	}
 #endif
 	if( file == NULL ) {
@@ -1263,7 +1276,7 @@ void PlayingGameState::draw() {
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
 
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 	//background->draw(0, 0, true);
 
 	bool no_armies = true;
@@ -1282,11 +1295,11 @@ void PlayingGameState::draw() {
 		// ask alliance
 		stringstream str;
 		str << PlayerType::getName((PlayerType::PlayerTypeID)player_asking_alliance);
-		Image::write(offset_map_x_c + 8, offset_map_y_c + 8, letters_small, str.str().c_str(), Image::JUSTIFY_LEFT, true);
+		Image::write(offset_map_x_c + 8, offset_map_y_c + 8, letters_small, str.str().c_str(), Image::JUSTIFY_LEFT);
 		str.str("asks for an");
-		Image::write(offset_map_x_c + 8, offset_map_y_c + 16, letters_small, str.str().c_str(), Image::JUSTIFY_LEFT, true);
+		Image::write(offset_map_x_c + 8, offset_map_y_c + 16, letters_small, str.str().c_str(), Image::JUSTIFY_LEFT);
 		str.str("alliance");
-		Image::write(offset_map_x_c + 8, offset_map_y_c + 24, letters_small, str.str().c_str(), Image::JUSTIFY_LEFT, true);
+		Image::write(offset_map_x_c + 8, offset_map_y_c + 24, letters_small, str.str().c_str(), Image::JUSTIFY_LEFT);
 	}
 	else if( this->map_display == MAPDISPLAY_MAP ) {
 		// map
@@ -1299,10 +1312,10 @@ void PlayingGameState::draw() {
 					int map_y = offset_map_y_c + 16 * y;
 					//map_sq[15]->draw(map_x, map_y, true);
 					if( map->getSector(x, y)->getPlayer() != -1 ) {
-						icon_towers[ map->getSector(x, y)->getPlayer() ]->draw(map_x + 5, map_y + 5, true);
+						icon_towers[ map->getSector(x, y)->getPlayer() ]->draw(map_x + 5, map_y + 5);
 					}
 					else if( map->getSector(x, y)->isNuked() ) {
-						icon_nuke_hole->draw(map_x + 4, map_y + 4, true);
+						icon_nuke_hole->draw(map_x + 4, map_y + 4);
 					}
 					for(int i=0;i<n_players_c;i++) {
 						Army *army = map->getSector(x, y)->getArmy(i);
@@ -1311,7 +1324,7 @@ void PlayingGameState::draw() {
 							int off_step = 5;
 							int off_step_x = ( i == 0 || i == 2 ) ? -off_step : off_step;
 							int off_step_y = ( i == 0 || i == 1 ) ? -off_step : off_step;
-							icon_armies[i]->draw(map_x + 6 + off_step_x, map_y + 6 + off_step_y, true);
+							icon_armies[i]->draw(map_x + 6 + off_step_x, map_y + 6 + off_step_y);
 						}
 					}
 				}
@@ -1319,7 +1332,7 @@ void PlayingGameState::draw() {
 		}
 		int map_x = offset_map_x_c + 16 * current_sector->getXPos();
 		int map_y = offset_map_y_c + 16 * current_sector->getYPos();
-		mapsquare->draw(map_x, map_y, true);
+		mapsquare->draw(map_x, map_y);
 	}
 	else if( this->map_display == MAPDISPLAY_UNITS ) {
 		// unit stats
@@ -1328,7 +1341,7 @@ void PlayingGameState::draw() {
 		for(int i=0;i<=n_sub_epochs;i++) {
 			Image *image = (i==0) ? unarmed_man : numbered_weapons[start_epoch + i - 1];
 			//Image *image = (i==0) ? men[start_epoch] : numbered_weapons[start_epoch + i - 1];
-			image->draw(offset_map_x_c + gap * i + extra, offset_map_y_c + 2 - 16 + 8, true);
+			image->draw(offset_map_x_c + gap * i + extra, offset_map_y_c + 2 - 16 + 8);
 		}
 		for(int i=0;i<n_players_c;i++) {
 			if( shield_buttons[i] == NULL ) {
@@ -1344,7 +1357,7 @@ void PlayingGameState::draw() {
 							int n_men = army->getSoldiers(idx);
 							if( n_men > 0 ) {
 								//Image::writeNumbers(offset_map_x_c + 16 * k + 4, offset_map_y_c + 2 + 16 * i + 8 * off + 8, numbers_small[j], n_men, Image::JUSTIFY_LEFT, true);
-								Image::writeNumbers(offset_map_x_c + gap * k + extra, offset_map_y_c + 2 + 16 * i + 8 * off + 8, numbers_small[j], n_men, Image::JUSTIFY_LEFT, true);
+								Image::writeNumbers(offset_map_x_c + gap * k + extra, offset_map_y_c + 2 + 16 * i + 8 * off + 8, numbers_small[j], n_men, Image::JUSTIFY_LEFT);
 							}
 						}
 						off++;
@@ -1355,7 +1368,7 @@ void PlayingGameState::draw() {
 	}
 
 	// land area
-	land[map->getColour()]->draw(offset_land_x_c, offset_land_y_c, true);
+	land[map->getColour()]->draw(offset_land_x_c, offset_land_y_c);
 
 	// trees etc (not at front)
 	for(int i=0;i<current_sector->getNFeatures();i++) {
@@ -1372,7 +1385,7 @@ void PlayingGameState::draw() {
 	if( current_sector->getActivePlayer() != -1 )
 	{
 		if( openPitMine() )
-			icon_openpitmine->draw(offset_land_x_c + offset_openpitmine_x_c, offset_land_y_c + offset_openpitmine_y_c, true);
+			icon_openpitmine->draw(offset_land_x_c + offset_openpitmine_x_c, offset_land_y_c + offset_openpitmine_y_c);
 
 		bool rotate_defenders = false;
 		if( frame_counter - defenders_last_frame_update > defenders_frames_per_update_c ) {
@@ -1387,7 +1400,7 @@ void PlayingGameState::draw() {
 
 			// draw building
 			Image **images = building->getImages();
-			images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY(), true);
+			images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY());
 
 			if( rotate_defenders )
 				building->rotateDefenders();
@@ -1402,12 +1415,12 @@ void PlayingGameState::draw() {
 					else {
 						image = defenders[current_sector->getPlayer()][ building->getTurretMan(j) ][ building->getTurretManDir(j) ];
 					}
-					image->draw(building->getTurretButton(j)->getLeft(), building->getTurretButton(j)->getTop() - 4, true);
+					image->draw(building->getTurretButton(j)->getLeft(), building->getTurretButton(j)->getTop() - 4);
 				}
 			}
 
 			if( i == BUILDING_TOWER )
-				flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c, true);
+				flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c);
 
 			const int health_xpos = offset_land_x_c + building->getX() + 4;
 			//const int health_ypos = offset_land_y_c + building->getY() - 16;
@@ -1429,8 +1442,8 @@ void PlayingGameState::draw() {
 		Building *building = current_sector->getBuilding(BUILDING_TOWER);
 		ASSERT( building != NULL );
 		Image **images = building->getImages();
-		images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY(), true);
-		flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c, true);
+		images[ current_sector->getBuildingEpoch() ]->draw(offset_land_x_c + building->getX(), offset_land_y_c + building->getY());
+		flags[ current_sector->getPlayer() ][frame_counter % n_flag_frames_c]->draw(offset_land_x_c + building->getX() + offset_flag_x_c, offset_land_y_c + building->getY() + offset_flag_y_c);
 	}
 
 	//Vector soldier_list(n_players_c * 250);
@@ -1462,7 +1475,7 @@ void PlayingGameState::draw() {
 			//Image *image = attackers_walking[soldier->player][soldier->epoch][frame];
 			int n_frames = n_attacker_frames[soldier->epoch][soldier->dir];
 			Image *image = attackers_walking[soldier->player][soldier->epoch][soldier->dir][frame_counter % n_frames];
-			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
+			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos);
 		}
 	}
 
@@ -1509,7 +1522,7 @@ void PlayingGameState::draw() {
 				image = saucers[soldier->player][frame];
 			}
 			ASSERT(image != NULL);
-			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
+			image->draw(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos);
 		}
 	}
 	delete [] soldier_list;
@@ -1527,7 +1540,7 @@ void PlayingGameState::draw() {
 		int ex = 128, ey = 144;
 		int xpos = (int)(alpha * ex + (1.0 - alpha) * sx);
 		int ypos = (int)(alpha * ey + (1.0 - alpha) * sy);
-		nukes[nuke_by_player][1]->draw(xpos, ypos, true);
+		nukes[nuke_by_player][1]->draw(xpos, ypos);
 	}
 
 	// playershields etc
@@ -1553,7 +1566,7 @@ void PlayingGameState::draw() {
 					if( n_army > 0 ) {
 						shield_number_panels[i]->setEnabled(true);
 						//Image::writeNumbers(offset_map_x_c + 16 * map_width_c + 20, offset_map_y_c + 2 + shield_step_y_c * i + 8, numbers_small[i], n_army, Image::JUSTIFY_LEFT, true);
-						Image::writeNumbers(offset_map_x_c + 16 * map_width_c + 20, offset_map_y_c + 2 + shield_step_y_c * i + 8 * off + 8, numbers_small[j], n_army, Image::JUSTIFY_LEFT, true);
+						Image::writeNumbers(offset_map_x_c + 16 * map_width_c + 20, offset_map_y_c + 2 + shield_step_y_c * i + 8 * off + 8, numbers_small[j], n_army, Image::JUSTIFY_LEFT);
 						off++;
 					}
 				}
@@ -1902,7 +1915,7 @@ void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 	if( player != -1 ) {
 		//human_player = player;
 		//human_player = PLAYER_DEMO; // force demo mode
-		setClientPlayer(player);
+		::setClientPlayer(player);
 		setGameStateID(GAMESTATEID_PLACEMEN);
 		newGame();
 		//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
@@ -2259,7 +2272,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 	if( !done && ( m_left || m_right ) && click && speed_button != NULL && speed_button->mouseOver(m_x, m_y) ) {
         done = true;
         registerClick();
-        if( onemousebutton ) {
+        if( oneMouseButtonMode() ) {
 			// cycle through the speeds
 			time_rate++;
 			if( time_rate > 3 )
@@ -2421,7 +2434,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 				}
 			}
 		}
-		if( !done && ( onemousebutton ? m_left : m_right ) && !clicked_fortress && army_in_sector->getTotal() > 0 ) {
+		if( !done && ( oneMouseButtonMode() ? m_left : m_right ) && !clicked_fortress && army_in_sector->getTotal() > 0 ) {
 			done = true;
             registerClick();
             //selected_army = army_in_sector;
@@ -2872,7 +2885,7 @@ void EndIslandGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 	char text[4096] = "";
 	if( gameResult == GAMERESULT_QUIT )
 		strcpy(text, "QUITTER");
@@ -2883,19 +2896,19 @@ void EndIslandGameState::draw() {
 	else {
 		ASSERT(false);
 	}
-	Image::write(160, 120, letters_large, text, Image::JUSTIFY_CENTRE, true);
+	Image::write(160, 120, letters_large, text, Image::JUSTIFY_CENTRE);
 
 	bool suspend = false;
 	if( start_epoch >= 6 && gameResult == GAMERESULT_WON )
 		suspend = true;
 
-	Image::write(40, 140, letters_small, "PLAYER", Image::JUSTIFY_LEFT, true);
-	Image::write(100, 140, letters_small, "START", Image::JUSTIFY_LEFT, true);
-	Image::write(140, 140, letters_small, "BIRTHS", Image::JUSTIFY_LEFT, true);
-	Image::write(180, 140, letters_small, "DEATHS", Image::JUSTIFY_LEFT, true);
-	Image::write(220, 140, letters_small, "END", Image::JUSTIFY_LEFT, true);
+	Image::write(40, 140, letters_small, "PLAYER", Image::JUSTIFY_LEFT);
+	Image::write(100, 140, letters_small, "START", Image::JUSTIFY_LEFT);
+	Image::write(140, 140, letters_small, "BIRTHS", Image::JUSTIFY_LEFT);
+	Image::write(180, 140, letters_small, "DEATHS", Image::JUSTIFY_LEFT);
+	Image::write(220, 140, letters_small, "END", Image::JUSTIFY_LEFT);
 	if( suspend )
-		Image::write(260, 140, letters_small, "SAVED", Image::JUSTIFY_LEFT, true);
+		Image::write(260, 140, letters_small, "SAVED", Image::JUSTIFY_LEFT);
 
 	int ypos = 150;
 	//int r = 0, g = 0, b = 0, col = 0;
@@ -2917,14 +2930,14 @@ void EndIslandGameState::draw() {
 		screen->fillRect(rect_x, rect_y, rect_w, rect_h, r, g, b);
 
 		//Image::write(40, ypos, letters_small, "HUMAN", Image::JUSTIFY_LEFT, true);
-		Image::write(40, ypos, letters_small, PlayerType::getName((PlayerType::PlayerTypeID)client_player), Image::JUSTIFY_LEFT, true);
+		Image::write(40, ypos, letters_small, PlayerType::getName((PlayerType::PlayerTypeID)client_player), Image::JUSTIFY_LEFT);
 
-		Image::writeNumbers(110, ypos, numbers_yellow, players[client_player]->getNMenForThisIsland(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(150, ypos, numbers_yellow, players[client_player]->getNBirths(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(190, ypos, numbers_yellow, players[client_player]->getNDeaths(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(230, ypos, numbers_yellow, players[client_player]->getFinalMen(), Image::JUSTIFY_LEFT, true);
+		Image::writeNumbers(110, ypos, numbers_yellow, players[client_player]->getNMenForThisIsland(), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(150, ypos, numbers_yellow, players[client_player]->getNBirths(), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(190, ypos, numbers_yellow, players[client_player]->getNDeaths(), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(230, ypos, numbers_yellow, players[client_player]->getFinalMen(), Image::JUSTIFY_LEFT);
 		if( suspend )
-			Image::writeNumbers(270, ypos, numbers_yellow, players[client_player]->getNSuspended(), Image::JUSTIFY_LEFT, true);
+			Image::writeNumbers(270, ypos, numbers_yellow, players[client_player]->getNSuspended(), Image::JUSTIFY_LEFT);
 		ypos += 10;
 	}
 
@@ -2939,13 +2952,13 @@ void EndIslandGameState::draw() {
 		screen->fillRect(rect_x, rect_y, rect_w, rect_h, r, g, b);
 
 		//Image::write(40, ypos, letters_small, "COMPUTER", Image::JUSTIFY_LEFT, true);
-		Image::write(40, ypos, letters_small, PlayerType::getName((PlayerType::PlayerTypeID)i), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(110, ypos, numbers_yellow, players[i]->getNMenForThisIsland(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(150, ypos, numbers_yellow, players[i]->getNBirths(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(190, ypos, numbers_yellow, players[i]->getNDeaths(), Image::JUSTIFY_LEFT, true);
-		Image::writeNumbers(230, ypos, numbers_yellow, players[i]->getFinalMen(), Image::JUSTIFY_LEFT, true);
+		Image::write(40, ypos, letters_small, PlayerType::getName((PlayerType::PlayerTypeID)i), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(110, ypos, numbers_yellow, players[i]->getNMenForThisIsland(), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(150, ypos, numbers_yellow, players[i]->getNBirths(), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(190, ypos, numbers_yellow, players[i]->getNDeaths(), Image::JUSTIFY_LEFT);
+		Image::writeNumbers(230, ypos, numbers_yellow, players[i]->getFinalMen(), Image::JUSTIFY_LEFT);
 		if( suspend )
-			Image::writeNumbers(270, ypos, numbers_yellow, players[i]->getNSuspended(), Image::JUSTIFY_LEFT, true);
+			Image::writeNumbers(270, ypos, numbers_yellow, players[i]->getNSuspended(), Image::JUSTIFY_LEFT);
 		ypos += 10;
 	}
 
@@ -2981,7 +2994,7 @@ void GameCompleteGameState::draw() {
 #if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
-	background->draw(0, 0, false);
+	background->draw(0, 0);
 
 	this->screen_page->draw();
 	//this->screen_page->drawPopups();
@@ -2991,7 +3004,7 @@ void GameCompleteGameState::draw() {
 		int l_h = letters_large[0]->getScaledHeight();
 		int y = 80;
 
-		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, "GAME COMPLETE", Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, "GAME COMPLETE", Image::JUSTIFY_CENTRE);
 		y += l_h + 2;
 
 		if( difficulty_level == DIFFICULTY_EASY )
@@ -3003,24 +3016,24 @@ void GameCompleteGameState::draw() {
 		else {
 			ASSERT(false);
 		}
-		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE);
 		y += l_h + 2;
 
 		y += l_h + 2;
 
 		str << "Men Remaining " << getMenAvailable();
-		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE);
 		y += l_h + 2;
 
 		str.str("");
 		str << "Men Saved " << getNSuspended();
-		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE);
 		y += l_h + 2;
 
 		int score = getMenAvailable() + getNSuspended();
 		str.str("");
 		str << "Total Score " << score;
-		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE, true);
+		Image::writeMixedCase(160, y, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_CENTRE);
 		y += l_h + 2;
 	}
 

@@ -66,7 +66,7 @@ class ChooseMenPanel : public MultiPanel {
 	Button *button_nextepoch;
 	Button *button_options;
 	Button *button_play;
-#ifdef USING_QT
+#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
     Button *button_help;
 #endif
 	Button *button_quit;
@@ -78,6 +78,7 @@ class ChooseMenPanel : public MultiPanel {
 	Button *button_save_save[n_slots_c];
 	Button *button_save_cancel;
 	PanelPage *button_nmen;
+	Button *button_cancel;
 	int n_men;
 
 	void setInfoText();

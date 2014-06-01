@@ -17,7 +17,7 @@
 
 //---------------------------------------------------------------------------
 
-Screen::Screen() {
+Screen::Screen() : m_pos_x(0), m_pos_y(0), m_down_left(false), m_down_middle(false), m_down_right(false) {
 #if SDL_MAJOR_VERSION == 1
 	surface = NULL;
 #else
@@ -194,7 +194,7 @@ void Screen::fillRectWithAlpha(short x, short y, short w, short h, unsigned char
 #endif
 
 #if SDL_MAJOR_VERSION == 1
-// not supported with SDL 1.2 (as SDL_FillRect can't do blending)!
+// not supported with SDL 1.2
 #else
 void Screen::convertWindowToLogical(int *m_x, int *m_y) {
 	SDL_Rect rect;
@@ -208,46 +208,50 @@ void Screen::convertWindowToLogical(int *m_x, int *m_y) {
 	*m_x -= rect.x;
 	*m_y -= rect.y;
 }
+
+void Screen::getWindowSize(int *window_width, int *window_height) {
+	SDL_GetWindowSize(sdlWindow, window_width, window_height);
+}
 #endif
 
+
 void Screen::getMouseCoords(int *m_x, int *m_y) {
-	SDL_GetMouseState(m_x, m_y);
+	// SDL_GetMouseState doesn't play well with touch events
+	/*SDL_GetMouseState(m_x, m_y);
 	// need to convert from window space to logical space
 #if SDL_MAJOR_VERSION == 1
 #else
-	/*int screen_width = 0, screen_height = 0;
-	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
-	LOG("Logical size: %d, %d\n", width, height);
-	LOG("Screen size: %d, %d\n", screen_width, screen_height);*/
-	/*int screen_x = 0, screen_y = 0;
-	SDL_GetWindowPosition(sdlWindow, &screen_x, &screen_y);
-	LOG("Screen pos: %d, %d\n", screen_x, screen_y);*/
-	//*m_x = (*m_x * width) / screen_width;
-	//*m_y = (*m_y * height) / screen_height;
 	this->convertWindowToLogical(m_x, m_y);
-#endif
+#endif*/
+	*m_x = this->m_pos_x;
+	*m_y = this->m_pos_y;
 	//LOG("Screen::getMouseCoords: %d, %d\n", *m_x, *m_y);
 }
 
 bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right) {
-	int m_b = SDL_GetMouseState(m_x, m_y);
+	// SDL_GetMouseState doesn't play well with touch events
+	/*int m_b = SDL_GetMouseState(m_x, m_y);
 	*m_left = ( m_b & SDL_BUTTON(1) ) != 0;
 	*m_middle = ( m_b & SDL_BUTTON(2) ) != 0;
 	*m_right = ( m_b & SDL_BUTTON(3) ) != 0;
 	// need to convert from window space to logical space
 #if SDL_MAJOR_VERSION == 1
 #else
-	/*int screen_width = 0, screen_height = 0;
-	SDL_GetWindowSize(sdlWindow, &screen_width, &screen_height);
-	*m_x = (*m_x * width) / screen_width;
-	*m_y = (*m_y * height) / screen_height;*/
 	this->convertWindowToLogical(m_x, m_y);
-#endif
+#endif*/
+	*m_x = this->m_pos_x;
+	*m_y = this->m_pos_y;
+	*m_left = this->m_down_left;
+	*m_middle = this->m_down_middle;
+	*m_right = this->m_down_right;
+	/*if( *m_left ) {
+		LOG("mouse down at: %d, %d\n", *m_x, *m_y);
+	}*/
 	//LOG("Screen::getMouseState: %d, %d\n", *m_x, *m_y);
 	return ( *m_left || *m_middle || *m_right );
 }
 
-Application::Application() : quit(false) {
+Application::Application() : quit(false), blank_mouse(false) {
 }
 
 Application::~Application() {
@@ -340,7 +344,12 @@ void Application::runMainLoop() {
 #else
 					SDL_Keysym key = event.key.keysym;
 #endif
-					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q ) {
+					if( key.sym == SDLK_ESCAPE || key.sym == SDLK_q
+#if SDL_MAJOR_VERSION == 1
+#else
+						|| key.sym == SDLK_AC_BACK // SDLK_AC_BACK required for Android
+#endif
+						) {
 						keypressEscape();
 					}
 					else if( key.sym == SDLK_p ) {
@@ -350,16 +359,22 @@ void Application::runMainLoop() {
 				}
 			case SDL_MOUSEBUTTONDOWN:
 				{
+					int m_x = event.button.x;
+					int m_y = event.button.y;
+					screen->setMousePos(m_x, m_y);
 					bool m_left = false, m_middle = false, m_right = false;
 					Uint8 button = event.button.button;
 					if( button == SDL_BUTTON_LEFT ) {
 						m_left = true;
+						screen->setMouseLeft(true);
 					}
 					else if( button == SDL_BUTTON_MIDDLE ) {
 						m_middle = true;
+						screen->setMouseMiddle(true);
 					}
 					else if( button == SDL_BUTTON_RIGHT ) {
 						m_right = true;
+						screen->setMouseRight(true);
 					}
 
 					if( paused ) {
@@ -367,13 +382,93 @@ void Application::runMainLoop() {
 						paused = false;
 					}
 					else if( m_left || m_middle || m_right ) {
-						int m_x = 0, m_y = 0;
-						screen->getMouseCoords(&m_x, &m_y);
+						/*int m_x = 0, m_y = 0;
+						screen->getMouseCoords(&m_x, &m_y);*/
+						//LOG("received mouse click: %d, %d\n", m_x, m_y);
 						mouseClick(m_x, m_y, m_left, m_middle, m_right, true);
 					}
 
 					break;
 				}
+			case SDL_MOUSEBUTTONUP:
+				{
+					//LOG("received mouse up\n");
+					Uint8 button = event.button.button;
+					if( button == SDL_BUTTON_LEFT ) {
+						screen->setMouseLeft(false);
+					}
+					else if( button == SDL_BUTTON_MIDDLE ) {
+						screen->setMouseMiddle(false);
+					}
+					else if( button == SDL_BUTTON_RIGHT ) {
+						screen->setMouseRight(false);
+					}
+					break;
+				}
+			case SDL_MOUSEMOTION:
+				{
+					int old_m_x = 0, old_m_y = 0;
+					screen->getMouseCoords(&old_m_x, &old_m_y);
+					int m_x = event.motion.x;
+					int m_y = event.motion.y;
+					//LOG("    mouse motion %d, %d\n", m_x, m_y);
+					//LOG("    old %d, %d\n", old_m_x, old_m_y);
+					// can't use SDL_TOUCH_MOUSEID, as event.motion.which doesn't seem to be supported for Windows 8
+					// need to allow some tolerance, as sometimes we get a rounding issue when calculating the coordinates from tfinger, when the window size isn't 1:1
+					int diff_x = abs(m_x - old_m_x);
+					int diff_y = abs(m_y - old_m_y);
+					if( diff_x > 1 || diff_y > 1 ) {
+						//LOG("    unblank\n");
+						//LOG("    mouse motion %d, %d\n", m_x, m_y);
+						//LOG("    old %d, %d\n", old_m_x, old_m_y);
+						this->blank_mouse = false;
+					}
+					screen->setMousePos(m_x, m_y);
+					break;
+				}
+#if SDL_MAJOR_VERSION == 1
+#else
+			// support for touchscreens
+			// when a touch even occurs, we receive SDL_FINGERDOWN
+			// when the touch is released, we receive SDL_FINGERUP, followed by SDL_MOUSEBUTTONDOWN then SDL_MOUSEBUTTONUP
+			case SDL_FINGERDOWN:
+				{
+					//LOG("received fingerdown: %f , %f\n", event.tfinger.x, event.tfinger.y);
+					int window_width = 0, window_height = 0;
+					screen->getWindowSize(&window_width, &window_height);
+					int m_x = (int)(event.tfinger.x*window_width);
+					int m_y = (int)(event.tfinger.y*window_height);
+					//LOG("    %d, %d\n", m_x, m_y);
+					screen->convertWindowToLogical(&m_x, &m_y);
+					//LOG("    logical %d, %d\n", m_x, m_y);
+					screen->setMousePos(m_x, m_y);
+					screen->setMouseLeft(true);
+					this->blank_mouse = true;
+					break;
+				}
+			case SDL_FINGERUP:
+				{
+					//LOG("received fingerup\n");
+					screen->setMouseLeft(false);
+					this->blank_mouse = true;
+					// n.b., "click" is handled via SDL_MOUSEBUTTONUP
+					break;
+				}
+			case SDL_FINGERMOTION:
+				{
+					//LOG("received fingermotion: %f , %f\n", event.tfinger.x, event.tfinger.y);
+					int window_width = 0, window_height = 0;
+					screen->getWindowSize(&window_width, &window_height);
+					int m_x = (int)(event.tfinger.x*window_width);
+					int m_y = (int)(event.tfinger.y*window_height);
+					//LOG("    %d, %d\n", m_x, m_y);
+					screen->convertWindowToLogical(&m_x, &m_y);
+					//LOG("    logical %d, %d\n", m_x, m_y);
+					screen->setMousePos(m_x, m_y);
+					this->blank_mouse = true;
+					break;
+				}
+#endif
 #if SDL_MAJOR_VERSION == 1
 			case SDL_ACTIVEEVENT:
 #ifndef AROS
@@ -388,6 +483,16 @@ void Application::runMainLoop() {
 					}
 				}
 #endif
+				break;
+#else
+			case SDL_WINDOWEVENT:
+				if( event.window.event == SDL_WINDOWEVENT_SHOWN || event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED ) {
+					// activate
+				}
+				else if( event.window.event == SDL_WINDOWEVENT_HIDDEN || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST ) {
+					// inactive
+					keypressP(); // automatically pause when application goes inactive
+				}
 				break;
 #endif
 			}

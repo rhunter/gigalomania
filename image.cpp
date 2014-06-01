@@ -87,7 +87,7 @@ void Image::free() {
 	}
 }
 
-void Image::draw(int x, int y,bool mask) const {
+void Image::draw(int x, int y) const {
 	x = (int)(x * scale_x);
 	y = (int)(y * scale_y);
 #if SDL_MAJOR_VERSION == 1
@@ -119,7 +119,7 @@ void Image::drawWithAlpha(int x, int y, unsigned char alpha) const {
 #else
 	SDL_SetTextureAlphaMod(texture, alpha);
 #endif
-	this->draw(x, y, false);
+	this->draw(x, y);
 }
 
 int Image::getWidth() const {
@@ -353,7 +353,7 @@ bool Image::convertToHiColor(bool alpha) {
 	return true;
 }
 
-void Image::convertToDisplayFormat() {
+bool Image::convertToDisplayFormat() {
 #if SDL_MAJOR_VERSION == 1
 	SDL_Surface *new_surf = NULL;
 	int bpp = this->surface->format->BitsPerPixel;
@@ -365,9 +365,10 @@ void Image::convertToDisplayFormat() {
 	this->surface = new_surf;
 #else
 	texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
-	/*if( texture == NULL ) {
-		throw "SDL_CreateTextureFromSurface failed";
-	}*/
+	if( texture == NULL ) {
+		LOG("SDL_CreateTextureFromSurface failed\n");
+		return false;
+	}
 	/*{
 		SDL_BlendMode blendMode = SDL_BLENDMODE_NONE;
 		SDL_GetTextureBlendMode(texture, &blendMode);
@@ -375,14 +376,15 @@ void Image::convertToDisplayFormat() {
 	}*/
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // seems to be default, but just in case
 #endif
+	return true;
 }
 
 bool Image::copyPalette(const Image *image) {
 	if( this->surface->format->palette == NULL || image->surface->format->palette == NULL )
 		return false;
 
-	if( this->surface->format->palette->ncolors != image->surface->format->palette->ncolors )
-		return false;
+	/*if( this->surface->format->palette->ncolors != image->surface->format->palette->ncolors )
+		return false;*/
 
 #if SDL_MAJOR_VERSION == 1
 	SDL_SetColors(this->surface, image->surface->format->palette->colors, 0, this->surface->format->palette->ncolors);
@@ -395,8 +397,10 @@ bool Image::copyPalette(const Image *image) {
 // side-effect: also converts images with < 256 colours to have 256 colours, unless scaling is 1.0
 void Image::scale(float sx,float sy) {
 	if( sx == 1.0f && sy == 1.0f ) {
+		//LOG("no need to scale\n");
 		return;
 	}
+	//LOG("having to scale %f x %f\n", sx, sy);
 	// only supported for either reducing or englarging the size - this is all we need, and is easier to optimise for performance
 	bool enlarging = false;
 	if( sx > 1.0f || sy > 1.0f ) {
@@ -711,7 +715,22 @@ Image *Image::copy(int x, int y, int w, int h) const {
 		copy_image->need_to_free_data = false;
 	}
 
-	unsigned char *src_data = (unsigned char *)this->surface->pixels;
+	copy_image->copyPalette(this); // must be called before SDL_BlitSurface
+
+	SDL_Rect src_rect;
+	src_rect.x = x;
+	src_rect.y = y;
+	src_rect.w = w;
+	src_rect.h = h;
+#if SDL_MAJOR_VERSION == 1
+	SDL_SetAlpha(this->surface, 0, SDL_ALPHA_OPAQUE);
+#else
+	SDL_SetSurfaceBlendMode(this->surface, SDL_BLENDMODE_NONE);
+#endif
+	if( SDL_BlitSurface(this->surface, &src_rect, copy_image->surface, NULL) < 0 ) {
+		LOG("SDL_BlitSurface failed: %s\n", SDL_GetError());
+	}
+	/*unsigned char *src_data = (unsigned char *)this->surface->pixels;
 	unsigned char *dst_data = (unsigned char *)copy_image->surface->pixels;
 	SDL_LockSurface(this->surface);
 	int bytesperpixel = this->surface->format->BytesPerPixel;
@@ -723,13 +742,15 @@ Image *Image::copy(int x, int y, int w, int h) const {
 				int dst_indx = cy * copy_image->surface->pitch + cx * bytesperpixel + i;
 				ASSERT( src_indx >= 0 && src_indx < this->surface->pitch * this->surface->h * bytesperpixel );
 				ASSERT( dst_indx >= 0 && dst_indx < copy_image->surface->pitch * copy_image->surface->h * copy_image->surface->format->BytesPerPixel );
+				//if( dst_data[ dst_indx ] != src_data[ src_indx ] ) {
+				//	LOG("not equal: %d, %d, %d: %d vs %d\n", cx, cy, i, src_data[ src_indx ], dst_data[ dst_indx ]);
+				//}
 				dst_data[ dst_indx ] = src_data[ src_indx ];
 			}
 		}
 	}
-	SDL_UnlockSurface(this->surface);
+	SDL_UnlockSurface(this->surface);*/
 
-	copy_image->copyPalette(this);
 	copy_image->scale_x = scale_x;
 	copy_image->scale_y = scale_y;
 
@@ -744,18 +765,476 @@ Image *Image::copy(int x, int y, int w, int h) const {
 	return copy_image;
 }
 
+// The following code is taken from IMG_lbm.c from SDL_image 2,
+// under the following licence.
+
+/*
+  SDL_image:  An example image loading library for use with SDL
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+
+#define MAXCOLORS 256
+
+/* Structure for an IFF picture ( BMHD = Bitmap Header ) */
+
+typedef struct
+{
+    Uint16 w, h;        /* width & height of the bitmap in pixels */
+    Sint16 x, y;        /* screen coordinates of the bitmap */
+    Uint8 planes;       /* number of planes of the bitmap */
+    Uint8 mask;         /* mask type ( 0 => no mask ) */
+    Uint8 tcomp;        /* compression type */
+    Uint8 pad1;         /* dummy value, for padding */
+    Uint16 tcolor;      /* transparent color */
+    Uint8 xAspect,      /* pixel aspect ratio */
+          yAspect;
+    Sint16  Lpage;      /* width of the screen in pixels */
+    Sint16  Hpage;      /* height of the screen in pixels */
+} BMHD;
+
+SDL_Surface *my_IMG_LoadLBM_RW( SDL_RWops *src )
+{
+    Sint64 start;
+    SDL_Surface *Image;
+    Uint8       id[4], pbm, colormap[MAXCOLORS*3], *MiniBuf, *ptr, count, color, msk;
+    Uint32      size, bytesloaded, nbcolors;
+    Uint32      i, j, bytesperline, nbplanes, stencil, plane, h;
+    Uint32      remainingbytes;
+    Uint32      width;
+    BMHD          bmhd;
+    char        *error;
+    Uint8       flagHAM,flagEHB;
+
+    Image   = NULL;
+    error   = NULL;
+    MiniBuf = NULL;
+
+    if ( !src ) {
+        /* The error message has been set in SDL_RWFromFile */
+        return NULL;
+    }
+    start = SDL_RWtell(src);
+
+    if ( !SDL_RWread( src, id, 4, 1 ) )
+    {
+        error="error reading IFF chunk";
+        goto done;
+    }
+
+    /* Should be the size of the file minus 4+4 ( 'FORM'+size ) */
+    if ( !SDL_RWread( src, &size, 4, 1 ) )
+    {
+        error="error reading IFF chunk size";
+        goto done;
+    }
+
+    /* As size is not used here, no need to swap it */
+
+    if ( SDL_memcmp( id, "FORM", 4 ) != 0 )
+    {
+        error="not a IFF file";
+        goto done;
+    }
+
+    if ( !SDL_RWread( src, id, 4, 1 ) )
+    {
+        error="error reading IFF chunk";
+        goto done;
+    }
+
+    pbm = 0;
+
+    /* File format : PBM=Packed Bitmap, ILBM=Interleaved Bitmap */
+    if ( !SDL_memcmp( id, "PBM ", 4 ) ) pbm = 1;
+    else if ( SDL_memcmp( id, "ILBM", 4 ) )
+    {
+        error="not a IFF picture";
+        goto done;
+    }
+
+    nbcolors = 0;
+
+    SDL_memset( &bmhd, 0, sizeof( BMHD ) );
+    flagHAM = 0;
+    flagEHB = 0;
+
+    while ( SDL_memcmp( id, "BODY", 4 ) != 0 )
+    {
+        if ( !SDL_RWread( src, id, 4, 1 ) )
+        {
+            error="error reading IFF chunk";
+            goto done;
+        }
+
+        if ( !SDL_RWread( src, &size, 4, 1 ) )
+        {
+            error="error reading IFF chunk size";
+            goto done;
+        }
+
+        bytesloaded = 0;
+
+        size = SDL_SwapBE32( size );
+
+        if ( !SDL_memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
+        {
+            if ( !SDL_RWread( src, &bmhd, sizeof( BMHD ), 1 ) )
+            {
+                error="error reading BMHD chunk";
+                goto done;
+            }
+
+            bytesloaded = sizeof( BMHD );
+
+            bmhd.w      = SDL_SwapBE16( bmhd.w );
+            bmhd.h      = SDL_SwapBE16( bmhd.h );
+            bmhd.x      = SDL_SwapBE16( bmhd.x );
+            bmhd.y      = SDL_SwapBE16( bmhd.y );
+            bmhd.tcolor = SDL_SwapBE16( bmhd.tcolor );
+            bmhd.Lpage  = SDL_SwapBE16( bmhd.Lpage );
+            bmhd.Hpage  = SDL_SwapBE16( bmhd.Hpage );
+        }
+
+        if ( !SDL_memcmp( id, "CMAP", 4 ) ) /* palette ( Color Map ) */
+        {
+            if ( !SDL_RWread( src, &colormap, size, 1 ) )
+            {
+                error="error reading CMAP chunk";
+                goto done;
+            }
+
+            bytesloaded = size;
+            nbcolors = size / 3;
+        }
+
+        if ( !SDL_memcmp( id, "CAMG", 4 ) ) /* Amiga ViewMode  */
+        {
+            Uint32 viewmodes;
+            if ( !SDL_RWread( src, &viewmodes, sizeof(viewmodes), 1 ) )
+            {
+                error="error reading CAMG chunk";
+                goto done;
+            }
+
+            bytesloaded = size;
+            viewmodes = SDL_SwapBE32( viewmodes );
+            if ( viewmodes & 0x0800 )
+                flagHAM = 1;
+            if ( viewmodes & 0x0080 )
+                flagEHB = 1;
+        }
+
+        if ( SDL_memcmp( id, "BODY", 4 ) )
+        {
+            if ( size & 1 ) ++size;     /* padding ! */
+            size -= bytesloaded;
+            /* skip the remaining bytes of this chunk */
+            if ( size ) SDL_RWseek( src, size, RW_SEEK_CUR );
+        }
+    }
+
+    /* compute some usefull values, based on the bitmap header */
+
+    width = ( bmhd.w + 15 ) & 0xFFFFFFF0;  /* Width in pixels modulo 16 */
+
+    bytesperline = ( ( bmhd.w + 15 ) / 16 ) * 2;
+
+    nbplanes = bmhd.planes;
+
+    if ( pbm )                         /* File format : 'Packed Bitmap' */
+    {
+        bytesperline *= 8;
+        nbplanes = 1;
+    }
+
+    stencil = (bmhd.mask & 1);   /* There is a mask ( 'stencil' ) */
+
+    /* Allocate memory for a temporary buffer ( used for
+           decompression/deinterleaving ) */
+
+    MiniBuf = (Uint8 *)SDL_malloc( bytesperline * (nbplanes + stencil) );
+    if ( MiniBuf == NULL )
+    {
+        error="no enough memory for temporary buffer";
+        goto done;
+    }
+
+    if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, (bmhd.planes==24 || flagHAM==1)?24:8, 0, 0, 0, 0 ) ) == NULL )
+       goto done;
+
+    if ( bmhd.mask & 2 )               /* There is a transparent color */
+        SDL_SetColorKey( Image, SDL_TRUE, bmhd.tcolor );
+
+    /* Update palette informations */
+
+    /* There is no palette in 24 bits ILBM file */
+    if ( nbcolors>0 && flagHAM==0 )
+    {
+        /* FIXME: Should this include the stencil? See comment below */
+        int nbrcolorsfinal = 1 << (nbplanes + stencil);
+        ptr = &colormap[0];
+
+        for ( i=0; i<nbcolors; i++ )
+        {
+            Image->format->palette->colors[i].r = *ptr++;
+            Image->format->palette->colors[i].g = *ptr++;
+            Image->format->palette->colors[i].b = *ptr++;
+        }
+
+        /* Amiga EHB mode (Extra-Half-Bright) */
+        /* 6 bitplanes mode with a 32 colors palette */
+        /* The 32 last colors are the same but divided by 2 */
+        /* Some Amiga pictures save 64 colors with 32 last wrong colors, */
+        /* they shouldn't !, and here we overwrite these 32 bad colors. */
+        if ( (nbcolors==32 || flagEHB ) && (1<<bmhd.planes)==64 )
+        {
+            nbcolors = 64;
+            ptr = &colormap[0];
+            for ( i=32; i<64; i++ )
+            {
+                Image->format->palette->colors[i].r = (*ptr++)/2;
+                Image->format->palette->colors[i].g = (*ptr++)/2;
+                Image->format->palette->colors[i].b = (*ptr++)/2;
+            }
+        }
+
+        /* If nbcolors < 2^nbplanes, repeat the colormap */
+        /* This happens when pictures have a stencil mask */
+        if ( nbrcolorsfinal > (1<<bmhd.planes) ) {
+            nbrcolorsfinal = (1<<bmhd.planes);
+        }
+        for ( i=nbcolors; i < (Uint32)nbrcolorsfinal; i++ )
+        {
+            Image->format->palette->colors[i].r = Image->format->palette->colors[i%nbcolors].r;
+            Image->format->palette->colors[i].g = Image->format->palette->colors[i%nbcolors].g;
+            Image->format->palette->colors[i].b = Image->format->palette->colors[i%nbcolors].b;
+        }
+        if ( !pbm )
+            Image->format->palette->ncolors = nbrcolorsfinal;
+    }
+
+    /* Get the bitmap */
+
+    for ( h=0; h < bmhd.h; h++ )
+    {
+        /* uncompress the datas of each planes */
+
+        for ( plane=0; plane < (nbplanes+stencil); plane++ )
+        {
+            ptr = MiniBuf + ( plane * bytesperline );
+
+            remainingbytes = bytesperline;
+
+            if ( bmhd.tcomp == 1 )      /* Datas are compressed */
+            {
+                do
+                {
+                    if ( !SDL_RWread( src, &count, 1, 1 ) )
+                    {
+                        error="error reading BODY chunk";
+                        goto done;
+                    }
+
+                    if ( count & 0x80 )
+                    {
+                        count ^= 0xFF;
+                        count += 2; /* now it */
+
+                        if ( ( count > remainingbytes ) || !SDL_RWread( src, &color, 1, 1 ) )
+                        {
+                            error="error reading BODY chunk";
+                            goto done;
+                        }
+						//ptrdiff_t diff = ptr - MiniBuf;
+                        //SDL_memset( ptr, color, count );
+                        memset( ptr, color, count );
+                    }
+                    else
+                    {
+                        ++count;
+
+                        if ( ( count > remainingbytes ) || !SDL_RWread( src, ptr, count, 1 ) )
+                        {
+                           error="error reading BODY chunk";
+                            goto done;
+                        }
+                    }
+
+                    ptr += count;
+                    remainingbytes -= count;
+
+                } while ( remainingbytes > 0 );
+            }
+            else
+            {
+                if ( !SDL_RWread( src, ptr, bytesperline, 1 ) )
+                {
+                    error="error reading BODY chunk";
+                    goto done;
+                }
+            }
+        }
+
+        /* One line has been read, store it ! */
+
+        ptr = (Uint8 *)Image->pixels;
+        if ( nbplanes==24 || flagHAM==1 )
+            ptr += h * width * 3;
+        else
+            ptr += h * width;
+
+        if ( pbm )                 /* File format : 'Packed Bitmap' */
+        {
+           SDL_memcpy( ptr, MiniBuf, width );
+        }
+        else        /* We have to un-interlace the bits ! */
+        {
+            if ( nbplanes!=24 && flagHAM==0 )
+            {
+                size = ( width + 7 ) / 8;
+
+                for ( i=0; i < size; i++ )
+                {
+                    memset( ptr, 0, 8 );
+
+                    for ( plane=0; plane < (nbplanes + stencil); plane++ )
+                    {
+                        color = *( MiniBuf + i + ( plane * bytesperline ) );
+                        msk = 0x80;
+
+                        for ( j=0; j<8; j++ )
+                        {
+                            if ( ( plane + j ) <= 7 ) ptr[j] |= (Uint8)( color & msk ) >> ( 7 - plane - j );
+                            else                        ptr[j] |= (Uint8)( color & msk ) << ( plane + j - 7 );
+
+                            msk >>= 1;
+                        }
+                    }
+                    ptr += 8;
+                }
+            }
+            else
+            {
+                Uint32 finalcolor = 0;
+                size = ( width + 7 ) / 8;
+                /* 24 bitplanes ILBM : R0...R7,G0...G7,B0...B7 */
+                /* or HAM (6 bitplanes) or HAM8 (8 bitplanes) modes */
+                for ( i=0; i<width; i=i+8 )
+                {
+                    Uint8 maskBit = 0x80;
+                    for ( j=0; j<8; j++ )
+                    {
+                        Uint32 pixelcolor = 0;
+                        Uint32 maskColor = 1;
+                        Uint8 dataBody;
+                        for ( plane=0; plane < nbplanes; plane++ )
+                        {
+                            dataBody = MiniBuf[ plane*size+i/8 ];
+                            if ( dataBody&maskBit )
+                                pixelcolor = pixelcolor | maskColor;
+                            maskColor = maskColor<<1;
+                        }
+                        /* HAM : 12 bits RGB image (4 bits per color component) */
+                        /* HAM8 : 18 bits RGB image (6 bits per color component) */
+                        if ( flagHAM )
+                        {
+                            switch( pixelcolor>>(nbplanes-2) )
+                            {
+                                case 0: /* take direct color from palette */
+                                    finalcolor = colormap[ pixelcolor*3 ] + (colormap[ pixelcolor*3+1 ]<<8) + (colormap[ pixelcolor*3+2 ]<<16);
+                                    break;
+                                case 1: /* modify only blue component */
+                                    finalcolor = finalcolor&0x00FFFF;
+                                    finalcolor = finalcolor | (pixelcolor<<(16+(10-nbplanes)));
+                                    break;
+                                case 2: /* modify only red component */
+                                    finalcolor = finalcolor&0xFFFF00;
+                                    finalcolor = finalcolor | pixelcolor<<(10-nbplanes);
+                                    break;
+                                case 3: /* modify only green component */
+                                    finalcolor = finalcolor&0xFF00FF;
+                                    finalcolor = finalcolor | (pixelcolor<<(8+(10-nbplanes)));
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            finalcolor = pixelcolor;
+                        }
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+                            *ptr++ = (Uint8)(finalcolor>>16);
+                            *ptr++ = (Uint8)(finalcolor>>8);
+                            *ptr++ = (Uint8)(finalcolor);
+#else
+                            *ptr++ = (Uint8)(finalcolor);
+                            *ptr++ = (Uint8)(finalcolor>>8);
+                            *ptr++ = (Uint8)(finalcolor>>16);
+#endif
+                        maskBit = maskBit>>1;
+                    }
+                }
+            }
+        }
+    }
+
+done:
+
+    if ( MiniBuf ) SDL_free( MiniBuf );
+
+    if ( error )
+    {
+        SDL_RWseek(src, start, RW_SEEK_SET);
+        if ( Image ) {
+            SDL_FreeSurface( Image );
+            Image = NULL;
+        }
+        IMG_SetError( error );
+    }
+
+    return( Image );
+}
+
+// end of code taken from IMG_lbm.c from SDL_image 2
+
 Image *Image::loadImage(const char *filename) {
 #ifdef TIMING
 	int time_s = clock();
 #endif
-	LOG("Image::loadImage(\"%s\")\n",filename);
+	//LOG("Image::loadImage(\"%s\")\n",filename); // disabled logging to improve performance on startup
 	SDL_RWops *src = SDL_RWFromFile(filename, "rb");
 	if( src == NULL ) {
 		LOG("SDL_RWFromFile failed: %s\n", SDL_GetError());
 		return NULL;
 	}
 	Image *image = new Image();
-	image->surface = IMG_Load_RW(src, 1);
+#if SDL_MAJOR_VERSION == 1
+#else
+	// workaround IMG_Load_RW crashes on SDL_memset when loading IFF files?!
+	if( strstr(filename, ".") == NULL ) {
+		LOG("load as IFF, using local function\n");
+		image->surface = my_IMG_LoadLBM_RW(src);
+	}
+#endif
+	if( image->surface == NULL ) {
+		image->surface = IMG_Load_RW(src, 1);
+	}
 	if( image->surface == NULL ) {
 		LOG("IMG_Load_RW failed: %s\n", IMG_GetError());
 		delete image;
@@ -782,7 +1261,6 @@ Image *Image::loadImage(const char *filename) {
 
 	return image;
 }
-
 
 Image *Image::createBlankImage(int width,int height, int bpp) {
 	Uint32 rmask, gmask, bmask, amask;
@@ -899,7 +1377,7 @@ void Image::setGraphicsOutput(SDL_Renderer *sdlRenderer) {
 }
 #endif
 
-void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justify,bool mask) {
+void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justify) {
 	char buffer[16] = "";
 	sprintf(buffer,"%d",number);
 	int len = strlen(buffer);
@@ -913,16 +1391,16 @@ void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justif
 		sx = x - w * len;
 
 	for(int i=0;i<len;i++) {
-		images[ buffer[i] - '0' ]->draw(sx, y, mask);
+		images[ buffer[i] - '0' ]->draw(sx, y);
 		sx += w;
 	}
 }
 
-void Image::write(int x,int y,Image *images[26],const char *text,Justify justify,bool mask) {
-	writeMixedCase(x, y, images, images, NULL, text, justify, mask);
+void Image::write(int x,int y,Image *images[26],const char *text,Justify justify) {
+	writeMixedCase(x, y, images, images, NULL, text, justify);
 }
 
-void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify,bool mask) {
+void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify) {
 	int len = strlen(text);
 	int n_lines = 0;
 	int max_wid = 0;
@@ -958,14 +1436,14 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
 		else if( ch >= '0' && ch <= '9' ) {
 			ASSERT( numbers != NULL );
 			int indx = ch - '0';
-			numbers[indx]->draw(cx, y + l_h - n_h, mask);
+			numbers[indx]->draw(cx, y + l_h - n_h);
 		}
 		else if( isupper( ch ) ) {
 			int indx = ch - 'A';
-			large[indx]->draw(cx, y, mask);
+			large[indx]->draw(cx, y);
 		}
 		else {
-			little[ ch - 'a' ]->draw(cx, y + l_h - s_h, mask);
+			little[ ch - 'a' ]->draw(cx, y + l_h - s_h);
 		}
 		cx += w;
 	}

@@ -31,6 +31,7 @@ typedef FSOUND_SAMPLE Sample;*/
 
 extern bool onemousebutton;
 extern bool mobile_ui;
+bool oneMouseButtonMode();
 
 extern bool using_old_gfx;
 
@@ -279,6 +280,8 @@ extern QSettings *qt_settings;
 extern const QString play_music_key_c;
 #endif
 
+void savePrefs();
+
 //#include "sector.h"
 
 class Map {
@@ -366,6 +369,14 @@ bool validDifficulty(DifficultyLevel difficulty);
 bool validPlayer(int player);
 void addTextEffect(TextEffect *effect);
 
+
+#if defined(__ANDROID__)
+
+// JNI for Android
+
+void launchUrl(string url);
+
+#endif
 
 // game constants
 

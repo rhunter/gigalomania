@@ -20,9 +20,12 @@ namespace Gigalomania {
 		SDL_Window *sdlWindow;
 		SDL_Renderer *sdlRenderer;
 		int width, height; // this stores the logical size rather than the window size
-
-		void convertWindowToLogical(int *m_x, int *m_y);
 #endif
+		int m_pos_x;
+		int m_pos_y;
+		bool m_down_left;
+		bool m_down_middle;
+		bool m_down_right;
 
 	public:
 		Screen();
@@ -42,10 +45,25 @@ namespace Gigalomania {
 		int getHeight() const;
 		void fillRect(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b);
 #if SDL_MAJOR_VERSION == 1
-		// not supported with SDL 1.2 (as SDL_FillRect can't do blending)!
+		// not supported with SDL 1.2
 #else
 		void fillRectWithAlpha(short x, short y, short w, short h, unsigned char r, unsigned char g, unsigned char b, unsigned char alpha);
+		void convertWindowToLogical(int *m_x, int *m_y);
+		void getWindowSize(int *window_width, int *window_height);
 #endif
+		void setMousePos(int x, int y) {
+			this->m_pos_x = x;
+			this->m_pos_y = y;
+		}
+		void setMouseLeft(bool down) {
+			this->m_down_left = down;
+		}
+		void setMouseMiddle(bool down) {
+			this->m_down_middle = down;
+		}
+		void setMouseRight(bool down) {
+			this->m_down_right = down;
+		}
 		void getMouseCoords(int *m_x, int *m_y);
 		bool getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, bool *m_right);
 	};
@@ -53,6 +71,7 @@ namespace Gigalomania {
 
 class Application {
 	bool quit;
+	bool blank_mouse;
 
 public:
 	Application();
@@ -65,5 +84,8 @@ public:
 	void runMainLoop();
 	void setQuit() {
 		quit = true;
+	}
+	bool isBlankMouse() const {
+		return this->blank_mouse;
 	}
 };

@@ -40,7 +40,7 @@ namespace Gigalomania {
 		virtual ~Image();
 		virtual const char *getClass() const { return "CLASS_IMAGE"; }
 
-		void draw(int x, int y,bool mask) const;
+		void draw(int x, int y) const;
 		void drawWithAlpha(int x, int y, unsigned char alpha) const;
 		int getWidth() const;
 		int getHeight() const;
@@ -50,7 +50,7 @@ namespace Gigalomania {
 		int getScaledHeight() const {
 			return (int)(this->getHeight() / scale_y);
 		}
-		void convertToDisplayFormat();
+		bool convertToDisplayFormat();
 		bool copyPalette(const Image *image);
 		float getScaleX() const {
 			return scale_x;
@@ -105,9 +105,9 @@ namespace Gigalomania {
 			JUSTIFY_CENTRE = 1,
 			JUSTIFY_RIGHT = 2,
 		};
-		static void writeNumbers(int x,int y,Image *images[10],int number,Justify justify,bool mask);
-		static void write(int x,int y,Image *images[26],const char *text,Justify justify,bool mask);
-		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify,bool mask);
+		static void writeNumbers(int x,int y,Image *images[10],int number,Justify justify);
+		static void write(int x,int y,Image *images[26],const char *text,Justify justify);
+		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify);
 
 		// SDL specific
 #if SDL_MAJOR_VERSION == 1

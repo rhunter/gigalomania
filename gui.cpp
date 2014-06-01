@@ -9,6 +9,11 @@
 #include <sstream>
 using std::stringstream;
 
+#ifdef _WIN32
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 #include "gui.h"
 #include "sector.h"
 #include "player.h"
@@ -35,7 +40,7 @@ const int build_step_y_c = 40;
 
 void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, PanelPage *caller_button, bool m_left, bool m_middle, bool m_right, bool click) {
 	// wrapper function to handle one-mouse-button UI support
-	if( onemousebutton && click) {
+	if( oneMouseButtonMode() && click) {
 		LOG("open onemousebutton panel\n");
 		OneMouseButtonPanel *oneMouseButtonPanel = new OneMouseButtonPanel(clickFunc, data, arg, caller_button);
 		//panel->addToPanel(panel->getPage(), oneMouseButtonPanel);
@@ -45,7 +50,7 @@ void processClick(ClickFunc *clickFunc, PanelPage *panel, void *data, int arg, P
 			addTextEffect(new TextEffect(caller_button->getInfoLMB(), 160, caller_button->getTop(), 3000));
 		}
 	}
-	else if( !onemousebutton && !click ) {
+	else if( !oneMouseButtonMode() && !click ) {
 		//buttonNMenClick(panel, m_left, m_middle, m_right);
 		//(*clickFunc)(panel, arg, m_left, m_middle, m_right);
 		(*clickFunc)(data, arg, m_left, m_middle, m_right);
@@ -179,7 +184,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_play = new Button((int)(mx - 5.5*fw), cy, "PLAY ISLAND", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_play);
-#ifdef USING_QT
+#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
     this->button_help = new Button((int)(mx - 5.5*fw), cy, "ONLINE HELP", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_help);
@@ -196,6 +201,9 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     //this->button_nmen = new PanelPage(mx - 12, 154, 24, 12);
     this->button_nmen = new PanelPage(mx - 12, 154, 24, 32);
     this->addToPanel(STATE_CHOOSEMEN, button_nmen);
+
+	this->button_cancel = new Button((int)(mx - 10.5*fw), 210, "CHOOSE ANOTHER ISLAND", letters_large);
+    this->addToPanel(STATE_CHOOSEMEN, button_cancel);
 
     cy = start_y;
     step_y = 26;
@@ -355,9 +363,9 @@ void ChooseMenPanel::draw() {
 
 	if( this->getPage() == STATE_CHOOSEMEN ) {
 		// draw this after the popups, so we can see it...
-		men[start_epoch]->draw( this->button_nmen->getLeft() + 4, this->button_nmen->getTop() + 16, true);
-		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 2, numbers_white, this->n_men,Image::JUSTIFY_CENTRE, true);
-		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 36, numbers_white, getMenAvailable() - this->n_men,Image::JUSTIFY_CENTRE, true);
+		men[start_epoch]->draw( this->button_nmen->getLeft() + 4, this->button_nmen->getTop() + 16);
+		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 2, numbers_white, this->n_men,Image::JUSTIFY_CENTRE);
+		Image::writeNumbers( this->button_nmen->getXCentre(), this->button_nmen->getTop() + 36, numbers_white, getMenAvailable() - this->n_men,Image::JUSTIFY_CENTRE);
 	}
 
     if( this->gamestate->hasConfirmWindow() ) {
@@ -403,7 +411,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	MultiPanel::input(m_x, m_y, m_left, m_middle, m_right, click);
 
 	// update from options
-	if( button_music != NULL ) {
+	/*if( button_music != NULL ) {
 		play_music = button_music->getActive() == 0;
 #ifdef USING_QT
                 // also save
@@ -413,7 +421,7 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
     //onemousebutton = this->onemousebuttonOn();
 	if( button_onemousebutton != NULL ) {
 		onemousebutton = button_onemousebutton->getActive() == 0;
-	}
+	}*/
 
 	if( this->hasModal() ) {
 		return;
@@ -453,13 +461,20 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
             setupPlayers();
             gamestate->closeConfirmWindow();
         }
-#ifdef USING_QT
+#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
         else if( m_left && click && this->button_help->mouseOver(m_x, m_y) ) {
+			LOG("clicked online help\n");
             done = true;
             registerClick();
             gamestate->closeConfirmWindow();
-            qDebug("help");
-            QDesktopServices::openUrl(QUrl("http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html"));
+			char help_url[] = "http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html";
+#if defined(USING_QT)
+            QDesktopServices::openUrl(QUrl(help_url));
+#elif defined(_WIN32)
+			ShellExecute(0, 0, help_url, 0, 0 , SW_SHOW );
+#elif defined(__ANDROID__)
+			launchUrl(help_url);
+#endif
         }
 #endif
         else if( m_left && click && this->button_quit != NULL && this->button_quit->mouseOver(m_x, m_y) ) {
@@ -471,23 +486,29 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	else if( this->c_page == STATE_CHOOSEMEN ) {
 		if( ( m_left || m_right ) && this->button_nmen->mouseOver(m_x, m_y) ) {
             done = true;
-            /*if( onemousebutton ) {
-				LOG("open onemousebutton panel\n");
-				OneMouseButtonPanel *oneMouseButtonPanel = new OneMouseButtonPanel(buttonNMenClick, this, button_nmen);
-				this->addToPanel(this->c_page, oneMouseButtonPanel);
-				//return;
-			}
-			else {
-				buttonNMenClick(this, m_left, m_middle, m_right);
-			}*/
-			//processClick(buttonNMenClick, this, 0, button_nmen, m_left, m_middle, m_right);
 			processClick(buttonNMenClick, this->get(this->c_page), this, 0, button_nmen, m_left, m_middle, m_right, click);
+		}
+		else if( ( m_left || m_right ) && this->button_cancel->mouseOver(m_x, m_y) ) {
+            done = true;
+			gamestate->requestQuit();
 		}
 	}
 	else if( this->c_page == STATE_OPTIONS ) {
 		if( m_left && click && this->button_continue->mouseOver(m_x, m_y) ) {
             done = true;
-            registerClick();
+			if( button_music != NULL ) {
+				play_music = button_music->getActive() == 0;
+#ifdef USING_QT
+				// also save
+				qt_settings->setValue(play_music_key_c, play_music ? 1 : 0);
+#endif
+			}
+			if( button_onemousebutton != NULL ) {
+				onemousebutton = button_onemousebutton->getActive() == 0;
+			}
+			savePrefs();
+
+			registerClick();
             this->c_page = STATE_CHOOSEISLAND;
 		}
 		else if( m_left && click && this->button_new != NULL && this->button_new->mouseOver(m_x, m_y) ) {
@@ -1191,45 +1212,45 @@ void GamePanel::setMouseState(MouseState mousestate) {
 void GamePanel::draw() {
 	if( this->c_page == STATE_SECTORCONTROL ) {
 		//Image::write(offset_panel_x_c + 8, offset_panel_y_c + 6, letters_small, map->getName(), Image::JUSTIFY_LEFT, true, scale_width, scale_height);
-		Image::writeMixedCase(offset_panel_x_c + 8, offset_panel_y_c - 1, letters_large, letters_small, NULL, getMap()->getName(), Image::JUSTIFY_LEFT, true);
+		Image::writeMixedCase(offset_panel_x_c + 8, offset_panel_y_c - 1, letters_large, letters_small, NULL, getMap()->getName(), Image::JUSTIFY_LEFT);
 		if( start_epoch != end_epoch_c ) {
 			int year = epoch_dates[gamestate->getCurrentSector()->getEpoch()];
 			bool shiny = gamestate->getCurrentSector()->getEpoch() == n_epochs_c-1;
-			Image::writeNumbers(offset_panel_x_c + 96, offset_panel_y_c, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT,true);
+			Image::writeNumbers(offset_panel_x_c + 96, offset_panel_y_c, shiny ? numbers_largeshiny : numbers_largegrey, abs(year),Image::JUSTIFY_RIGHT);
 			Image *era = ( year < 0 ) ? icon_bc :
 				shiny ? icon_ad_shiny : icon_ad;
-			era->draw(offset_panel_x_c + 88, offset_panel_y_c + 7, true);
+			era->draw(offset_panel_x_c + 88, offset_panel_y_c + 7);
 		}
 
 		if( gamestate->viewingActiveClientSector() ) {
 			const int xpos = 8, ypos = 18;
 			//const int xpos = 40, ypos = 40;
-			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + xpos, offset_panel_y_c + ypos, true);
-			Image::writeNumbers(offset_panel_x_c + xpos + 8, offset_panel_y_c + ypos + 18, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(),Image::JUSTIFY_CENTRE, true);
+			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + xpos, offset_panel_y_c + ypos);
+			Image::writeNumbers(offset_panel_x_c + xpos + 8, offset_panel_y_c + ypos + 18, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(),Image::JUSTIFY_CENTRE);
 			if( gamestate->getCurrentSector()->getCurrentDesign() != NULL ) {
-				Image::writeNumbers( this->button_ndesigners->getXCentre(), this->button_ndesigners->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_ndesigners->getXCentre(), this->button_ndesigners->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE);
 			}
 			for(int i=0;i<4;i++) {
 				Id element = (Id)this->element_index[i];
 				if( this->button_nminers[i]->isEnabled() ) {
 					ASSERT_ELEMENT_ID( this->element_index[i] );
 					int n_miners = gamestate->getCurrentSector()->getMiners( element );
-					Image::writeNumbers( this->button_nminers[i]->getXCentre(), this->button_nminers[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE,true);
+					Image::writeNumbers( this->button_nminers[i]->getXCentre(), this->button_nminers[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE);
 				}
 			}
 			if( gamestate->getCurrentSector()->getCurrentManufacture() != NULL ) {
-				Image::writeNumbers( this->button_nworkers->getXCentre(), this->button_nworkers->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nworkers->getXCentre(), this->button_nworkers->getTop() + 2, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE);
 			}
 			for(int i=0;i<N_BUILDINGS;i++) {
 				if( this->button_nbuilders[i] != NULL && this->button_nbuilders[i]->isEnabled() ) {
-					Image::writeNumbers( this->button_nbuilders[i]->getXCentre(), this->button_nbuilders[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
+					Image::writeNumbers( this->button_nbuilders[i]->getXCentre(), this->button_nbuilders[i]->getBottom() - 8, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE);
 				}
 			}
 		}
 		else if( gamestate->viewingAnyClientSector() ) {
 			ASSERT( gamestate->getCurrentSector()->isShutdown() );
-			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 40, offset_panel_y_c + 40, true);
-			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 58, numbers_grey, gamestate->getCurrentSector()->getPopulation(),Image::JUSTIFY_CENTRE, true);
+			men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 40, offset_panel_y_c + 40);
+			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 58, numbers_grey, gamestate->getCurrentSector()->getPopulation(),Image::JUSTIFY_CENTRE);
 		}
 		else if( gamestate->getCurrentSector()->getPlayer() == -1 ) {
 			int n_players_in_sector = 0;
@@ -1244,35 +1265,35 @@ void GamePanel::draw() {
 				int halfdays = 0, hours = 0;
 				gamestate->getCurrentSector()->buildingTowerTimeLeft(player_in_sector, &halfdays, &hours);
 				int clock_index = hours + 1;
-				icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16, true);
-				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+				icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16);
+				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 			}
 		}
 	}
 	else if( this->c_page == STATE_DESIGN ) {
 		this->button_designers->setImage( men[gamestate->getCurrentSector()->getBuildingEpoch()] );
 		if( gamestate->getCurrentSector()->getCurrentDesign() == NULL ) {
-			dash_grey->draw(offset_panel_x_c + 45, offset_panel_y_c + 36, true);
+			dash_grey->draw(offset_panel_x_c + 45, offset_panel_y_c + 36);
 		}
 		else {
 			Invention *current_invention = gamestate->getCurrentSector()->getCurrentDesign()->getInvention();
-			current_invention->getImage()->draw(offset_panel_x_c + 8, offset_panel_y_c + 16, true);
-			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 34, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE,true);
+			current_invention->getImage()->draw(offset_panel_x_c + 8, offset_panel_y_c + 16);
+			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + 34, numbers_white, gamestate->getCurrentSector()->getDesigners(),Image::JUSTIFY_CENTRE);
 			if( gamestate->getCurrentSector()->getDesigners() > 0 ) {
 				int halfdays = 0, hours = 0;
 				gamestate->getCurrentSector()->inventionTimeLeft(&halfdays, &hours);
 				int clock_index = hours + 1;
-				icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16, true);
-				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+				icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16);
+				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34, numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 			}
 			else {
-				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16, true);
-				icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + 32, true);
+				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16);
+				icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + 32);
 			}
 		}
-		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + 44, true);
-		icon_defence->draw(offset_panel_x_c + 40, offset_panel_y_c + 44, true);
-		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + 44, true);
+		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + 44);
+		icon_defence->draw(offset_panel_x_c + 40, offset_panel_y_c + 44);
+		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + 44);
 	}
 	else if( this->c_page == STATE_SHIELD ) {
 		for(int i=0;i<N_BUILDINGS;i++) {
@@ -1291,9 +1312,9 @@ void GamePanel::draw() {
 				short y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
 				short w = (short)ceil(( scale_width * (max_health - health) * width ) / (float)max_health);
 				short h = (short)(scale_height * 5);
-				building_health->draw(offx, (int)(y/scale_height), true);
+				building_health->draw(offx, (int)(y/scale_height));
 				screen->fillRect(x, y, w, h, 0, 0, 0);
-				panel_building[i]->draw(offset_panel_x_c + 8, offset_panel_y_c + 64 - 5 + 16 * i, true);
+				panel_building[i]->draw(offset_panel_x_c + 8, offset_panel_y_c + 64 - 5 + 16 * i);
 			}
 		}
 
@@ -1302,57 +1323,57 @@ void GamePanel::draw() {
 				int n_store = gamestate->getCurrentSector()->getStoredShields(i);
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::SHIELD, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE, true);
+						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE, true);
+						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
-					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46, true);
+					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46);
 				}
 			}
 		}
 	}
 	else if( this->c_page == STATE_DEFENCE ) {
 		//unarmed_man->draw(offset_panel_x_c + 8, offset_panel_y_c + 24, true);
-		men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 8, offset_panel_y_c + 24, true);
-		Image::writeNumbers(offset_panel_x_c + 16, offset_panel_y_c + 42, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE, true);
+		men[gamestate->getCurrentSector()->getBuildingEpoch()]->draw(offset_panel_x_c + 8, offset_panel_y_c + 24);
+		Image::writeNumbers(offset_panel_x_c + 16, offset_panel_y_c + 42, numbers_grey, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE);
 		for(int i=0;i<n_sub_epochs;i++) {
 			if( this->button_deploy_defences[i]->isEnabled() ) {
 				int n_store = gamestate->getCurrentSector()->getStoredDefenders(start_epoch+i);
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::DEFENCE, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE, true);
+						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE, true);
+						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
-					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46, true);
+					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46);
 				}
 			}
 		}
 	}
 	else if( this->c_page == STATE_ATTACK ) {
-		Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8, offset_panel_y_c + 42, numbers_yellow, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE, true);
+		Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8, offset_panel_y_c + 42, numbers_yellow, gamestate->getCurrentSector()->getSparePopulation(), Image::JUSTIFY_CENTRE);
 		for(int i=0;i<n_sub_epochs;i++) {
 			if( this->button_deploy_attackers[i]->isEnabled() ) {
 				int n_store = gamestate->getCurrentSector()->getStoredArmy()->getSoldiers(start_epoch+i);
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::WEAPON, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, letters_small, "OK", Image::JUSTIFY_CENTRE, true);
+						Image::write(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, numbers_yellow, n_store, Image::JUSTIFY_CENTRE, true);
+						Image::writeNumbers(offset_panel_x_c + offset_attack_x_c + 8 + space_attack_x_c*i, offset_panel_y_c + 74, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
-					dash_grey->draw(offset_panel_x_c + offset_attack_x_c + 4 + space_attack_x_c*i, offset_panel_y_c + 78, true);
+					dash_grey->draw(offset_panel_x_c + offset_attack_x_c + 4 + space_attack_x_c*i, offset_panel_y_c + 78);
 				}
 			}
 		}
 
 		int n_army = gamestate->getCurrentSector()->getAssembledArmy()->getTotal();
 		if( n_army == 0 )
-			dash_grey->draw(offset_panel_x_c + 84, offset_panel_y_c + 116, true);
+			dash_grey->draw(offset_panel_x_c + 84, offset_panel_y_c + 116);
 		else
-			Image::writeNumbers(offset_panel_x_c + 88, offset_panel_y_c + 116, numbers_orange, n_army, Image::JUSTIFY_CENTRE, true);
+			Image::writeNumbers(offset_panel_x_c + 88, offset_panel_y_c + 116, numbers_orange, n_army, Image::JUSTIFY_CENTRE);
 	}
 	else if( this->c_page == STATE_ELEMENTSTOCKS ) {
 		for(int i=0;i<4;i++) {
@@ -1366,15 +1387,15 @@ void GamePanel::draw() {
 			//int ypos = offset_panel_y_c + 38 + 28 * i;
 			int ypos = offset_panel_y_c + 40 + 28 * i;
 			if( n_elements > 0 ) {
-				Image::writeNumbers(offset_panel_x_c + 72, ypos, numbers_blue, n_elements, Image::JUSTIFY_LEFT, true);
+				Image::writeNumbers(offset_panel_x_c + 72, ypos, numbers_blue, n_elements, Image::JUSTIFY_LEFT);
 				off += 8 * n_digits(n_elements);
 			}
 			if( fraction == 1 ) {
-				numbers_half->draw(offset_panel_x_c + 72 + off, ypos, true);
+				numbers_half->draw(offset_panel_x_c + 72 + off, ypos);
 			}
 			if( this->button_nminers2[i]->isEnabled() ) {
 				int n_miners = gamestate->getCurrentSector()->getMiners( element );
-				Image::writeNumbers( this->button_nminers2[i]->getXCentre(), this->button_nminers2[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nminers2[i]->getXCentre(), this->button_nminers2[i]->getTop() + 2, numbers_white, n_miners,Image::JUSTIFY_CENTRE);
 			}
 		}
 	}
@@ -1382,25 +1403,25 @@ void GamePanel::draw() {
 		for(int i=0;i<N_BUILDINGS;i++)
 		{
 			if( this->button_nbuilders2[i] != NULL && this->button_nbuilders2[i]->isEnabled() ) {
-				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getTop() + 20, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers( this->button_nbuilders2[i]->getXCentre(), this->button_nbuilders2[i]->getTop() + 20, numbers_white, gamestate->getCurrentSector()->getBuilders((Type)i),Image::JUSTIFY_CENTRE);
 				if( gamestate->getCurrentSector()->getBuilders((Type)i) > 0 ) {
 					int halfdays = 0, hours = 0;
 					gamestate->getCurrentSector()->buildingTimeLeft((Type)i, &halfdays, &hours);
 					int clock_index = hours + 1;
-					icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16 + build_step_y_c*(i-1), true);
-					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34 + build_step_y_c*(i-1), numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+					icon_clocks[ clock_index ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16 + build_step_y_c*(i-1));
+					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + 34 + build_step_y_c*(i-1), numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 				}
 				else {
-					icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16 + build_step_y_c*(i-1), true);
-					icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + 32 + build_step_y_c*(i-1), true);
+					icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + 16 + build_step_y_c*(i-1));
+					icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + 32 + build_step_y_c*(i-1));
 				}
 			}
 		}
 	}
 	else if( this->c_page == STATE_KNOWNDESIGNS ) {
-		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + 24, true);
-		icon_defence->draw(offset_panel_x_c + 40, offset_panel_y_c + 24, true);
-		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + 24, true);
+		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + 24);
+		icon_defence->draw(offset_panel_x_c + 40, offset_panel_y_c + 24);
+		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + 24);
 	}
 	else if( this->c_page == STATE_DESIGNINFO ) {
 		ASSERT(this->designinfo != NULL);
@@ -1412,20 +1433,20 @@ void GamePanel::draw() {
 			if( cost > 0 ) {
 				int whole = cost / element_multiplier_c;
 				int frac = cost % element_multiplier_c;
-				icon_elements[i]->draw(offset_panel_x_c + 16, offset_panel_y_c + 32 + 18 * cnt, true);
+				icon_elements[i]->draw(offset_panel_x_c + 16, offset_panel_y_c + 32 + 18 * cnt);
 				int off = 0;
 				if( whole > 0 ) {
-					Image::writeNumbers(offset_panel_x_c + 36, offset_panel_y_c + 34 + 18 * cnt, numbers_blue, whole, Image::JUSTIFY_LEFT, true);
+					Image::writeNumbers(offset_panel_x_c + 36, offset_panel_y_c + 34 + 18 * cnt, numbers_blue, whole, Image::JUSTIFY_LEFT);
 					off += 8 * n_digits(whole);
 				}
 				if( frac == 1 ) {
-					numbers_half->draw(offset_panel_x_c + 36 + off, offset_panel_y_c + 34 + 18 * cnt, true);
+					numbers_half->draw(offset_panel_x_c + 36 + off, offset_panel_y_c + 34 + 18 * cnt);
 				}
 				cnt++;
 			}
 		}
 		if( design->isErgonomicallyTerrific() ) {
-			icon_ergo->draw(offset_panel_x_c + 64, offset_panel_y_c + 32, true);
+			icon_ergo->draw(offset_panel_x_c + 64, offset_panel_y_c + 32);
 		}
 	}
 	else if( this->c_page == STATE_FACTORY ) {
@@ -1437,22 +1458,22 @@ void GamePanel::draw() {
 		const int y2 = 66;
 		this->button_workers->setImage( men[gamestate->getCurrentSector()->getBuildingEpoch()] );
 		if( gamestate->getCurrentSector()->getCurrentManufacture() == NULL ) {
-			dash_grey->draw(offset_panel_x_c + 45, offset_panel_y_c + y0 + 20, true);
+			dash_grey->draw(offset_panel_x_c + 45, offset_panel_y_c + y0 + 20);
 			this->button_famount->setImage(NULL);
 		}
 		else {
 			Invention *current_manufacture = gamestate->getCurrentSector()->getCurrentManufacture()->getInvention();
 			this->button_famount->setImage( current_manufacture->getImage() );
 			//current_manufacture->getImage()->draw(offset_panel_x_c + 8, offset_panel_y_c + 16, true);
-			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + y0 + 20, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE,true);
+			Image::writeNumbers(offset_panel_x_c + 48, offset_panel_y_c + y0 + 20, numbers_white, gamestate->getCurrentSector()->getWorkers(),Image::JUSTIFY_CENTRE);
 			int famount = gamestate->getCurrentSector()->getFAmount();
 			int famount_x = offset_panel_x_c + 48;
 			int famount_y = offset_panel_y_c + y1 + 18;
 			if( famount == infinity_c ) {
-				icon_infinity->draw(famount_x - icon_infinity->getScaledWidth()/2, famount_y - 2, true);
+				icon_infinity->draw(famount_x - icon_infinity->getScaledWidth()/2, famount_y - 2);
 			}
 			else {
-				Image::writeNumbers(famount_x, famount_y, numbers_white, famount,Image::JUSTIFY_CENTRE,true);
+				Image::writeNumbers(famount_x, famount_y, numbers_white, famount,Image::JUSTIFY_CENTRE);
 			}
 
 			if( gamestate->getCurrentSector()->getWorkers() > 0 ) {
@@ -1460,12 +1481,12 @@ void GamePanel::draw() {
 				int thalfdays = 0, thours = 0;
 				gamestate->getCurrentSector()->manufactureTimeLeft(&halfdays, &hours);
 				gamestate->getCurrentSector()->manufactureTotalTime(&thalfdays, &thours);
-				icon_clocks[ hours+1 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y0, true);
-				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y0 + 18, numbers_white, halfdays,Image::JUSTIFY_CENTRE,true);
+				icon_clocks[ hours+1 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y0);
+				Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y0 + 18, numbers_white, halfdays,Image::JUSTIFY_CENTRE);
 				int amount = gamestate->getCurrentSector()->getFAmount();
 				if( amount == infinity_c ) {
-					icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1, true);
-					icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + y1 + 16, true);
+					icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1);
+					icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + y1 + 16);
 				}
 				else {
 					thours *= (amount-1);
@@ -1474,20 +1495,20 @@ void GamePanel::draw() {
 					thalfdays += halfdays;
 					thalfdays += thours/12;
 					thours = thours % 12;
-					icon_clocks[ thours+1 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1, true);
-					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y1 + 18, numbers_white, thalfdays, Image::JUSTIFY_CENTRE, true);
+					icon_clocks[ thours+1 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1);
+					Image::writeNumbers(offset_panel_x_c + 80, offset_panel_y_c + y1 + 18, numbers_white, thalfdays, Image::JUSTIFY_CENTRE);
 				}
 			}
 			else {
-				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y0, true);
-				icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + y0 + 16, true);
-				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1, true);
-				icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + y1 + 16, true);
+				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y0);
+				icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + y0 + 16);
+				icon_clocks[ 0 ]->draw(offset_panel_x_c + 72, offset_panel_y_c + y1);
+				icon_infinity->draw(offset_panel_x_c + 74, offset_panel_y_c + y1 + 16);
 			}
 		}
-		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + y2, true);
-		icon_defence->draw(offset_panel_x_c + 40, offset_panel_y_c + y2, true);
-		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + y2, true);
+		icon_shield->draw(offset_panel_x_c + 8, offset_panel_y_c + y2);
+		icon_defence->draw(offset_panel_x_c + 40, offset_panel_y_c + y2);
+		icon_weapon->draw(offset_panel_x_c + 72, offset_panel_y_c + y2);
 	}
 
 	MultiPanel::draw();
@@ -1716,7 +1737,7 @@ x		}*/
             else if( this->button_nminers[i]->mouseOver(m_x,m_y) ) {
                 done = true;
                 // if one mouse button, only allow changing via the sub-menu (otherwise problems with left/right icons going off screen)
-                if( onemousebutton ) {
+                if( oneMouseButtonMode() ) {
 					if( click ) {
 	                    registerClick();
 						addTextEffect(new TextEffect(help_elementstocks_c, help_x_c, help_y_c, help_delay_c));
@@ -1734,7 +1755,7 @@ x		}*/
             if( button_nbuilders[i] != NULL && this->button_nbuilders[i]->mouseOver(m_x,m_y) ) {
                 done = true;
                 // if one mouse button, only allow changing via the sub-menu (otherwise problems with left/right icons going off screen)
-                if( onemousebutton ) {
+                if( oneMouseButtonMode() ) {
 					if( click ) {
 	                    registerClick();
 						addTextEffect(new TextEffect(help_build_c, help_x_c, help_y_c, help_delay_c));

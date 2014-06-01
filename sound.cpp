@@ -68,7 +68,7 @@ void freeSound() {
 }
 
 Sample *Sample::loadSample(const char *filename, bool iff) {
-	LOG("loadSample %s\n", filename);
+	//LOG("loadSample %s\n", filename); // disabled logging to improve performance on startup
 	Mix_Chunk *chunk = NULL;
 	if( have_sound ) {
 		chunk = Mix_LoadWAV(filename);

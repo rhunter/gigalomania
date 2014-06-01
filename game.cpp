@@ -61,6 +61,10 @@ bool onemousebutton = true;
 bool onemousebutton = false;
 #endif
 
+bool oneMouseButtonMode() {
+	return onemousebutton || application->isBlankMouse();
+}
+
 // mobile_ui means no mouse pointer
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
 bool mobile_ui = true;
@@ -550,20 +554,20 @@ void Map::draw(int offset_x, int offset_y) const {
 				int coast_map_x = offset_x - map_sq_coast_offset + 16 * x;
 				int coast_map_y = offset_y - map_sq_coast_offset + 16 * y;
                 //LOG("draw at: %d, %d : %d, %d\n", x, y, map_sq[colour][icon]->getWidth(), map_sq[colour][icon]->getHeight());
-                map_sq[colour][icon]->draw(map_x, map_y, true);
+                map_sq[colour][icon]->draw(map_x, map_y);
 				/*int coast = 15 - icon;
 				if( coast > 0 && coast_icons[coast-1] != NULL ) {
 				coast_icons[coast-1]->draw(map_x, map_y, true);
 				}*/
 				//LOG(">>> %d %d %d\n", icon, icon & 1, 4 & 1);
 				if( (icon & 1) == 0 && coast_icons[0] != NULL )
-					coast_icons[0]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[0]->draw(coast_map_x, coast_map_y);
 				if( (icon & 2) == 0 && coast_icons[1] != NULL )
-					coast_icons[1]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[1]->draw(coast_map_x, coast_map_y);
 				if( (icon & 4) == 0 && coast_icons[3] != NULL )
-					coast_icons[3]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[3]->draw(coast_map_x, coast_map_y);
 				if( (icon & 8) == 0 && coast_icons[7] != NULL )
-					coast_icons[7]->draw(coast_map_x, coast_map_y, true);
+					coast_icons[7]->draw(coast_map_x, coast_map_y);
 			}
 		}
 	}
@@ -642,6 +646,9 @@ void newGame() {
 
 void setClientPlayer(int set_client_player) {
 	::human_player = set_client_player;
+	if( gamestate != NULL ) {
+		gamestate->setClientPlayer(set_client_player);
+	}
 }
 
 void nextEpoch() {
@@ -776,7 +783,7 @@ bool loadGame(int slot) {
 	bool temp_completed[max_islands_per_epoch_c];
 	if( loadGameInfo(&temp_difficulty, &temp_player, &temp_n_men_store, temp_suspended, &temp_start_epoch, temp_completed, slot) ) {
 		difficulty_level = temp_difficulty;
-		human_player = temp_player;
+		setClientPlayer(temp_player);
 		n_men_store = temp_n_men_store;
 		for(int i=0;i<n_players_c;i++)
 			n_suspended[i] = temp_suspended[i];
@@ -1103,90 +1110,11 @@ bool remapLand(Image *image,MapColour colour) {
 	return true;
 }
 
-#if 0
-void createAlphaShadows(Image *image,int sx, int sy) {
-	// hack to mark some shadows when using the original data files
-	//Uint32 amask = image->getSDLSurface()->format->Amask;
-	//if( image->getScaleX() != 2 || image->getScaleY() != 2 ) {
-	/*if( !image->isPaletted() ) {
-	return;
-	}*/
-	image->convertToHiColor(true);
-	SDL_Surface *surface = image->getSDLSurface();
-	SDL_LockSurface(surface);
-	int w = image->getWidth();
-	int h = image->getHeight();
-	int bytespp = surface->format->BytesPerPixel;
-	/*unsigned char mask_r = 0, mask_g = 0, mask_b = 0;
-	image->getMaskColor(&mask_r, &mask_g, &mask_b);
-	Uint32 mask_index = SDL_MapRGB(surface->format, mask_r, mask_g, mask_b);*/
-	//Uint32 mask_index = SDL_MapRGB(surface->format, 255, 0, 255);
-	Uint32 shadow_index = SDL_MapRGB(surface->format, 0, 0, 0);
-	//Uint32 amask2 = surface->format->Amask;
-	for(int x=0;x<w;x++) {
-		for(int y=0;y<h;y++) {
-			unsigned char *ptr = &((unsigned char *)surface->pixels)[ surface->pitch * y + bytespp * x ];
-			Uint32 pixel = *((Uint32 *)ptr);
-			/*if( pixel == mask_index )
-				ptr[3] = 0; // mask color
-			else*/ if( pixel == shadow_index && ( x >= sx || y >= sy ) )
-				ptr[3] = shadow_alpha_c; // shadow
-			else
-				ptr[3] = 255; // opaque
-		}
-	}
-	SDL_UnlockSurface(surface);
-	SDL_SetAlpha(surface, SDL_SRCALPHA, 255);
-	/*
-	int amask2 = surface->format->Amask;
-	image->convertToDisplayFormat();*/
-}
-
-void createAlphaShadows(int epoch,Type type,Image *image) {
-	ASSERT_ANY_EPOCH(epoch);
-	int sx = 100, sy = 100;
-	if( type == BUILDING_TOWER ) {
-		if( epoch == 0 ) {
-			sx = 46;
-			sy = 41;
-		}
-		else if( epoch == 1 ) {
-			sx = 42;
-			sy = 51;
-		}
-		else if( epoch == 2 ) {
-			sx = 46;
-			sy = 53;
-		}
-		else if( epoch == 3 ) {
-			sx = 46;
-			sy = 50;
-		}
-		else if( epoch == 4 ) {
-			sx = 45;
-			sy = 51;
-		}
-	}
-	else if( type == BUILDING_MINE ) {
-		if( epoch == 3 ) {
-			sx = 45;
-			sy = 44;
-		}
-	}
-	/*sx *= scale_width;
-	sy *= scale_height;*/
-	/*sx *= image->getScaleX();
-	sy *= image->getScaleY();*/
-	sx = (int)(sx * image->getScaleX());
-	sy = (int)(sy * image->getScaleY());
-	createAlphaShadows(image, sx, sy);
-}
-#endif
-
 void convertToHiColor(Image *image) {
-	//image->setColor(0, 255, 0, 255);
-	//image->setMaskColor(255, 0, 255);
-	image->createAlphaForColor(true, 255, 0, 255, 127, 0, 127, shadow_alpha_c);
+	if( using_old_gfx ) {
+		// create alpha from color keys
+		image->createAlphaForColor(true, 255, 0, 255, 127, 0, 127, shadow_alpha_c);
+	}
 	image->convertToHiColor(false);
 }
 
@@ -2923,7 +2851,10 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 
 bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end) {
 	if( newline_index > 1 ) {
-		memmove(buffer, &buffer[newline_index-1], MAX_LINE-(newline_index-1));
+		// not safe to use strcpy on overlapping strings (undefined behaviour)
+		int len = strlen(&buffer[newline_index-1]);
+		memmove(buffer, &buffer[newline_index-1], len);
+		buffer[len] = '\0';
 		if( reached_end && buffer[0] == '\0' ) {
 			return true;
 		}
@@ -2969,7 +2900,7 @@ bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int 
 }
 
 bool readMap(const char *filename) {
-	LOG("readMap: %s\n", filename);
+	//LOG("readMap: %s\n", filename); // disabled logging to improve performance on startup
 	bool ok = true;
 	const int MAX_LINE = 4096;
 	//const int MAX_LINE = 64;
@@ -3013,7 +2944,7 @@ bool readMap(const char *filename) {
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, filename);
-		file = fopen(fullname, "rb");
+		file = SDL_RWFromFile(fullname, "rb");
 	}
 #endif
     if( file == NULL ) {
@@ -3186,7 +3117,6 @@ void setGameStateID(GameStateID state) {
 
 	GameState *old_gamestate = gamestate;
 	if( gamestate != NULL ) {
-		//delete gamestate; // todo: postpone until later!
 		disposeGameState();
 	}
 
@@ -3336,6 +3266,12 @@ void placeTower() {
 
 void cleanup() {
 	LOG("cleanup()\n");
+	if( gamestate != NULL ) {
+		LOG("delete gamestate %d\n", gamestate);
+		delete gamestate;
+		gamestate = NULL;
+	}
+	LOG("delete maps\n");
 	for(int i=0;i<n_epochs_c;i++) {
 		for(int j=0;j<max_islands_per_epoch_c;j++) {
 			if( maps[i][j] != NULL ) {
@@ -3346,12 +3282,15 @@ void cleanup() {
 	}
 	map = NULL;
 	if( screen != NULL ) {
+		LOG("delete screen %d\n", screen);
 		delete screen;
 		screen = NULL;
 	}
+	LOG("clean up tracked objects\n");
 	TrackedObject::cleanup();
 	// no longer need to stop music, as it's deleted as a TrackedObject
 	//stopMusic();
+	LOG("free sound\n");
 	freeSound();
 #ifdef USING_QT
         if( qt_settings != NULL ) {
@@ -3359,8 +3298,10 @@ void cleanup() {
             qt_settings = NULL;
         }
 #endif
+	LOG("delete application %d\n", application);
 	delete application;
 	application = NULL;
+	LOG("cleanup done\n");
 }
 
 //bool quit = false;
@@ -3489,7 +3430,9 @@ void updateGame() {
 	}
 
 	if( dispose_gamestate != NULL ) {
+		LOG("delete dispose_gamestate %d (current gamestate is %d)\n", dispose_gamestate, gamestate);
 		delete dispose_gamestate;
+		LOG("done delete\n");
 		dispose_gamestate = NULL;
 	}
 }
@@ -3497,6 +3440,75 @@ void updateGame() {
 void drawGame() {
 	// we now redraw even when paused, to display paused message
 	gamestate->draw();
+}
+
+const char prefs_filename[] = "prefs";
+const char onemousebutton_key[] = "onemousebutton";
+const char play_music_key[] = "play_music";
+
+void loadPrefs() {
+	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
+	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "rb");
+	if( prefs_file != NULL ) {
+		// reset
+		play_music = false;
+		onemousebutton = false;
+
+		const int MAX_LINE = 4096;
+		char line[MAX_LINE+1] = "";
+		char buffer[MAX_LINE+1] = "";
+		int buffer_offset = 0;
+		bool reached_end = false;
+		int newline_index = 0;
+		bool ok = true;
+		while( ok ) {
+			bool done = readLineFromRWOps(ok, prefs_file, buffer, line, MAX_LINE, buffer_offset, newline_index, reached_end);
+			if( !ok )  {
+				LOG("failed to read line for: %s\n", prefs_fullfilename);
+			}
+			else if( done ) {
+				break;
+			}
+			else {
+				LOG("read prefs line: %s", line);
+				if( strncmp(line, onemousebutton_key, strlen(onemousebutton_key)) == 0 ) {
+					LOG("enable onemousebutton from prefs\n");
+					onemousebutton = true;
+				}
+				else if( strncmp(line, play_music_key, strlen(play_music_key)) == 0 ) {
+					LOG("enable play_music from prefs\n");
+					play_music = true;
+				}
+			}
+		}
+		prefs_file->close(prefs_file);
+
+#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
+		// force onemousebutton mode, just to be safe
+		onemousebutton = true;
+#endif
+	}
+	delete [] prefs_fullfilename;
+}
+
+void savePrefs() {
+	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
+	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "wb+");
+	if( prefs_file == NULL ) {
+		LOG("failed to open: %s\n", prefs_fullfilename);
+	}
+	else {
+		if( onemousebutton ) {
+			prefs_file->write(prefs_file, onemousebutton_key, sizeof(char), strlen(onemousebutton_key));
+			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+		}
+		if( play_music ) {
+			prefs_file->write(prefs_file, play_music_key, sizeof(char), strlen(play_music_key));
+			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+		}
+		prefs_file->close(prefs_file);
+	}
+	delete [] prefs_fullfilename;
 }
 
 void playGame(int n_args, char *args[]) {
@@ -3568,9 +3580,11 @@ void playGame(int n_args, char *args[]) {
             play_music = play_music_i != 0;
             LOG("qt_settings: set play_music to %d\n", play_music);
         }
+#else
+	loadPrefs();
 #endif
 
-        for(int i=0;i<n_epochs_c;i++)
+    for(int i=0;i<n_epochs_c;i++)
 		for(int j=0;j<max_islands_per_epoch_c;j++)
 			maps[i][j] = NULL;
 
@@ -3602,6 +3616,7 @@ void playGame(int n_args, char *args[]) {
 #endif
 	}
 
+    int time_s = clock();
 	drawProgress(0);
 
 	if( ok && !loadImages() ) {
@@ -3611,6 +3626,7 @@ void playGame(int n_args, char *args[]) {
 		MessageBoxA(NULL, "Failed to load images", "Error", MB_OK|MB_ICONEXCLAMATION);
 #endif
 	}
+	LOG("time taken to load images: %d\n", clock() - time_s);
 	// loadImages takes progress up to 80%
 	if( !ok ) {
 		cleanup();
@@ -3650,11 +3666,21 @@ void playGame(int n_args, char *args[]) {
 		TrackedObject *to = TrackedObject::getTag(i);
 		if( to != NULL && strcmp( to->getClass(), "CLASS_IMAGE" ) == 0 ) {
 			Image *image = (Image *)to;
-			image->convertToDisplayFormat();
+			if( !image->convertToDisplayFormat() ) {
+				LOG("failed to convertToDisplayFormat\n");
+				cleanup();
+#ifdef _WIN32
+				MessageBoxA(NULL, "Failed to create texture images", "Error", MB_OK|MB_ICONEXCLAMATION);
+#endif
+				return;
+			}
 		}
 	}
 
 	drawProgress(100);
+    int time_taken = clock() - time_s;
+	LOG("time taken to load data: %d\n", time_taken);
+
 	char buffer[256] = "";
 	sprintf(buffer, "Gigalomania, version %d.%d", majorVersion, minorVersion);
 	screen->setTitle(buffer);
@@ -3702,3 +3728,63 @@ bool playerAlive(int player) {
 	}
 	return false;
 }
+
+#if defined(__ANDROID__)
+
+// JNI for Android
+
+#include <jni.h>
+#include <android/log.h>
+
+// see http://wiki.libsdl.org/SDL_AndroidGetActivity
+
+void launchUrl(string url) {
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: launch url: %s", url.c_str());
+    // retrieve the JNI environment.
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+    if (!env)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find env");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained env");
+
+    // retrieve the Java instance of the SDLActivity
+    jobject activity = (jobject)SDL_AndroidGetActivity();
+    if (!activity)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find activity");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained activity");
+
+    // find the Java class of the activity. It should be SDLActivity or a subclass of it.
+    jclass clazz( env->GetObjectClass(activity) );
+    if (!clazz)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find class");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained class");
+
+    // find the identifier of the method to call
+    jmethodID method_id = env->GetMethodID(clazz, "launchUrl", "(Ljava/lang/String;)V");
+    if (!method_id)
+    {
+        __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: can't find launchUrl method");
+        return;
+    }
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: obtained method");
+
+    // effectively call the Java method
+	jstring str = env->NewStringUTF(url.c_str());
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: about to call static method");
+    env->CallVoidMethod( activity, method_id, str );
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: called method");
+    
+    // clean up the local references.
+    env->DeleteLocalRef(str);
+    env->DeleteLocalRef(activity);
+    __android_log_print(ANDROID_LOG_INFO, "Gigalomania", "JNI: done");
+}
+#endif
