@@ -52,16 +52,8 @@ void PlayerType::getColour(int *r,int *g,int *b,PlayerTypeID id) {
 //Player::Player(int index, char *name) {
 //Player::Player(int index, int personality) {
 Player::Player(bool is_human, int index) :
-is_human(is_human), index(index)
+index(index), dead(false), n_births(0), n_deaths(0), n_men_for_this_island(0), n_suspended(0), is_human(is_human), alliance_last_asked_human(-1)
 {
-	this->dead = false;
-	//this->personality = personality;
-	this->n_births = 0;
-	this->n_deaths = 0;
-	this->n_men_for_this_island = 0;
-	this->n_suspended = 0;
-	this->alliance_last_asked_human = -1;
-	//strcpy(this->name,name);
 	for(int i=0;i<n_players_c;i++) {
 		if( i != index && players[i] != NULL && !players[i]->isDead() ) {
 			setAlliance(index, i, false);

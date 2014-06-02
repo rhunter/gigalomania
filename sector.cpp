@@ -144,7 +144,7 @@ void SmokeParticleSystem::update() {
 }
 
 Army::Army(PlayingGameState *gamestate, Sector *sector, int player) :
-gamestate(gamestate), sector(sector), player(player)
+player(player), sector(sector), gamestate(gamestate)
 {
 	ASSERT_PLAYER(player);
 	this->empty();
@@ -411,7 +411,7 @@ Invention *Invention::getInvention(Invention::Type type,int epoch) {
 }
 
 Building::Building(PlayingGameState *gamestate, Sector *sector, Type type) :
-gamestate(gamestate), sector(sector), type(type)
+type(type), sector(sector), health(0), max_health(0), pos_x(0), pos_y(0), n_turrets(0), building_button(NULL), gamestate(gamestate)
 {
     //LOG("Building::Building(Sector [%d: %d, %d], Type %d)\n", sector->getPlayer(), sector->getXPos(), sector->getYPos(), type);
 	Rect2D turret_pos[max_building_turrets_c];

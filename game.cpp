@@ -248,6 +248,10 @@ int n_men_store = 0;
 int n_suspended[n_players_c];
 //int n_men_for_this_island = 0;
 
+bool validDifficulty(DifficultyLevel difficulty) {
+	return difficulty >= 0 && difficulty < DIFFICULTY_N_LEVELS;
+}
+
 int getMenPerEpoch() {
 	ASSERT( gameType == GAMETYPE_ALLISLANDS );
 	if( difficulty_level == DIFFICULTY_EASY )
@@ -1607,7 +1611,7 @@ bool loadOldImages() {
 		for(int j=0;j<=n_epochs_c;j++) {
 			for(int k=0;k<n_attacker_directions_c;k++) {
 				for(int l=0;l<max_attacker_frames_c;l++) {
-					attackers_walking[k][i][j][l] = NULL;
+					attackers_walking[i][j][k][l] = NULL;
 				}
 			}
 		}
@@ -2217,7 +2221,7 @@ bool loadImages() {
 			for(int j=0;j<=n_epochs_c;j++) {
 				for(int k=0;k<n_attacker_directions_c;k++) {
 					for(int l=0;l<max_attacker_frames_c;l++) {
-						attackers_walking[k][i][j][l] = NULL;
+						attackers_walking[i][j][k][l] = NULL;
 					}
 				}
 			}
