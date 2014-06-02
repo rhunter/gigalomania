@@ -362,17 +362,13 @@ Invention::Invention(const char *name,Type type,int epoch) {
 	this->name = name;
 	this->type = type;
 	this->epoch = epoch;
-	//this->designs = new Vector();
-	this->designs = new vector<Design *>();
 }
 
 Invention::~Invention() {
-	for(unsigned int i=0;i<designs->size();i++) {
-		//Design *design = (Design *)designs->elementAt(i);
-		Design *design = designs->at(i);
+	for(size_t i=0;i<designs.size();i++) {
+		Design *design = designs.at(i);
 		delete design;
 	}
-	delete this->designs;
 }
 
 /*int Invention::getRelativeEpoch() {
@@ -604,7 +600,6 @@ gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
 {
     //LOG("Sector::Sector(%d,%d,%d)\n",epoch,xpos,ypos);
 	ASSERT_EPOCH(epoch);
-	this->designs = new vector<Design *>();
 
 	for(int i=0;i<N_ID;i++) {
 		this->elements[i] = 0;
@@ -612,8 +607,6 @@ gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
 	for(int i=0;i<n_players_c;i++) {
 		this->armies[i] = new Army(gamestate, this, i);
 	}
-
-	this->features = new vector<Feature *>();
 
 	// rocks etc
 	int n_clutter = icon_clutter[0] != NULL ? (1 + rand() % 4) : 0;
@@ -624,7 +617,7 @@ gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
 		int ypos = offset_land_y_c + rand() % land_height;
 		Image **image_ptr = &icon_clutter[rand() % n_clutter_c];
 		Feature *feature = new Feature(image_ptr, 1, xpos, ypos);
-		this->features->push_back(feature);
+		this->features.push_back(feature);
 	}
 	// trees (should be after clutter, so they are drawn over them if overlapping)
 	int cx = offset_land_x_c + 16;
@@ -642,8 +635,7 @@ gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
 		//Feature *feature = new Feature(icon_trees[treetype], cx, ypos);
 		Feature *feature = new Feature(icon_trees[treetype], n_tree_frames_c, cx, ypos);
 		//Feature *feature = new Feature(image, cx, ypos);
-		//this->features->add(feature);
-		this->features->push_back(feature);
+		this->features.push_back(feature);
 		cx += image->getScaledWidth() - 8;
 	}
 	cx = offset_land_x_c + 16;
@@ -658,7 +650,7 @@ gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
 		int ypos = offset_land_y_c + land[(int)map_colour]->getScaledHeight() - image->getScaledHeight() - 8 - rand() % 4;
 		Feature *feature = new Feature(icon_trees[treetype], n_tree_frames_c, cx, ypos);
 		feature->setAtFront(true);
-		this->features->push_back(feature);
+		this->features.push_back(feature);
 		cx += image->getScaledWidth() - 8;
 	}
 
@@ -706,7 +698,7 @@ void Sector::initTowerStuff() {
 			//this->inventions_known[i][j] = true;
 		}
 	}
-	this->designs->clear();
+	this->designs.clear();
 	for(int i=0;i<N_ID;i++) {
 		this->n_miners[i] = 0;
 		this->elementstocks[i] = 0;
@@ -728,12 +720,10 @@ void Sector::initTowerStuff() {
 
 Sector::~Sector() {
     //LOG("Sector::~Sector() [%d: %d, %d]\n", player, xpos, ypos);
-	for(unsigned int i=0;i<this->features->size();i++) {
-		//Feature *feature = (Feature *)this->features->get(i);
-		Feature *feature = (Feature *)this->features->at(i);
+	for(size_t i=0;i<this->features.size();i++) {
+		Feature *feature = (Feature *)this->features.at(i);
 		delete feature;
 	}
-	delete this->features;
 
 	for(unsigned int i=0;i<N_BUILDINGS;i++) {
 		if(this->buildings[i] != NULL )
@@ -745,7 +735,6 @@ Sector::~Sector() {
 		delete this->stored_army;
 	for(int i=0;i<n_players_c;i++)
 		delete this->armies[i];
-	delete this->designs;
 
 	if( smokeParticleSystem != NULL ) {
 		delete smokeParticleSystem;
@@ -1043,9 +1032,8 @@ Design *Sector::canBuildDesign(Invention::Type type,int epoch) const {
 	Invention *invention = Invention::getInvention(type, epoch);
 	ASSERT(invention != NULL);
 	Design *best_design = NULL;
-	for(unsigned int i=0;i<this->designs->size() && best_design==NULL;i++) {
-		//Design *design = (Design *)this->designs->elementAt(i);
-		Design *design = this->designs->at(i);
+	for(size_t i=0;i<this->designs.size() && best_design==NULL;i++) {
+		Design *design = this->designs.at(i);
 		// design should be non-NULL, but to satisfy VS Code Analysis...
 		if( design == NULL )
 			continue;
@@ -1086,9 +1074,8 @@ bool Sector::canEverBuildDesign(Design *design) const {
 }
 
 void Sector::autoTrashDesigns() {
-	for(unsigned int i=0;i<this->designs->size();i++) {
-		//Design *design = (Design *)this->designs->elementAt(i);
-		Design *design = this->designs->at(i);
+	for(size_t i=0;i<this->designs.size();i++) {
+		Design *design = this->designs.at(i);
 		if( !canEverBuildDesign(design) ) {
 			// trash
 			this->trashDesign(design);
@@ -1128,9 +1115,8 @@ bool Sector::usedUp() const {
 		// should try building a mine
 		return false;
 	}
-	for(unsigned int i=0;i<this->designs->size();i++) {
-		//Design *design = (Design *)this->designs->elementAt(i);
-		Design *design = this->designs->at(i);
+	for(size_t i=0;i<this->designs.size();i++) {
+		Design *design = this->designs.at(i);
 		if( design->getInvention()->getType() == Invention::WEAPON )
 			return false;
 	}
@@ -1154,9 +1140,8 @@ Design *Sector::knownDesign(Invention::Type type,int epoch) const {
 	Invention *invention = Invention::getInvention(type, epoch);
 	ASSERT(invention != NULL);
 	Design *best_design = NULL;
-	//for(unsigned int i=0;i<this->designs->size();i++) {
-	for(unsigned int i=0;i<this->designs->size() && best_design==NULL;i++) {
-		Design *design = this->designs->at(i);
+	for(size_t i=0;i<this->designs.size() && best_design==NULL;i++) {
+		Design *design = this->designs.at(i);
 		// design should be non-NULL, but to satisfy VS Code Analysis...
 		if( design == NULL )
 			continue;
@@ -1198,12 +1183,10 @@ Design *Sector::bestDesign(Invention::Type type,int epoch) const {
 void Sector::trashDesign(Invention *invention) {
 	LOG("Sector::trashDesign(%d) [%d: %d, %d]\n", invention, player, xpos, ypos);
 	this->inventions_known[ invention->getType() ][ invention->getEpoch() ] = false;
-	for(unsigned int i=0;i<this->designs->size();i++) {
-		//Design *design = (Design *)this->designs->elementAt(i);
-		Design *design = this->designs->at(i);
+	for(size_t i=0;i<this->designs.size();i++) {
+		Design *design = this->designs.at(i);
 		if( design->getInvention() == invention ) {
-			//this->designs->remove(i);
-			this->designs->erase(this->designs->begin() + i);
+			this->designs.erase(this->designs.begin() + i);
 			break;
 		}
 	}
@@ -1216,12 +1199,10 @@ void Sector::trashDesign(Invention *invention) {
 void Sector::trashDesign(Design *design) {
 	LOG("Sector::trashDesign(%d) [%d: %d, %d]\n", design, player, xpos, ypos);
 	this->inventions_known[ design->getInvention()->getType() ][ design->getInvention()->getEpoch() ] = false;
-	for(unsigned int i=0;i<this->designs->size();i++) {
-		//Design *this_design = (Design *)this->designs->elementAt(i);
-		Design *this_design = this->designs->at(i);
+	for(size_t i=0;i<this->designs.size();i++) {
+		Design *this_design = this->designs.at(i);
 		if( this_design == design ) {
-			//this->designs->remove(i);
-			this->designs->erase(this->designs->begin() + i);
+			this->designs.erase(this->designs.begin() + i);
 			break;
 		}
 	}
@@ -1281,7 +1262,7 @@ Design *Sector::canResearch(Invention::Type type,int epoch) const {
 
 int Sector::getNDesigns() const {
 	//LOG("Sector::getNDesigns()\n");
-	return this->designs->size();
+	return this->designs.size();
 }
 
 void Sector::consumeStocks(Design *design) {
@@ -1617,8 +1598,7 @@ void Sector::doPlayer(int client_player) {
 			if( this->player != client_player )
 				done_sound = true;
 			this->inventions_known[ this->current_design->getInvention()->getType() ][ this->current_design->getInvention()->getEpoch() ] = true;
-			//this->designs->add( this->current_design );
-			this->designs->push_back( this->current_design );
+			this->designs.push_back( this->current_design );
 
 			if( this->epoch < start_epoch + 3 && epoch < n_epochs_c-1 ) {
 				//int levels[4] = {0, 0, 0, 0};
@@ -1935,7 +1915,7 @@ void Sector::update(int client_player) {
 					this->armies[i]->empty();
 				}
 				// replace tree icons with burnt tree
-				for(vector<Feature *>::iterator iter = this->features->begin(); iter != this->features->end(); ++iter) {
+				for(vector<Feature *>::iterator iter = this->features.begin(); iter != this->features.end(); ++iter) {
 					Feature *feature = *iter;
 					const Image *image = feature->getImage(0);
 					// bit of a hacky way of finding trees...

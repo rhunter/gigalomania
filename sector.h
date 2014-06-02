@@ -173,7 +173,7 @@ public:
 protected:
 	Type type;
 	int epoch;
-	vector<Design *> *designs;
+	vector<Design *> designs;
 
 public:
 	Invention(const char *name,Type type,int epoch);
@@ -192,13 +192,13 @@ public:
 		return this->epoch;
 	}
 	void addDesign(Design *design) {
-		this->designs->push_back(design);
+		this->designs.push_back(design);
 	}
 	size_t getNDesigns() const {
-		return this->designs->size();
+		return this->designs.size();
 	}
 	Design *getDesign(size_t i) const {
-		return this->designs->at(i);
+		return this->designs.at(i);
 	}
 
 	static Invention *getInvention(Invention::Type type,int epoch);
@@ -291,7 +291,7 @@ public:
 };
 
 class Sector {
-	vector<Feature *> *features;
+	vector<Feature *> features;
 	int xpos, ypos;
 	int epoch;
 	int player;
@@ -333,7 +333,7 @@ class Sector {
 	int getManufactureCost() const;
 	bool inventions_known[3][n_epochs_c];
 	//Vector *designs;
-	vector<Design *> *designs;
+	vector<Design *> designs;
 
 	int getBuildingCost(Type type) const;
 	void destroyBuilding(Type building_type,int client_player);
@@ -391,10 +391,10 @@ public:
 	void update(int client_player);
 
 	int getNFeatures() const {
-		return this->features->size();
+		return this->features.size();
 	}
 	const Feature *getFeature(int i) const {
-		return this->features->at(i);
+		return this->features.at(i);
 	}
 	const ParticleSystem *getParticleSystem() const {
 		return this->smokeParticleSystem;

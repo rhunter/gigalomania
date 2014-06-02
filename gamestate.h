@@ -312,10 +312,10 @@ class PlayingGameState : public GameState {
 	const Army *selected_army;
 	//int n_soldiers[n_players_c];
 	//Vector *soldiers[n_players_c];
-	vector<Soldier *> *soldiers[n_players_c];
-	vector<TimedEffect *> *effects;
+	vector<Soldier *> soldiers[n_players_c];
+	vector<TimedEffect *> effects;
 	//Vector *ammo_effects;
-	vector<TimedEffect *> *ammo_effects;
+	vector<TimedEffect *> ammo_effects;
 	TextEffect *text_effect;
 	/*SmokeParticleSystem *smokeParticleSystem;
 	SmokeParticleSystem *smokeParticleSystem_busy;*/
@@ -367,7 +367,7 @@ public:
 	void refreshSoldiers(bool flash);
 	void deathEffect(int xpos,int ypos);
 	void addEffect(TimedEffect *effect) {
-		this->effects->push_back(effect);
+		this->effects.push_back(effect);
 	}
 	virtual void addTextEffect(TextEffect *effect) {
 		if( text_effect != NULL ) {
