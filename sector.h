@@ -291,7 +291,6 @@ public:
 };
 
 class Sector {
-	//Vector *features;
 	vector<Feature *> *features;
 	int xpos, ypos;
 	int epoch;
