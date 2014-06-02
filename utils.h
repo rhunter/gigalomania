@@ -139,23 +139,6 @@ bool remove_vec(vector<T> *vec,const T& value) {
 	return false;
 }
 
-/*template<class T>
-bool contains_vec(vector<T> *vec,const T& value) {
-        if( find(vec->begin(), vec->end(), value) == vec->end() ) {
-                return false;
-        }
-        return true;
-}
-
-template<class T>
-bool addIfAbsent_vec(vector<T> *vec,const T& value) {
-        if( find(vec->begin(), vec->end(), value) == vec->end() ) {
-                vec->push_back(value);
-                return true;
-        }
-        return false;
-}*/
-
 #if defined(AROS) || defined(__MORPHOS__)
 
 void getAROSScreenSize(int *user_width, int *user_height);
