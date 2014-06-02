@@ -596,7 +596,13 @@ void Building::setTurretMan(int turret, int epoch) {
 }
 
 Sector::Sector(PlayingGameState *gamestate, int epoch, int xpos, int ypos, MapColour map_colour) :
-gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
+xpos(xpos), ypos(ypos), epoch(epoch), player(PLAYER_NONE), is_shutdown(false), nuked(false), trees_nuked(false),
+nuke_by_player(-1), nuke_time(-1),
+population(0), n_designers(0), n_workers(0), n_famount(0),
+current_design(NULL), current_manufacture(NULL),
+researched(0), researched_lasttime(-1), manufactured(0), manufactured_lasttime(-1), growth_lasttime(-1), mined_lasttime(-1), built_lasttime(-1),
+assembled_army(NULL), stored_army(NULL), smokeParticleSystem(NULL),
+gamestate(gamestate)
 {
     //LOG("Sector::Sector(%d,%d,%d)\n",epoch,xpos,ypos);
 	ASSERT_EPOCH(epoch);
@@ -654,12 +660,6 @@ gamestate(gamestate), epoch(epoch), xpos(xpos), ypos(ypos)
 		cx += image->getScaledWidth() - 8;
 	}
 
-	this->nuked = false;
-	this->trees_nuked = false;
-	this->nuke_by_player = -1;
-	this->nuke_time = -1;
-
-	this->smokeParticleSystem = NULL;
 	if( smoke_image != NULL ) {
 		this->smokeParticleSystem = new SmokeParticleSystem(smoke_image);
 	}

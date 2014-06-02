@@ -53,6 +53,8 @@ protected:
 public:
 	ParticleSystem(const Image *image) : image(image) {
 	}
+	virtual ~ParticleSystem() {
+	}
 
 	void draw(int xpos, int ypos) const;
 	virtual void update()=0;
@@ -64,6 +66,9 @@ class SmokeParticleSystem : public ParticleSystem {
 	int last_emit_time;
 public:
 	SmokeParticleSystem(const Image *image);
+	virtual ~SmokeParticleSystem() {
+	}
+
 	void setBirthRate(float birth_rate);
 
 	virtual void update();
@@ -332,7 +337,6 @@ class Sector {
 	int getInventionCost() const;
 	int getManufactureCost() const;
 	bool inventions_known[3][n_epochs_c];
-	//Vector *designs;
 	vector<Design *> designs;
 
 	int getBuildingCost(Type type) const;
