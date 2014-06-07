@@ -819,7 +819,7 @@ SDL_Surface *my_IMG_LoadLBM_RW( SDL_RWops *src )
     Uint32      remainingbytes;
     Uint32      width;
     BMHD          bmhd;
-    char        *error;
+    char const  *error;
     Uint8       flagHAM,flagEHB;
 
     Image   = NULL;
