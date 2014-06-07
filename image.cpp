@@ -55,7 +55,7 @@ SDL_Renderer *Image::sdlRenderer = NULL;
 
 Image::Image() {
 	this->data = NULL;
-	this->need_to_free_data = NULL;
+	this->need_to_free_data = false;
 	this->surface = NULL;
 #if SDL_MAJOR_VERSION == 1
 #else
