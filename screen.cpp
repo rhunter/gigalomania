@@ -261,7 +261,7 @@ Application::~Application() {
 
 bool Application::init() {
 #ifndef __MORPHOS__
-	putenv("SDL_VIDEO_CENTERED=0,0");
+	setenv("SDL_VIDEO_CENTERED", "0,0", 1);
 #endif
 	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == -1 ) {
 		LOG("SDL_Init failed\n");
