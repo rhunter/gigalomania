@@ -90,7 +90,9 @@ Sample *Sample::loadMusic(const char *filename) {
 	LOG("loadMusic %s\n", filename);
 	Mix_Music *music = NULL;
 	if( have_sound ) {
-		music = Mix_LoadMUS(filename);
+		// Mix_LoadMUS doesn't support RWops, so won't work on Android
+		//music = Mix_LoadMUS(filename);
+		music = Mix_LoadMUSType_RW(SDL_RWFromFile(filename, "rb"), MUS_OGG, 1);
 		if( music == NULL ) {
 			LOG("Mix_LoadMUS failed: %s\n", Mix_GetError());
 			error_occurred = true;

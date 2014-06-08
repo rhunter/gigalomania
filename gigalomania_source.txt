@@ -154,10 +154,10 @@ See README-android.txt in the SDL source archive for some information. You need 
 
 1. Copy the android/Gigalomania project into your workspace.
 2. Copy the Gigalomania source files (*.cpp, *.h) into jni/src/
-3. Copy the gfx/, islands/ and sound/ folders into assets/
+3. Copy the gfx/, islands/, music/ and sound/ folders into assets/
 4. Copy the source from SDL2, SDL2_image, SDL2_mixer into jni/ (so you have folders jni/SDL/, jni/SDL_image/, jni/SDL_mixer/; each of these folders should be the root folder for the SDL sources - e.g., so inside jni/SDL/ will be folders such as acinclude/, include/, src/ etc). 
-5. You need to configure the file jni/src/SDL_image/Android.mk: comment out the lines SUPPORT_WEBP and WEBP_LIBRARY_PATH (by adding a # to the start of the lines).
-6. You need to configure the file jni/src/SDL_mixer/Android.mk: comment out the lines SUPPORT_MOD_MODPLUG, MODPLUG_LIBRARY_PATH, SUPPORT_MOD_MIKMOD, MIKMOD_LIBRARY_PATH, SUPPORT_MP3_SMPEG and SMPEG_LIBRARY_PATH (by adding a # to the start of the lines).
+5. You need to configure the file jni/SDL_image/Android.mk: comment out the lines SUPPORT_WEBP and WEBP_LIBRARY_PATH (by adding a # to the start of the lines).
+6. You need to configure the file jni/SDL_mixer/Android.mk: comment out the lines SUPPORT_MOD_MODPLUG, MODPLUG_LIBRARY_PATH, SUPPORT_MOD_MIKMOD, MIKMOD_LIBRARY_PATH, SUPPORT_MP3_SMPEG and SMPEG_LIBRARY_PATH (by adding a # to the start of the lines).
 7. Before running from Eclipse, the native C++ files need to be compiled. On Windows, this can be done from the command prompt by cd-ing to the Gigalomania folder, and running the ndk-build.cmd command from the Android NDK (e.g.: C:\android-ndk-r9\ndk-build.cmd ). Note that this needs to be done every time you change one of the native C++ files.
 
 Note that versions 0.26 an earlier used Qt/necessitas for Android. Now Android is compiled using SDL 2.

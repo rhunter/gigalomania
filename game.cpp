@@ -890,7 +890,7 @@ void playMusic() {
 	else if( gameStateID == GAMESTATEID_PLACEMEN ) {
 	}
 	else if( pref_music_on && gameStateID == GAMESTATEID_PLAYING ) {
-		music = Sample::loadMusic("gamemusic.ogg");
+		music = Sample::loadMusic("music/gamemusic.ogg");
 		if( music == NULL ) {
 			LOG("Failed to load music\n");
 		}
