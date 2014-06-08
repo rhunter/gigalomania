@@ -290,10 +290,12 @@ Screen *screen = NULL;
 GameState *gamestate = NULL;
 //Sector *current_sector = NULL;
 
-const bool default_play_music_c = true;
-bool play_music = default_play_music_c; // also affects any sound effects now
-/*FMUSIC_MODULE *module = NULL;
-FSOUND_STREAM *str_music = NULL;*/
+const bool default_pref_sound_on_c = true;
+const bool default_pref_music_on_c = true;
+bool pref_sound_on = default_pref_sound_on_c;
+bool pref_music_on = default_pref_music_on_c;
+
+
 Sample *music = NULL;
 
 #ifdef USING_QT
@@ -868,44 +870,26 @@ void addTextEffect(TextEffect *effect) {
 }
 
 void stopMusic() {
-	/*if( module != NULL ) {
-		FMUSIC_FreeSong(module);
-		module = NULL;
-	}
-	if( str_music != NULL ) {
-		FSOUND_Stream_Close(str_music);
-		str_music = NULL;
-	}*/
 	if( music != NULL ) {
 		delete music;
 		music = NULL;
 	}
 }
 
+void fadeMusic(int duration_ms) {
+	if( music != NULL ) {
+		music->fadeOut(duration_ms);
+	}
+}
+
 void playMusic() {
 	stopMusic();
-	/*if( !play_music )
-	return;*/
 
 	if( gameStateID == GAMESTATEID_CHOOSEPLAYER ) {
-		/*music = loadMusic("data/mod.warintro");
-		if( music == NULL ) {
-			LOG("Failed to load music\n");
-		}
-		else {
-			music->play(SOUND_CHANNEL_MUSIC);
-		}*/
 	}
 	else if( gameStateID == GAMESTATEID_PLACEMEN ) {
-		/*music = loadMusic("data/mod.music");
-		if( music == NULL ) {
-			LOG("Failed to load music\n");
-		}
-		else {
-			music->play(SOUND_CHANNEL_MUSIC);
-		}*/
 	}
-	else if( play_music && gameStateID == GAMESTATEID_PLAYING ) {
+	else if( pref_music_on && gameStateID == GAMESTATEID_PLAYING ) {
 		music = Sample::loadMusic("gamemusic.ogg");
 		if( music == NULL ) {
 			LOG("Failed to load music\n");
@@ -3309,7 +3293,6 @@ void startNewGame() {
 
 void placeTower() {
 	ASSERT( gameStateID == GAMESTATEID_PLACEMEN );
-	//play_music = static_cast<PlaceMenGameState *>(gamestate)->getChooseMenPanel()->musicOn();
 	if( !state_changed ) {
 		//createSectors(x, y, n_men); // now done in startIsland()
 		state_changed = true;
@@ -3457,6 +3440,7 @@ void updateGame() {
 			playSample(s_itis_all_over);
 			state_changed = true;
 			gameResult = GAMERESULT_LOST;
+			fadeMusic(SHORT_DELAY + 1000);
 			gamestate->fadeScreen(true, SHORT_DELAY, endIsland);
 		}
 		else {
@@ -3479,6 +3463,7 @@ void updateGame() {
 				playSample(s_won);
 				state_changed = true;
 				gameResult = GAMERESULT_WON;
+				fadeMusic(SHORT_DELAY + 1000);
 				gamestate->fadeScreen(true, SHORT_DELAY, endIsland);
 			}
 		}
@@ -3499,14 +3484,16 @@ void drawGame() {
 
 const char prefs_filename[] = "prefs";
 const char onemousebutton_key[] = "onemousebutton";
-const char play_music_key[] = "play_music";
+const char sound_on_key[] = "sound_on";
+const char music_on_key[] = "music_on";
 
 void loadPrefs() {
 	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
 	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "rb");
 	if( prefs_file != NULL ) {
 		// reset
-		play_music = false;
+		pref_sound_on = false;
+		pref_music_on = false;
 		onemousebutton = false;
 
 		const int MAX_LINE = 4096;
@@ -3530,9 +3517,13 @@ void loadPrefs() {
 					LOG("enable onemousebutton from prefs\n");
 					onemousebutton = true;
 				}
-				else if( strncmp(line, play_music_key, strlen(play_music_key)) == 0 ) {
-					LOG("enable play_music from prefs\n");
-					play_music = true;
+				else if( strncmp(line, sound_on_key, strlen(sound_on_key)) == 0 ) {
+					LOG("enable pref_sound_on from prefs\n");
+					pref_sound_on = true;
+				}
+				else if( strncmp(line, music_on_key, strlen(music_on_key)) == 0 ) {
+					LOG("enable pref_music_on from prefs\n");
+					pref_music_on = true;
 				}
 			}
 		}
@@ -3557,8 +3548,12 @@ void savePrefs() {
 			prefs_file->write(prefs_file, onemousebutton_key, sizeof(char), strlen(onemousebutton_key));
 			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
 		}
-		if( play_music ) {
-			prefs_file->write(prefs_file, play_music_key, sizeof(char), strlen(play_music_key));
+		if( pref_sound_on ) {
+			prefs_file->write(prefs_file, sound_on_key, sizeof(char), strlen(sound_on_key));
+			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+		}
+		if( pref_music_on ) {
+			prefs_file->write(prefs_file, music_on_key, sizeof(char), strlen(music_on_key));
 			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
 		}
 		prefs_file->close(prefs_file);

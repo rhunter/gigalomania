@@ -60,6 +60,7 @@ public:
 class ChooseMenPanel : public MultiPanel {
 	PlaceMenGameState *gamestate;
 	Button *button_continue;
+	CycleButton *button_sound;
 	CycleButton *button_music;
 	CycleButton *button_onemousebutton;
 	Button *button_nextisland;
@@ -103,10 +104,6 @@ public:
 	int getNMen() const {
 		return n_men;
 	}
-	/*bool musicOn() const {
-		return ( button_music->getActive() == 0 );
-	}*/
-    //bool onemousebuttonOn() const;
 };
 
 class GamePanel : public MultiPanel {

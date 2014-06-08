@@ -32,7 +32,6 @@ android_qt/
 *.db
 
 *.ico
-*.ogg
 *.svg
 
 gpl.txt

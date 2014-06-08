@@ -271,7 +271,8 @@ enum PlayerMode {
 bool isDemo();
 //extern int human_player;
 extern int end_game_time;
-extern bool play_music;
+extern bool pref_sound_on;
+extern bool pref_music_on;
 
 #ifdef USING_QT
 #include <QSettings>
@@ -348,6 +349,7 @@ void mouseClick(int m_x, int m_y, bool m_left, bool m_middle, bool m_right, bool
 void updateGame();
 void drawGame();
 
+void fadeMusic(int duration_ms);
 void playGame(int n_args, char *args[]);
 void placeTower();
 bool playerAlive(int player);

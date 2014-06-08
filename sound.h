@@ -39,6 +39,7 @@ namespace Gigalomania {
 		virtual ~Sample();
 		virtual const char *getClass() const { return "CLASS_SAMPLE"; }
 		void play(int ch);
+		void fadeOut(int duration_ms);
 		void setVolume(float volume);
 		void setText(const char *text) {
 			this->text = text;

@@ -285,8 +285,8 @@ a measure of the current level of technology, rather than how much time has pass
   play.</li>
   <li>"Options" - displays a sub menu as follows:<ul>
     <li>"Continue" - return to the main menu.</li>
-    <li>"Sound On/Off" - whether sound is currently enabled - click to change this (note that on
-    Android, you can also change the sound volume by using the volume keys on your device).</li>
+    <li>"Music On/Off" - whether in-game music is enabled - click to change this.</li>
+    <li>"Sound On/Off" - whether sound effects are enabled - click to change this.</li>
     <li>"One/Two Mouse Button UI" - in two mouse button mode, the left and right mouse buttons
     are required. In one mouse button mode, only the left mouse button is required (e.g., changing
     the number of people is done by left clicking, then clicking on the left/right arrows that
@@ -489,12 +489,12 @@ but in "All Islands" mode, it contributes to your final score if you complete th
 <p><b>Help wanted!</b></p>
 
 <p>If you would like to contribute to Gigalomania, there are various ways you can help:<ul>
-<li><b>Musicians</b> - Some music would be nice to add to the game. Note that if you place an OGG music file "gamemusic.ogg" in the main folder, it will play during the game (at least for Windows/OS X/Linux). More sound effects would also be useful to have.</li>
+<li><b>Musicians</b> - Some more music would be nice to add to the game (music for intro etc, maybe different music for different ages). More sound effects would also be useful to have.</li>
 <li><b>Graphics artists</b> - I have a graphics artist working on some images, though there's no reason why there couldn't be additional graphics sets for different styles, so feel free to contribute. Please contact me if you want info on the expected graphics formats, or things like additional data files (e.g., the POV Ray files for the building graphics).</li>
 <li><b>Porting</b> - Feel free to port Gigalomania to other platforms - it should be easy to port to any OS that supports SDL. If you send me the files, I can integrate them into the main source. (Please check the Git repository on Sourceforge for the latest version to work with.)</li>
 <li><b>Tell people about it!</b> - If you like the game, then please feel free to tell other
        people about it, on your blog/Twitter/website/etc :)</li>
-<li><b>Give me a nice rating :)</b> (On Nokia/Android stores, or other hosting sites...)
+<li><b>Give me a nice rating :)</b> (On Google Play for Android, or other hosting sites...)
 <li><b>Videos</b> - videos of the gameplay (e.g., on YouTube) would be useful to have, partly to help raise awareness, and also to act as gameplay tutorials.</li>
 </ul></p>
 
@@ -513,6 +513,7 @@ FIXED   If moving army in another sector directly to the player's tower, land
 FIXED   Animation of soldiers walking wasn't quite right.
 FIXED   User account paths with unicode characters now supported on Windows.
 FIXED   Crash on Linux if unable to create data folder in user space.
+ADDED   In-game music.
 ADDED   Full support for Windows 8 touchscreens/tablets.
 ADDED   New button to return to choosing island screen, after clicking to play
         an island.
@@ -526,7 +527,7 @@ UPDATED Now using SDL 2 for Android instead of Qt: no longer requires Ministro
         devices with FullHD displays or higher); now supports using device's
         volume keys to change volume.
 UPDATED Faster startup time.
-UPDATED Options (sound and one mouse button mode) now saved.
+UPDATED Options (sound/music and one mouse button mode) now saved.
 UPDATED Message displayed when game paused; mouse pointer no longer frozen when
         paused.
 UPDATED Pressing quit (Escape or close button) on game win/lose/quit screen goes
@@ -952,13 +953,11 @@ First public release.
 
 <p>Gigalomania is released under the <a href="http://www.gnu.org/copyleft/gpl.html">GPL v2 or later</a>, except the following files:<ul>
 
-<!--<li>explosion_6.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=35463">35463__jobro__Explosion_6.wav</a>, by jobro, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
-<li>bomb.wav - from <a href="http://soundbible.com/1234-Bomb.html">Bomb-SoundBible.com-891110113.wav</a>, by Mike Koenig, under <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported</a> (CC BY 3.0).</li>
-<!--<li>plagasul_jah.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=74">74__plagasul__JaH.wav</a>, by Plagasul, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
+<li>bomb.wav - from <a href="http://soundbible.com/1234-Bomb.html">Bomb-SoundBible.com-891110113.wav</a>, by Mike Koenig, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
 <li>pain1.wav - from <a href="http://opengameart.org/content/11-male-human-paindeath-sounds">http://opengameart.org/content/11-male-human-paindeath-sounds</a>, by Michel Baradari, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
-<!--<li>pulsed808bd.wav - from <a href="http://www.freesound.org/samplesViewSingle.php?id=3169">3169__jonnay__Pulsed808BD.wav</a>, by Jonnay, under <a href="http://creativecommons.org/licenses/sampling+/1.0/">Creative Commons Sampling Plus 1.0</a>.</li>-->
 <li>misc_menu_3.wav - from <a href="http://opengameart.org/content/gui-sound-effects">http://opengameart.org/content/gui-sound-effects</a>, by Lokif, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
 <li>woodbrk.wav - modified from <a href="http://freeciv.wikia.com/wiki/Main_Page">FreeCiv</a>, under the GPL.</li>
+<li>gamemusic.ogg - from <a href="http://ccmixter.org/files/_ghost/37481">http://ccmixter.org/files/_ghost/37481</a>, by _ghost, under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
 <li>attacker_walking_0_*.png, attacker_walking_1_*.png, attacker_walking_2_*.png, attacker_walking_3_*.png, attacker_walking_10_*.png, "Crossbow" defender, 10000BC, 2000BC, 1AD, 900AD, 1400AD, 1944AD, 2100AD and unarmed people icons - from <a href="http://opengameart.org/content/lpc-medieval-fantasy-character-sprites">http://opengameart.org/content/lpc-medieval-fantasy-character-sprites</a>, by wulax, under <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> or later, or the GPL v3 or later.</li>
 <li>attacker_walking_5.png, "Factory" icon, "Stick", "Spear", "Shortbow", "Cauldron of Oil", "Crossbow", "Rifle", "Machine Gun", "Rocket" defenders, 1850AD, 1914AD, 1980AD people icons - from <a href="http://freeciv.wikia.com/wiki/Main_Page">FreeCiv</a>, under the GPL.</li>
 <li>attacker_walking_4_*.png - from <a href="http://opengameart.org/content/catapult">http://opengameart.org/content/catapult</a>, by yd, under <a href="http://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>

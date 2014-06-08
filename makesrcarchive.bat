@@ -121,6 +121,8 @@ REM used by Android, though has to replace gfx/ manually
 REM mkdir %dst%\gfx_android_extras
 REM copy %src%\gfx_android_extras\ %dst%\gfx_android_extras\
 
+copy %src%\gamemusic.ogg %dst%\
+
 mkdir %dst%\sound
 copy %src%\sound\ %dst%\sound\
 

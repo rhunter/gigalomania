@@ -2270,6 +2270,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
         this->closeConfirmWindow();
         if( !state_changed ) {
 			gameResult = GAMERESULT_QUIT;
+			fadeMusic(1000);
 			this->fadeScreen(true, 0, endIsland);
 		}
 	}

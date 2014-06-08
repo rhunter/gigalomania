@@ -211,11 +211,16 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     cy += step_y;
     this->addToPanel(STATE_OPTIONS, button_continue);
 
-    //char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
-    const char *music_texts[] = { "SOUND ON", "SOUND OFF" };
+    const char *sound_texts[] = { "SOUND ON", "SOUND OFF" };
+    this->button_sound = new CycleButton((int)(mx - 4.5*fw), cy, sound_texts, 2, letters_large);
+    cy += step_y;
+    this->button_sound->setActive( pref_sound_on ? 0 : 1 );
+	this->addToPanel(STATE_OPTIONS, button_sound);
+
+    const char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
     this->button_music = new CycleButton((int)(mx - 4.5*fw), cy, music_texts, 2, letters_large);
     cy += step_y;
-    this->button_music->setActive( play_music ? 0 : 1 );
+    this->button_music->setActive( pref_music_on ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_music);
 
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
@@ -410,19 +415,6 @@ void ChooseMenPanel::buttonNMenClick(void *data, int arg, bool m_left, bool m_mi
 void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_right,bool click) {
 	MultiPanel::input(m_x, m_y, m_left, m_middle, m_right, click);
 
-	// update from options
-	/*if( button_music != NULL ) {
-		play_music = button_music->getActive() == 0;
-#ifdef USING_QT
-                // also save
-                qt_settings->setValue(play_music_key_c, play_music ? 1 : 0);
-#endif
-	}
-    //onemousebutton = this->onemousebuttonOn();
-	if( button_onemousebutton != NULL ) {
-		onemousebutton = button_onemousebutton->getActive() == 0;
-	}*/
-
 	if( this->hasModal() ) {
 		return;
 	}
@@ -496,12 +488,11 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 	else if( this->c_page == STATE_OPTIONS ) {
 		if( m_left && click && this->button_continue->mouseOver(m_x, m_y) ) {
             done = true;
+			if( button_sound != NULL ) {
+				pref_sound_on = button_sound->getActive() == 0;
+			}
 			if( button_music != NULL ) {
-				play_music = button_music->getActive() == 0;
-#ifdef USING_QT
-				// also save
-				qt_settings->setValue(play_music_key_c, play_music ? 1 : 0);
-#endif
+				pref_music_on = button_music->getActive() == 0;
 			}
 			if( button_onemousebutton != NULL ) {
 				onemousebutton = button_onemousebutton->getActive() == 0;
