@@ -965,37 +965,40 @@ bool loadSamples() {
 		s_quit[3] = loadSample("data/laff", true);
 	}*/
 
-	// no longer supporting speech samples
-	s_design_is_ready = new Sample();
-	s_design_is_ready->setText("the design is completed");
-	s_ergo = new Sample();
+	string sound_dir = "sound/";
+
+	s_design_is_ready = Sample::loadSample(sound_dir + "the_design_is_finished.wav");
+	s_design_is_ready->setText("the design is finished");
+	s_ergo = Sample::loadSample(sound_dir + "ergonomically_terrific.wav");
 	s_ergo->setText("ergonomically terrific");
-	s_fcompleted = new Sample();
-	s_fcompleted->setText("the production run is finished");
-	s_advanced_tech = new Sample();
-	s_advanced_tech->setText("we have advanced to the next tech level");
-	s_running_out_of_elements = new Sample();
-	s_running_out_of_elements->setText("run out of elements");
-	s_tower_critical = new Sample();
-	s_tower_critical->setText("the tower is almost destroyed");
-	s_sector_destroyed = new Sample();
+	s_fcompleted = Sample::loadSample(sound_dir + "the_production_run_s_completed.wav");
+	s_fcompleted->setText("the production run is completed");
+	s_advanced_tech = Sample::loadSample(sound_dir + "we_ve_advanced_a_tech_level.wav");
+	s_advanced_tech->setText("we have advanced a tech level");
+	s_running_out_of_elements = Sample::loadSample(sound_dir + "we_re_running_out_of_elements.wav");
+	s_running_out_of_elements->setText("we are running out of elements");
+	s_tower_critical = Sample::loadSample(sound_dir + "tower_critical.wav");
+	s_tower_critical->setText("tower critical");
+	s_sector_destroyed = Sample::loadSample(sound_dir + "the_sector_s_been_destroyed.wav");
 	s_sector_destroyed->setText("the sector has been destroyed");
-	s_mine_destroyed = new Sample();
+	s_mine_destroyed = Sample::loadSample(sound_dir + "the_mine_is_destroyed.wav");
 	s_mine_destroyed->setText("the mine is destroyed");
-	s_factory_destroyed = new Sample();
-	s_factory_destroyed->setText("the factory is destroyed");
-	s_lab_destroyed = new Sample();
-	s_lab_destroyed->setText("the lab is destroyed");
-	s_itis_all_over = new Sample();
+	s_factory_destroyed = Sample::loadSample(sound_dir + "the_factory_s_been_destroyed.wav");
+	s_factory_destroyed->setText("the factory has been destroyed");
+	s_lab_destroyed = Sample::loadSample(sound_dir + "the_lab_s_been_destroyed.wav");
+	s_lab_destroyed->setText("the lab has been destroyed");
+	s_itis_all_over = Sample::loadSample(sound_dir + "it_s_all_over.wav");
 	s_itis_all_over->setText("game over");
-	s_conquered = new Sample();
+	s_conquered = Sample::loadSample(sound_dir + "we_ve_conquered_the_sector.wav");
 	s_conquered->setText("we have conquered the sector");
-	s_won = new Sample();
+	s_won = Sample::loadSample(sound_dir + "we_ve_won.wav");
 	s_won->setText("we have won");
 	s_weve_nuked_them = new Sample();
 	s_weve_nuked_them->setText("we have nuked them");
-	s_weve_been_nuked = new Sample();
+	s_weve_been_nuked = Sample::loadSample(sound_dir + "we_ve_been_nuked.wav");
 	s_weve_been_nuked->setText("we have been nuked");
+	s_on_hold = Sample::loadSample(sound_dir + "putting_you_on_hold.wav");
+	// no text for s_on_hold
 	s_alliance_yes[0] = new Sample();
 	s_alliance_yes[0]->setText("red team says okay");
 	s_alliance_yes[1] = new Sample();
@@ -1027,13 +1030,11 @@ bool loadSamples() {
 	s_cant_nuke_ally->setText("cannot nuke our ally");
 
 	// no samples or text messages, but keep supported in case we re-add samples later
-	s_on_hold = new Sample();
 	s_quit[0] = new Sample();
 	s_quit[1] = new Sample();
 	s_quit[2] = new Sample();
 	s_quit[3] = new Sample();
 
-	string sound_dir = "sound/";
 	// sound effects
 	s_explosion = Sample::loadSample(sound_dir + "bomb.wav");
 #ifndef USING_QT
