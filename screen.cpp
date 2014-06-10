@@ -260,7 +260,10 @@ Application::~Application() {
 }
 
 bool Application::init() {
-#ifndef __MORPHOS__
+#if defined(_WIN32)
+	_putenv("SDL_VIDEO_CENTERED=0,0");
+#elif defined(__MORPHOS__)
+#else
 	setenv("SDL_VIDEO_CENTERED", "0,0", 1);
 #endif
 	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) == -1 ) {
