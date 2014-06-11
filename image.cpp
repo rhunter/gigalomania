@@ -1429,7 +1429,7 @@ void Image::writeMixedCase(int x,int y,Image *large[n_font_chars_c],Image *littl
 			// newline
 			cx = sx;
 			y += l_h + 2;
-			continue; // don't increase sx
+			continue; // don't increase cx
 		}
 		else if( isspace( ch ) )
 			; // do nothing
@@ -1438,18 +1438,33 @@ void Image::writeMixedCase(int x,int y,Image *large[n_font_chars_c],Image *littl
 			int indx = ch - '0';
 			numbers[indx]->draw(cx, y + l_h - n_h);
 		}
+		else if( isupper( ch ) ) {
+			int indx = ch - 'A';
+			large[indx]->draw(cx, y);
+		}
+		else if( islower( ch ) ) {
+			little[ ch - 'a' ]->draw(cx, y + l_h - s_h);
+		}
 		else if( ch == '.' ) {
 			if( little[font_index_period_c] != NULL )
 				little[font_index_period_c]->draw(cx, y);
 			else if( large[font_index_period_c] != NULL )
 				large[font_index_period_c]->draw(cx, y);
 		}
-		else if( isupper( ch ) ) {
-			int indx = ch - 'A';
-			large[indx]->draw(cx, y);
+		else if( ch == '\'' ) {
+			if( little[font_index_apostrophe_c] != NULL )
+				little[font_index_apostrophe_c]->draw(cx, y);
+			else if( large[font_index_apostrophe_c] != NULL )
+				large[font_index_apostrophe_c]->draw(cx, y);
+		}
+		else if( ch == '!' ) {
+			if( little[font_index_exclamation_c] != NULL )
+				little[font_index_exclamation_c]->draw(cx, y);
+			else if( large[font_index_exclamation_c] != NULL )
+				large[font_index_exclamation_c]->draw(cx, y);
 		}
 		else {
-			little[ ch - 'a' ]->draw(cx, y + l_h - s_h);
+			continue; // don't increase cx
 		}
 		cx += w;
 	}

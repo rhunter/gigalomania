@@ -17,8 +17,10 @@ using std::string;
 #include <sdl_image.h>
 #endif
 
-const int n_font_chars_c = 27;
+const int n_font_chars_c = 29;
 const int font_index_period_c = 26;
+const int font_index_apostrophe_c = 27;
+const int font_index_exclamation_c = 28;
 
 namespace Gigalomania {
 	class Image : public TrackedObject {

@@ -879,102 +879,38 @@ void playMusic() {
 }
 
 bool loadSamples() {
-	/*if( use_amigadata )
-	{
-		s_design_is_ready = loadSample("data/desready", true);
-		s_design_is_ready->setText("the design is completed");
-		s_ergo = loadSample("data/ergo", true);
-		s_ergo->setText("ergonomically terrific");
-		s_fcompleted = loadSamplesChained("data/fthe", "data/-prodrun2", NULL);
-		s_fcompleted->setText("the production run is completed");
-		s_advanced_tech = loadSample("data/teklev2", true);
-		s_advanced_tech->setText("we have advanced a tech level");
-		s_on_hold = loadSample("data/hold", true);
-		//s_on_hold->setText("putting you on hold");
-		s_running_out_of_elements = loadSample("data/nelem", true);
-		s_running_out_of_elements->setText("running out of elements");
-		s_tower_critical = loadSample("data/da-tower", true);
-		s_tower_critical->setText("the tower is almost destroyed");
-		s_sector_destroyed = loadSample("data/arsect", true);
-		s_sector_destroyed->setText("the sector has been destroyed");
-		s_mine_destroyed = loadSample("data/ndest", true);
-		s_mine_destroyed->setText("the mine is destroyed");
-		s_factory_destroyed = loadSamplesChained("data/fthe", "data/ffact", "data/fdest");
-		s_factory_destroyed->setText("the factory is destroyed");
-		s_lab_destroyed = loadSample("data/labdest", true);
-		s_lab_destroyed->setText("the lab is destroyed");
-		s_itis_all_over = loadSample("data/da-allover", true);
-		s_itis_all_over->setText("game over");
-		s_conquered = loadSamplesChained("data/arweve", "data/arconq", NULL);
-		s_conquered->setText("we have conquered the sector");
-		s_won = loadSamplesChained("data/arweve", "data/arwon", NULL);
-		s_won->setText("we have won");
-		s_weve_nuked_them = loadSamplesChained("data/arweve", "data/arnuke", NULL);
-		s_weve_nuked_them->setText("we nuked them");
-		s_weve_been_nuked = loadSample("data/da-nuked", true);
-		s_weve_been_nuked->setText("we have been nuked");
-		s_alliance_yes[0] = loadSamplesChained("data/dwhy", "data/dall", NULL);
-		s_alliance_yes[0]->setText("red team says okay");
-		s_alliance_yes[1] = loadSample("data/asisi", true);
-		s_alliance_yes[1]->setText("green team says okay");
-		s_alliance_yes[2] = loadSample("data/PVERYWELL", true);
-		s_alliance_yes[2]->setText("yellow team says okay");
-		s_alliance_yes[3] = loadSample("data/yougotit", true);
-		s_alliance_yes[3]->setText("blue team says okay");
-		s_alliance_no[0] = loadSamplesChained("data/dha", "data/NO", NULL);
-		s_alliance_no[0]->setText("red team says no");
-		s_alliance_no[1] = loadSample("data/anowork", true);
-		s_alliance_no[1]->setText("green team says no");
-		s_alliance_no[2] = loadSample("data/pno", true);
-		s_alliance_no[2]->setText("yellow team says no");
-		s_alliance_no[3] = loadSample("data/noway", true);
-		s_alliance_no[3]->setText("blue team says no");
-		s_alliance_ask[0] = loadSample("data/djoin", true);
-		s_alliance_ask[0]->setText("red team requests alliance");
-		s_alliance_ask[1] = loadSample("data/awanna", true);
-		s_alliance_ask[1]->setText("green team requests alliance");
-		s_alliance_ask[2] = loadSample("data/pmyteam", true);
-		s_alliance_ask[2]->setText("yellow team requests alliance");
-		s_alliance_ask[3] = loadSample("data/myside2", true);
-		s_alliance_ask[3]->setText("blue team requests alliance");
-		s_quit[0] = loadSamplesChained("data/dha", "data/dpath", NULL);
-		s_quit[1] = loadSample("data/alaff", true);
-		s_quit[2] = loadSample("data/pmmm2", true);
-		s_quit[3] = loadSample("data/laff", true);
-	}*/
-
 	string sound_dir = "sound/";
 
 	s_design_is_ready = Sample::loadSample(sound_dir + "the_design_is_finished.wav");
 	s_design_is_ready->setText("the design is finished");
 	s_ergo = Sample::loadSample(sound_dir + "ergonomically_terrific.wav");
-	s_ergo->setText("ergonomically terrific");
+	s_ergo->setText("ergonomically terrific!");
 	s_fcompleted = Sample::loadSample(sound_dir + "the_production_run_s_completed.wav");
-	s_fcompleted->setText("the production run is completed");
+	s_fcompleted->setText("the production run's completed");
 	s_advanced_tech = Sample::loadSample(sound_dir + "we_ve_advanced_a_tech_level.wav");
-	s_advanced_tech->setText("we have advanced a tech level");
+	s_advanced_tech->setText("we've advanced a tech level!");
 	s_running_out_of_elements = Sample::loadSample(sound_dir + "we_re_running_out_of_elements.wav");
-	s_running_out_of_elements->setText("we are running out of elements");
+	s_running_out_of_elements->setText("we're running out of elements");
 	s_tower_critical = Sample::loadSample(sound_dir + "tower_critical.wav");
-	s_tower_critical->setText("tower critical");
+	s_tower_critical->setText("tower critical!");
 	s_sector_destroyed = Sample::loadSample(sound_dir + "the_sector_s_been_destroyed.wav");
-	s_sector_destroyed->setText("the sector has been destroyed");
+	s_sector_destroyed->setText("the sector's been destroyed!");
 	s_mine_destroyed = Sample::loadSample(sound_dir + "the_mine_is_destroyed.wav");
 	s_mine_destroyed->setText("the mine is destroyed");
 	s_factory_destroyed = Sample::loadSample(sound_dir + "the_factory_s_been_destroyed.wav");
-	s_factory_destroyed->setText("the factory has been destroyed");
+	s_factory_destroyed->setText("the factory's been destroyed");
 	s_lab_destroyed = Sample::loadSample(sound_dir + "the_lab_s_been_destroyed.wav");
-	s_lab_destroyed->setText("the lab has been destroyed");
+	s_lab_destroyed->setText("the lab's been destroyed");
 	s_itis_all_over = Sample::loadSample(sound_dir + "it_s_all_over.wav");
 	s_itis_all_over->setText("game over");
 	s_conquered = Sample::loadSample(sound_dir + "we_ve_conquered_the_sector.wav");
-	s_conquered->setText("we have conquered the sector");
+	s_conquered->setText("we've conquered the sector");
 	s_won = Sample::loadSample(sound_dir + "we_ve_won.wav");
-	s_won->setText("we have won");
+	s_won->setText("we've won!");
 	s_weve_nuked_them = Sample::loadSample(sound_dir + "we_ve_nuked_them.wav");
-	s_weve_nuked_them->setText("we have nuked them");
+	s_weve_nuked_them->setText("we've nuked them!");
 	s_weve_been_nuked = Sample::loadSample(sound_dir + "we_ve_been_nuked.wav");
-	s_weve_been_nuked->setText("we have been nuked");
+	s_weve_been_nuked->setText("we've been nuked!");
 	s_on_hold = Sample::loadSample(sound_dir + "putting_you_on_hold.wav");
 	// no text for s_on_hold
 	s_alliance_yes[0] = new Sample();
@@ -2101,6 +2037,8 @@ bool loadImages() {
 	}
     numbers_half = icons->copy(288, 16, 6, number_h_c);
 	letters_small[font_index_period_c] = icons->copy(296, 16, 6, number_h_c);
+	letters_small[font_index_apostrophe_c] = icons->copy(304, 16, 6, number_h_c);
+	letters_small[font_index_exclamation_c] = icons->copy(312, 16, 6, number_h_c);
 
 	delete icons;
 	drawProgress(50);
