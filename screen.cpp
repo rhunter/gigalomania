@@ -494,7 +494,9 @@ void Application::runMainLoop() {
 				}
 				else if( event.window.event == SDL_WINDOWEVENT_HIDDEN || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST ) {
 					// inactive
-					keypressP(); // automatically pause when application goes inactive
+					if( !paused ) {
+						keypressP(); // automatically pause when application goes inactive
+					}
 				}
 				break;
 #endif
