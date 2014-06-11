@@ -1900,6 +1900,7 @@ void Sector::update(int client_player) {
 
 			if( this->nuked ) {
 				playSample(s_explosion, SOUND_CHANNEL_FX);
+				s_explosion->setVolume(0.25f); // needed so we can hear speech sample over the explosion
 				this->trees_nuked = this->nuked;
 				if( this->getActivePlayer() != -1 ) {
 					this->destroyTower(true, client_player);
