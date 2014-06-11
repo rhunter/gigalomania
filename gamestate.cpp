@@ -2169,7 +2169,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 								current_sector->getAssembledArmy()->empty();
 								this->moveTo(map_x,map_y);
 							}*/
-							if( map->getSector(map_x, map_y)->isBeingNuked() ) {
+							if( !map->getSector(map_x, map_y)->isBeingNuked() ) {
 								//map->getSector(map_x, map_y)->nukeSector(current_sector);
 								this->nukeSector(current_sector->getXPos(), current_sector->getYPos(), map_x, map_y);
 								//current_sector->getAssembledArmy()->empty();
