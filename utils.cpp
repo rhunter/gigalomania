@@ -23,12 +23,6 @@
 #include <android/log.h>
 #endif
 
-#ifdef USING_QT
-#include <QString>
-#include <QDir>
-#include <QDesktopServices>
-#endif
-
 #include <cassert>
 #include <cmath> // n.b., needed on Linux at least
 
@@ -159,18 +153,11 @@ void textLines(int *n_lines,int *max_wid,const char *text) {
 }
 
 char application_name[] = "Gigalomania";
-#if defined(Q_OS_ANDROID)
-char application_package_name[] = "net.sourceforge.gigalomania";
-#endif
 
 FILE *logfile = NULL;
 
 // Maemo/Meego treated as Linux as far as paths are concerned
-#ifdef USING_QT
-char *application_path = NULL;
-char *logfilename = NULL;
-char *oldlogfilename = NULL;
-#elif _WIN32
+#if _WIN32
 char application_path[MAX_PATH] = "";
 char logfilename[MAX_PATH] = "";
 char oldlogfilename[MAX_PATH] = "";
@@ -199,16 +186,7 @@ char *getApplicationFilename(const char *name) {
     //printf("getApplicationFilename: %s\n", name);
     //printf("application_path: %s\n", application_path);
     // Maemo/Meego treated as Linux as far as paths are concerned
-#ifdef USING_QT
-    /*int len = strlen(application_path) + 1 + strlen(name);
-    char *filename = new char[len+1];
-    sprintf(filename, "%s/%s", application_path, name);*/
-    QString pathQt = QString(application_path) + QString("/") + QString(name);
-    QString nativePath(QDir::toNativeSeparators(pathQt));
-    char *filename = new char[nativePath.length()+1];
-    strcpy(filename, nativePath.toLatin1().data());
-    qDebug("getApplicationFilename returns: %s", filename);
-#elif _WIN32
+#if _WIN32
 	char *filename = new char[MAX_PATH];
 	strcpy(filename, application_path);
 	PathAppendA(filename, name);
@@ -239,35 +217,7 @@ void initLogFile() {
     // first need to establish full path, and create folder if necessary
     // Maemo/Meego treated as Linux as far as paths are concerned
     LOG("initLogFile()\n"); // n.b., at this stage logging will only go to console output, not to log file
-#ifdef USING_QT
-
-#if defined(Q_OS_ANDROID)
-    // on Android, try for the sdcard, so we can find somewhere more accessible to the user (and that I can read on my Galaxy Nexus!!!)
-    QString nativePath = QString("/sdcard/") + QString(application_package_name);
-    qDebug("try sd card: %s", nativePath.toStdString().c_str());
-    if( !QDir(nativePath).exists() ) {
-        qDebug("try creating application folder in sdcard/");
-        // folder doesn't seem to exist - try creating it
-        QDir().mkdir(nativePath);
-        if( !QDir(nativePath).exists() ) {
-            qDebug("failed to create application folder in sdcard/");
-            QString pathQt(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-            nativePath = QDir::toNativeSeparators(pathQt);
-        }
-    }
-#else
-    QString pathQt(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-    QString nativePath(QDir::toNativeSeparators(pathQt));
-#endif
-
-    application_path = new char[nativePath.length()+1];
-    strcpy(application_path, nativePath.toLatin1().data());
-    logfilename = getApplicationFilename("log.txt");
-    oldlogfilename = getApplicationFilename("log_old.txt");
-    qDebug("application_path: %s", application_path);
-    qDebug("logfilename: %s", logfilename);
-    qDebug("oldlogfilename: %s", oldlogfilename);
-#elif _WIN32
+#if _WIN32
 	bool ok = true;
 	WCHAR logfilename_w[MAX_PATH];
     if ( SUCCEEDED( SHGetFolderPathW( NULL, CSIDL_APPDATA,
@@ -378,19 +328,11 @@ void initLogFile() {
 	LOG("Running in Release mode\n");
 #endif
 
-#if defined(Q_WS_SIMULATOR)
-    LOG("Platform: Qt Smartphone Simulator\n");
-#elif defined(_WIN32)
+#if defined(_WIN32)
     LOG("Platform: Windows\n");
-#elif defined(Q_WS_MAEMO_5)
-    // must be before __linux, as Maemo/Meego also defines __linux
-    LOG("Platform: Maemo/Meego\n");
 #elif defined(__ANDROID__)
 	// must be before __linux, as Android also defines __linux
 	LOG("Platform: Android\n");
-#elif defined(Q_OS_ANDROID)
-	// must be before __linux, as Android also defines __linux
-	LOG("Platform: Android (Qt-based)\n");
 #elif __linux
 	LOG("Platform: Linux\n");
 #elif defined(__APPLE__) && defined(__MACH__)
@@ -402,8 +344,6 @@ void initLogFile() {
     LOG("Platform: AROS\n");
 #elif defined(__MORPHOS__)
     LOG("Platform: MorphOS\n");
-#elif defined(Q_OS_SYMBIAN)
-    LOG("Platform: Symbian\n");
 #else
 	LOG("Platform: UNKNOWN\n");
 #endif

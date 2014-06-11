@@ -20,14 +20,8 @@ using std::stringstream;
 #include "game.h"
 #include "gamestate.h"
 #include "utils.h"
-
-#ifdef USING_QT
-#include "qt_screen.h"
-#include "qt_image.h"
-#else
 #include "screen.h"
 #include "image.h"
-#endif
 
 //---------------------------------------------------------------------------
 
@@ -184,12 +178,12 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_play = new Button((int)(mx - 5.5*fw), cy, "PLAY ISLAND", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_play);
-#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__ANDROID__)
     this->button_help = new Button((int)(mx - 5.5*fw), cy, "ONLINE HELP", letters_large);
     cy += step_y;
     this->addToPanel(STATE_CHOOSEISLAND, button_help);
 #endif
-#if defined(Q_OS_ANDROID) || defined(__ANDROID__)
+#if defined(__ANDROID__)
 	// Applications don't quit on Android
 	this->button_quit = NULL;
 #else
@@ -223,7 +217,7 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_music->setActive( pref_music_on ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_music);
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
+#if defined(__ANDROID__)
     this->button_onemousebutton = NULL;
 #else
 	const char *onemousebutton_texts[] = { "ONE MOUSE BUTTON UI", "TWO MOUSE BUTTON UI" };
@@ -453,16 +447,14 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
             setupPlayers();
             gamestate->closeConfirmWindow();
         }
-#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__ANDROID__)
         else if( m_left && click && this->button_help->mouseOver(m_x, m_y) ) {
 			LOG("clicked online help\n");
             done = true;
             registerClick();
             gamestate->closeConfirmWindow();
 			char help_url[] = "http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html";
-#if defined(USING_QT)
-            QDesktopServices::openUrl(QUrl(help_url));
-#elif defined(_WIN32)
+#if defined(_WIN32)
 			ShellExecute(0, 0, help_url, 0, 0 , SW_SHOW );
 #elif defined(__ANDROID__)
 			launchUrl(help_url);

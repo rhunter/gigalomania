@@ -274,16 +274,7 @@ extern int end_game_time;
 extern bool pref_sound_on;
 extern bool pref_music_on;
 
-#ifdef USING_QT
-#include <QSettings>
-
-extern QSettings *qt_settings;
-extern const QString play_music_key_c;
-#endif
-
 void savePrefs();
-
-//#include "sector.h"
 
 class Map {
 	string name;

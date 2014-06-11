@@ -7,20 +7,9 @@
 #include "game.h"
 #include "utils.h"
 #include "sector.h"
-
-#ifdef USING_QT
-#include "qt_screen.h"
-#include "qt_image.h"
-#include "qt_sound.h"
-#else
 #include "screen.h"
 #include "image.h"
 #include "sound.h"
-#endif
-
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR)
-#include <QFeedbackEffect>
-#endif
 
 //---------------------------------------------------------------------------
 
@@ -28,9 +17,6 @@ void registerClick() {
 	//LOG("registerClick()\n");
 	// call for gui items to be registered as a mouse click, rather than continuous press
 	playSample(s_guiclick, SOUND_CHANNEL_FX);
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR)
-    QtMobility::QFeedbackEffect::playThemeEffect(QtMobility::QFeedbackEffect::ThemeBasicButton);
-#endif
     s_guiclick->setVolume(0.125f);
 }
 

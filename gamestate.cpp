@@ -14,15 +14,9 @@ using std::stringstream;
 #include "gui.h"
 #include "player.h"
 
-#ifdef USING_QT
-#include "qt_screen.h"
-#include "qt_image.h"
-#include "qt_sound.h"
-#else
 #include "screen.h"
 #include "image.h"
 #include "sound.h"
-#endif
 
 //---------------------------------------------------------------------------
 
@@ -575,9 +569,7 @@ void PlaceMenGameState::reset() {
 void PlaceMenGameState::draw() {
 	char buffer[256] = "";
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR)
-	screen->clear(); // workaround for bug on Symbian where background doesn't show (with 4x gfx)!
-#elif defined(__ANDROID__)
+#if defined(__ANDROID__)
 	screen->clear(); // SDL on Android requires screen be cleared (otherwise we get corrupt regions outside of the main area)
 #endif
 	background_islands->draw(0, 0);
@@ -859,27 +851,6 @@ bool PlayingGameState::readSectors(Map *map) {
 	int sec_x = -1, sec_y = -1;
 	bool done_header = false;
 
-#if defined(USING_QT)
-    char fullname[4096] = "";
-    sprintf(fullname, "%s%s/%s", DEPLOYMENT_PATH, maps_dirname, map->getFilename());
-    LOG("open: %s\n", fullname);
-    QFile file(fullname);
-    if( !file.open(QIODevice::ReadOnly) ) {
-        LOG("failed to open file: %s\n", fullname);
-        return false;
-    }
-    while( ok ) {
-        qint64 amount_read = file.readLine(line, MAX_LINE);
-        //LOG("returned: %d\n", amount_read);
-        if( amount_read <= 0 ) {
-            break;
-        }
-        else {
-            ok = readSectorsProcessLine(map, line, &done_header, &sec_x, &sec_y);
-        }
-    }
-    file.close();
-#else
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, map->getFilename());
 	// open in binary mode, so that we parse files in an OS-independent manner
@@ -915,8 +886,8 @@ bool PlayingGameState::readSectors(Map *map) {
 		}
 	}
 	file->close(file);
-#endif
-    return ok;
+
+	return ok;
 }
 
 void PlayingGameState::createSectors(int x, int y, int n_men) {
@@ -2182,12 +2153,15 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 					int n_nukes = current_sector->getAssembledArmy()->getSoldiers(nuclear_epoch_c);
 					if( n_nukes > 0 ) {
 						// nuke!
+						LOG("nuke sector %d, %d (%d)\n", map_x, map_y, n_nukes);
 						ASSERT( n_nukes == 1 );
 						if( target_sector->getActivePlayer() != -1 && target_sector->getPlayer() == current_sector->getPlayer() ) {
 							// don't nuke own sector
+							LOG("don't nuke own sector: %d\n", target_sector->getActivePlayer());
 						}
 						else if( target_sector->getActivePlayer() != -1 && Player::isAlliance(current_sector->getPlayer(), target_sector->getPlayer()) ) {
 							// don't nuke allied sectors
+							LOG("don't nuke allied sector\n");
 							playSample(s_cant_nuke_ally);
 						}
 						else {

@@ -12,7 +12,6 @@
 #include <string>
 #include <cassert>
 
-#ifndef USING_QT
 // we include SDL globally, so that SDL_MAJOR_VERSION is available at least
 #if defined(__ANDROID__)
 #include <sdl.h>
@@ -22,5 +21,4 @@
 #include <SDL/SDL.h>
 #else
 #include <sdl.h>
-#endif
 #endif

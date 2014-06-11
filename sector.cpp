@@ -14,16 +14,9 @@ using std::max;
 #include "panel.h"
 #include "gui.h"
 #include "player.h"
-
-#ifdef USING_QT
-#include "qt_screen.h"
-#include "qt_image.h"
-#include "qt_sound.h"
-#else
 #include "screen.h"
 #include "image.h"
 #include "sound.h"
-#endif
 
 //---------------------------------------------------------------------------
 

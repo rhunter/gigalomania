@@ -12,8 +12,6 @@ using std::stringstream;
 #include <windows.h>
 #endif
 
-#ifndef USING_QT
-
 #ifndef _WIN32
 #include <dirent.h>
 #include <string.h>
@@ -23,29 +21,20 @@ using std::stringstream;
 #include <proto/dos.h>
 #endif
 
-#endif
-
 #include "game.h"
 #include "utils.h"
 #include "sector.h"
 #include "gamestate.h"
 #include "gui.h"
 #include "player.h"
-
-#ifdef USING_QT
-#include "qt_screen.h"
-#include "qt_image.h"
-#include "qt_sound.h"
-#else
 #include "screen.h"
 #include "image.h"
 #include "sound.h"
-#endif
 
 //---------------------------------------------------------------------------
 
 // onemousebutton means UI can be used with one mouse button only
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
+#if defined(__ANDROID__)
 bool onemousebutton = true;
 #else
 bool onemousebutton = false;
@@ -56,7 +45,7 @@ bool oneMouseButtonMode() {
 }
 
 // mobile_ui means no mouse pointer
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
+#if defined(__ANDROID__)
 bool mobile_ui = true;
 #else
 bool mobile_ui = false;
@@ -67,11 +56,8 @@ bool using_old_gfx = false;
 Application *application = NULL;
 
 const char *maps_dirname = "islands";
-#ifndef USING_QT
-    // if using Qt, we use resources even on Linux
 #if !defined(__ANDROID__) && defined(__linux)
 const char *alt_maps_dirname = "/usr/share/gigalomania/islands";
-#endif
 #endif
 
 //int lastmouseclick_time = 0;
@@ -297,11 +283,6 @@ bool pref_music_on = default_pref_music_on_c;
 
 
 Sample *music = NULL;
-
-#ifdef USING_QT
-QSettings *qt_settings = NULL; // n.b., creating on stack means application fails to launch on Nokia 5800?!
-const QString play_music_key_c = "play_music";
-#endif
 
 Map::Map(MapColour colour,int n_opponents,const char *name) {
 	//*this->filename = '\0';
@@ -613,9 +594,6 @@ void drawProgress(int percentage) {
 	screen->fillRect(xpos+1, ypos+1, progress_width, height-1, 127, 0, 0);
 	
 	screen->refresh();
-#ifdef USING_QT
-    application->processEvents(); // needed to update the screen in Qt! (due to being outside of qApp.exec())
-#endif
 }
 
 void newGame() {
@@ -1037,8 +1015,6 @@ bool loadSamples() {
 
 	// sound effects
 	s_explosion = Sample::loadSample(sound_dir + "bomb.wav");
-#ifndef USING_QT
-    // if using Qt, we use resources even on Linux
 #if !defined(__ANDROID__) && defined(__linux)
         if( s_explosion == NULL || errorSound() ) {
             if( s_explosion != NULL ) {
@@ -1051,20 +1027,12 @@ bool loadSamples() {
         s_explosion = Sample::loadSample(sound_dir + "bomb.wav");
 	}
 #endif
-#endif
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR)
-    s_scream = new Sample(); // playing this sample causes strange pauses on Symbian?? (Nokia 5800) Also probably best not to have this sound sample until we fix problem of volume control not having an effect...
-#else
     s_scream = Sample::loadSample(sound_dir + "pain1.wav");
-#endif
 	s_buildingdestroyed = Sample::loadSample(sound_dir + "woodbrk.wav");
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR)
-    s_guiclick = new Sample(); // on Symbian, we use vibration feedback
-#else
     s_guiclick = Sample::loadSample(sound_dir + "misc_menu_3.wav");
-#endif
-    bool ok = !errorSound();
+
+	bool ok = !errorSound();
 	return ok;
 }
 
@@ -1819,20 +1787,13 @@ bool loadImages() {
 	// progress should go from 0 to 80%
 	string gfx_dir = "gfx/";
 
-#if defined(Q_OS_ANDROID)
-	background = Image::loadImage(gfx_dir + "starfield.png");
-#else
 	background = Image::loadImage(gfx_dir + "starfield.jpg");
-#endif
-#ifndef USING_QT
-    // if using Qt, we use resources even on Linux
 #if !defined(__ANDROID__) && defined(__linux)
 	if( background == NULL ) {
 		gfx_dir = "/usr/share/gigalomania/" + gfx_dir;
 		LOG("look in %s for gfx\n", gfx_dir.c_str());
 		background = Image::loadImage(gfx_dir + "starfield.jpg");
 	}
-#endif
 #endif
 	if( background == NULL ) {
 		//return false;
@@ -2396,11 +2357,7 @@ bool loadImages() {
 	}
 	drawProgress(70);
 
-#if defined(Q_OS_ANDROID)
-        background_islands = Image::loadImage(gfx_dir + "sunrise.png");
-#else
-        background_islands = Image::loadImage(gfx_dir + "sunrise.jpg");
-#endif
+    background_islands = Image::loadImage(gfx_dir + "sunrise.jpg");
 	if( background_islands == NULL )
 		return false;
 	processImage(background_islands);
@@ -2525,25 +2482,7 @@ void setupPlayers() {
 bool openScreen(bool fullscreen) {
 	if( !fullscreen ) {
 		int user_width = 0, user_height = 0;
-#ifdef USING_QT
-		user_width = QApplication::desktop()->width();
-		user_height = QApplication::desktop()->height();
-		qDebug("window is %d x %d", user_width, user_height);
-		LOG("window is %d x %d\n", user_width, user_height);
-		if( mobile_ui && user_width < user_height ) {
-			// we'll be switching to landscape mode
-			qDebug("swap to landscape mode");
-			LOG("swap to landscape mode\n");
-			int dummy = user_width;
-			user_width = user_height;
-			user_height = dummy;
-		}
-		// test
-		/*user_width = 640;
-		user_height = 360;*/
-		/*user_width = 854;
-		user_height = 480;*/
-#elif defined(_WIN32)
+#if defined(_WIN32)
 		//#if 0
 		// we do it using system calls instead of SDL, to ignore the start bar (if showing)
 		RECT rect;
@@ -2949,31 +2888,6 @@ bool readMap(const char *filename) {
 	int epoch = -1;
 	int index = -1;
 
-#if defined(USING_QT)
-    char fullname[4096] = "";
-    sprintf(fullname, "%s%s/%s", DEPLOYMENT_PATH, maps_dirname, filename);
-    //LOG("open: %s\n", fullname);
-    QFile file(fullname);
-    if( !file.open(QIODevice::ReadOnly) ) {
-        LOG("failed to open file: %s\n", fullname);
-        return false;
-    }
-    while( ok ) {
-        qint64 amount_read = file.readLine(line, MAX_LINE);
-        //LOG("returned: %d\n", amount_read);
-        if( amount_read <= 0 ) {
-            /*if( amount_read == -1 ) {
-                LOG("error reading line\n");
-                ok = false;
-            }*/
-            break;
-        }
-        else {
-            ok = readMapProcessLine(&epoch, &index, &l_map, line, MAX_LINE, filename);
-        }
-    }
-    file.close();
-#else
     char fullname[4096] = "";
 	sprintf(fullname, "%s/%s", maps_dirname, filename);
 	// open in binary mode, so that we parse files in an OS-independent manner
@@ -3008,8 +2922,8 @@ bool readMap(const char *filename) {
 		}
 	}
 	file->close(file);
-#endif
-    if( !ok && l_map != NULL ) {
+
+	if( !ok && l_map != NULL ) {
 		LOG("delete map that was created\n");
 		delete l_map;
 		ASSERT(epoch != -1); // should have been set, if l_map!=NULL
@@ -3032,18 +2946,7 @@ int sortMapsFunc(const void *a, const void *b) {
 
 bool createMaps() {
 	LOG("createMaps()...\n");
-#if defined(USING_QT)
-    /*vector<string> maps;
-    maps.push_back("")*/
-    QDir dir(QString(DEPLOYMENT_PATH) + "islands/");
-    QStringList list = dir.entryList();
-    foreach(const QString file, list) {
-        if( !readMap(file.toLatin1().data()) ) {
-            LOG("failed reading map: %s\n", file.toLatin1().data());
-            // don't fail altogether, just ignore
-        }
-    }
-#elif defined(_WIN32)
+#if defined(_WIN32)
     WIN32_FIND_DATAA findFileData;
 	char maps_dirname_w[256];
 	sprintf(maps_dirname_w, "%s\\*", maps_dirname);
@@ -3331,12 +3234,6 @@ void cleanup() {
 	//stopMusic();
 	LOG("free sound\n");
 	freeSound();
-#ifdef USING_QT
-        if( qt_settings != NULL ) {
-            delete qt_settings;
-            qt_settings = NULL;
-        }
-#endif
 	LOG("delete application %d\n", application);
 	delete application;
 	application = NULL;
@@ -3530,7 +3427,7 @@ void loadPrefs() {
 		}
 		prefs_file->close(prefs_file);
 
-#if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
+#if defined(__ANDROID__)
 		// force onemousebutton mode, just to be safe
 		onemousebutton = true;
 #endif
@@ -3576,7 +3473,7 @@ void playGame(int n_args, char *args[]) {
 	fullscreen = true; // always fullscreen on Android
 #endif
 
-#if !defined(Q_OS_ANDROID) && !defined(__ANDROID__)
+#if !defined(__ANDROID__)
         // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
 	for(int i=0;i<n_args;i++) {
 		if( strcmp(args[i], "fullscreen") == 0 )
@@ -3619,23 +3516,9 @@ void playGame(int n_args, char *args[]) {
 	LOG("onemousebutton?: %d\n", onemousebutton);
 	LOG("mobile_ui?: %d\n", mobile_ui);
 
-#ifdef USING_QT
-        qt_settings = new QSettings("Mark Harman", "Gigalomania");
-        bool qt_ok = true;
-        int play_music_i = qt_settings->value(play_music_key_c, default_play_music_c).toInt(&qt_ok);
-        if( !qt_ok ) {
-            LOG("qt_settings: play_music not ok, set to default\n");
-            play_music = default_play_music_c;
-        }
-        else {
-            play_music = play_music_i != 0;
-            LOG("qt_settings: set play_music to %d\n", play_music);
-        }
-#else
 	loadPrefs();
-#endif
 
-    for(int i=0;i<n_epochs_c;i++)
+	for(int i=0;i<n_epochs_c;i++)
 		for(int j=0;j<max_islands_per_epoch_c;j++)
 			maps[i][j] = NULL;
 

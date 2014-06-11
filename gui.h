@@ -66,7 +66,7 @@ class ChooseMenPanel : public MultiPanel {
 	Button *button_nextepoch;
 	Button *button_options;
 	Button *button_play;
-#if defined(USING_QT) || defined(_WIN32) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__ANDROID__)
     Button *button_help;
 #endif
 	Button *button_quit;
