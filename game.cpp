@@ -2889,7 +2889,7 @@ bool readMapProcessLine(int *epoch, int *index, Map **l_map, char *line, const i
 	return ok;
 }
 
-bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end) {
+bool readLineFromRWOps(bool &ok, FILE *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end) {
 	if( newline_index > 1 ) {
 		// not safe to use strcpy on overlapping strings (undefined behaviour)
 		int len = strlen(&buffer[newline_index-1]);
@@ -2903,7 +2903,7 @@ bool readLineFromRWOps(bool &ok, SDL_RWops *file, char *buffer, char *line, int 
 	if( !reached_end ) {
 		// fill up buffer
 		for(;;) {
-			int n_read = file->read(file, &buffer[buffer_offset], 1, MAX_LINE-buffer_offset);
+			int n_read = fread(&buffer[buffer_offset], 1, MAX_LINE-buffer_offset, file);
 			//LOG("buffer offset %d , read %d\n", buffer_offset, n_read);
 			if( n_read == 0 ) {
 				// error or eof - don't quit yet, still need to finish reading buffer
@@ -2979,12 +2979,12 @@ bool readMap(const char *filename) {
 	// open in binary mode, so that we parse files in an OS-independent manner
 	// (otherwise, Windows will parse "\r\n" as being "\n", but Linux will still read it as "\n")
 	//FILE *file = fopen(fullname, "rb");
-	SDL_RWops *file = SDL_RWFromFile(fullname, "rb");
+	FILE *file = fopen(fullname, "rb");
 #if !defined(__ANDROID__) && defined(__linux)
 	if( file == NULL ) {
 		LOG("searching in /usr/share/gigalomania/ for islands folder\n");
 		sprintf(fullname, "%s/%s", alt_maps_dirname, filename);
-		file = SDL_RWFromFile(fullname, "rb");
+		file = fopen(fullname, "rb");
 	}
 #endif
     if( file == NULL ) {
@@ -3007,7 +3007,7 @@ bool readMap(const char *filename) {
 			ok = readMapProcessLine(&epoch, &index, &l_map, line, MAX_LINE, filename);
 		}
 	}
-	file->close(file);
+	fclose(file);
 #endif
     if( !ok && l_map != NULL ) {
 		LOG("delete map that was created\n");
@@ -3493,7 +3493,7 @@ const char music_on_key[] = "music_on";
 
 void loadPrefs() {
 	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
-	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "rb");
+	FILE *prefs_file = fopen(prefs_fullfilename, "rb");
 	if( prefs_file != NULL ) {
 		// reset
 		pref_sound_on = false;
@@ -3531,7 +3531,7 @@ void loadPrefs() {
 				}
 			}
 		}
-		prefs_file->close(prefs_file);
+		fclose(prefs_file);
 
 #if defined(Q_OS_SYMBIAN) || defined(Q_WS_SIMULATOR) || defined(Q_WS_MAEMO_5) || defined(Q_OS_ANDROID) || defined(__ANDROID__)
 		// force onemousebutton mode, just to be safe
@@ -3543,24 +3543,24 @@ void loadPrefs() {
 
 void savePrefs() {
 	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
-	SDL_RWops *prefs_file = SDL_RWFromFile(prefs_fullfilename, "wb+");
+	FILE *prefs_file = fopen(prefs_fullfilename, "wb+");
 	if( prefs_file == NULL ) {
 		LOG("failed to open: %s\n", prefs_fullfilename);
 	}
 	else {
 		if( onemousebutton ) {
-			prefs_file->write(prefs_file, onemousebutton_key, sizeof(char), strlen(onemousebutton_key));
-			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+			fwrite(onemousebutton_key, sizeof(char), strlen(onemousebutton_key), prefs_file);
+			fwrite("\n", sizeof(char), 1, prefs_file);
 		}
 		if( pref_sound_on ) {
-			prefs_file->write(prefs_file, sound_on_key, sizeof(char), strlen(sound_on_key));
-			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+			fwrite(sound_on_key, sizeof(char), strlen(sound_on_key), prefs_file);
+			fwrite("\n", sizeof(char), 1, prefs_file);
 		}
 		if( pref_music_on ) {
-			prefs_file->write(prefs_file, music_on_key, sizeof(char), strlen(music_on_key));
-			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+			fwrite(music_on_key, sizeof(char), strlen(music_on_key), prefs_file);
+			fwrite("\n", sizeof(char), 1, prefs_file);
 		}
-		prefs_file->close(prefs_file);
+		fclose(prefs_file);
 	}
 	delete [] prefs_fullfilename;
 }

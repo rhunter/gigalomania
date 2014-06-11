@@ -340,7 +340,7 @@ extern Map *maps[n_epochs_c][max_islands_per_epoch_c];
 extern Map *map;
 const Map *getMap();
 
-bool readLineFromRWOps(bool &ok, struct SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end);
+bool readLineFromRWOps(bool &ok, FILE *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end);
 
 void keypressEscape();
 void keypressP();
