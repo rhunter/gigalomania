@@ -575,7 +575,7 @@ void PlaceMenGameState::draw() {
 	background_islands->draw(0, 0);
 
 	if( !using_old_gfx ) {
-		sprintf(buffer, "Gigalomania v%d %d", majorVersion, minorVersion);
+		sprintf(buffer, "Gigalomania v%d.%d", majorVersion, minorVersion);
 	    Image::writeMixedCase(160, 228, letters_large, letters_small, numbers_white, buffer, Image::JUSTIFY_CENTRE);
 	}
 

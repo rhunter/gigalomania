@@ -1396,11 +1396,11 @@ void Image::writeNumbers(int x,int y,Image *images[10],int number,Justify justif
 	}
 }
 
-void Image::write(int x,int y,Image *images[26],const char *text,Justify justify) {
+void Image::write(int x,int y,Image *images[n_font_chars_c],const char *text,Justify justify) {
 	writeMixedCase(x, y, images, images, NULL, text, justify);
 }
 
-void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify) {
+void Image::writeMixedCase(int x,int y,Image *large[n_font_chars_c],Image *little[n_font_chars_c],Image *numbers[10],const char *text,Justify justify) {
 	int len = strlen(text);
 	int n_lines = 0;
 	int max_wid = 0;
@@ -1437,6 +1437,12 @@ void Image::writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image 
 			ASSERT( numbers != NULL );
 			int indx = ch - '0';
 			numbers[indx]->draw(cx, y + l_h - n_h);
+		}
+		else if( ch == '.' ) {
+			if( little[font_index_period_c] != NULL )
+				little[font_index_period_c]->draw(cx, y);
+			else if( large[font_index_period_c] != NULL )
+				large[font_index_period_c]->draw(cx, y);
 		}
 		else if( isupper( ch ) ) {
 			int indx = ch - 'A';

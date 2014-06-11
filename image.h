@@ -17,6 +17,8 @@ using std::string;
 #include <sdl_image.h>
 #endif
 
+const int n_font_chars_c = 27;
+const int font_index_period_c = 26;
 
 namespace Gigalomania {
 	class Image : public TrackedObject {
@@ -105,8 +107,8 @@ namespace Gigalomania {
 			JUSTIFY_RIGHT = 2,
 		};
 		static void writeNumbers(int x,int y,Image *images[10],int number,Justify justify);
-		static void write(int x,int y,Image *images[26],const char *text,Justify justify);
-		static void writeMixedCase(int x,int y,Image *large[26],Image *little[26],Image *numbers[10],const char *text,Justify justify);
+		static void write(int x,int y,Image *images[n_font_chars_c],const char *text,Justify justify);
+		static void writeMixedCase(int x,int y,Image *large[n_font_chars_c],Image *little[n_font_chars_c],Image *numbers[10],const char *text,Justify justify);
 
 		// SDL specific
 #if SDL_MAJOR_VERSION == 1

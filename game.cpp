@@ -119,8 +119,8 @@ Image *numbers_largegrey[10];
 Image *numbers_largeshiny[10];
 Image *numbers_small[n_players_c][10];
 Image *numbers_half = NULL;
-Image *letters_large[26];
-Image *letters_small[26];
+Image *letters_large[n_font_chars_c];
+Image *letters_small[n_font_chars_c];
 Image *mouse_pointers[n_players_c];
 Image *playershields[n_playershields_c];
 Image *building_health = NULL;
@@ -1383,6 +1383,10 @@ bool loadOldImages() {
 		numbers_small[3][i] = icons->copy(160 + 16*i, 134, 5, 7);
 	numbers_half = icons->copy(160, 119, 6, 8);
 
+	for(int i=0;i<n_font_chars_c;i++) {
+		letters_large[i] = NULL;
+		letters_small[i] = NULL;
+	}
 	for(int i=0;i<4;i++)
 		letters_large[i] = icons->copy(256 + 16*i, 269, 6, 15);
 	for(int i=0;i<20;i++)
@@ -2066,7 +2070,6 @@ bool loadImages() {
 		return false;
 	drawProgress(48);
 	processImage(icons);
-    //const int number_h_c = 8;
     const int number_h_c = 10;
     for(int i=0;i<10;i++) {
         numbers_blue[i] = icons->copy(8*i, 0, 6, number_h_c);
@@ -2088,11 +2091,16 @@ bool loadImages() {
 		numbers_small[2][i]->reshadeRGB(0, true, true, false);
 		numbers_small[3][i]->reshadeRGB(0, false, false, true);
 	}
+	for(int i=0;i<n_font_chars_c;i++) {
+		letters_large[i] = NULL;
+		letters_small[i] = NULL;
+	}
 	for(int i=0;i<26;i++) {
         letters_small[i] = icons->copy(80 + 8*i, 16, 6, number_h_c);
         letters_large[i] = icons->copy(80 + 8*i, 16, 6, number_h_c); // should be 6x15
 	}
     numbers_half = icons->copy(288, 16, 6, number_h_c);
+	letters_small[font_index_period_c] = icons->copy(296, 16, 6, number_h_c);
 
 	delete icons;
 	drawProgress(50);
