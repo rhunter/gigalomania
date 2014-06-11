@@ -14,6 +14,22 @@ all: $(APP)
 $(APP): $(OFILES) $(HFILES) $(CFILES)
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $(APP)
 
+# build a HTML+Javascript page with Emscripten
+# (not ready for the prime time yet, and you need to be careful to clean
+# between builds to avoid mixing platforms for now)
+#
+# For now, you'll also need a modified Emscripten. Apply the patch
+# in the file `emscripten-sdl-gigalomania.patch`.
+#
+gigalomania.html:
+	em++ \
+		$(OFILES) \
+		-O0 -Wall -std=c++11 \
+		--embed-file islands --preload-file gfx --preload-file sound --preload-file music \
+		-lSDL -lSDL_mixer -lSDL_image \
+		-o $@
+	patch -p 1 < html.patch
+
 .cpp.o:
 	$(CC) $(CCFLAGS) $(INC) -c $<
 

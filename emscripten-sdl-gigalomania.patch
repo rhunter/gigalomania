@@ -1,0 +1,54 @@
+diff --git a/src/library_sdl.js b/src/library_sdl.js
+index eedb8c4..649cc20 100644
+--- a/src/library_sdl.js
++++ b/src/library_sdl.js
+@@ -1500,7 +1500,7 @@ var LibrarySDL = {
+     var surfData = SDL.surfaces[surf];
+     assert(!surfData.locked); // but we could unlock and re-lock if we must..
+     
+-    if (surfData.isFlagSet(0x00200000 /* SDL_HWPALETTE */)) {
++    if (typeof(surfData.colors) !== 'undefined') {
+       //in SDL_HWPALETTE color is index (0..255)
+       //so we should translate 1 byte value to
+       //32 bit canvas
+@@ -1556,6 +1556,31 @@ var LibrarySDL = {
+     return ret;
+   },
+ 
++  SDL_GetRGBA: function(pixel, format, ptr_r, ptr_g, ptr_b) {
++    Runtime.warnOnce('SDL_GetRGBA has not been implemented (though I expect it would be easy)');
++    return 0;
++  },
++
++
++  SDL_DisplayFormat: function() {
++                       return 0;
++                     },
++  SDL_CreateCursor: function() {
++                      return 0;
++                    },
++  SDL_FreeCursor: function() {
++                    return 0;
++                  },
++  Mix_LoadMUSType_RW: function() {
++                        return 0;
++                      },
++  SDL_SetCursor: function() {
++                   return 0;
++                 },
++  SDL_GetCursor: function() {
++                   return 0;
++                 },
++
+   SDL_SetAlpha: function(surf, flag, alpha) {
+     SDL.surfaces[surf].alpha = alpha;
+   },
+@@ -2904,7 +2929,7 @@ var LibrarySDL = {
+   
+   SDL_FreeRW: function(rwopsID) {
+     SDL.rwops[rwopsID] = null;
+-    while (SDL.rwops.length > 0 && SDL.rwops[SDL.rwops.length-1] === null) {
++    while (SDL.rwops.length > 1 && SDL.rwops[SDL.rwops.length-1] === null) {
+       SDL.rwops.pop();
+     }
+   },

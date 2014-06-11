@@ -1,0 +1,13 @@
+diff --git a/gigalomania.html b/gigalomania.html
+index 7c7dab7..6acc938 100644
+--- a/gigalomania.html
++++ b/gigalomania.html
+@@ -1220,6 +1220,8 @@
+       var Module = {
+         preRun: [],
+         postRun: [],
++        arguments: ['fullscreen', 'mobile_ui', 'debugwindow'],
++        TOTAL_MEMORY: 67108864 * 2,
+         print: (function() {
+           var element = document.getElementById('output');
+           if (element) element.value = ''; // clear browser cache
