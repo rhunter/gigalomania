@@ -971,8 +971,7 @@ bool loadSamples() {
 	s_conquered->setText("we have conquered the sector");
 	s_won = Sample::loadSample(sound_dir + "we_ve_won.wav");
 	s_won->setText("we have won");
-	s_weve_nuked_them = new Sample();
-	s_weve_been_nuked = Sample::loadSample(sound_dir + "we_ve_nuked_them.wav");
+	s_weve_nuked_them = Sample::loadSample(sound_dir + "we_ve_nuked_them.wav");
 	s_weve_nuked_them->setText("we have nuked them");
 	s_weve_been_nuked = Sample::loadSample(sound_dir + "we_ve_been_nuked.wav");
 	s_weve_been_nuked->setText("we have been nuked");
