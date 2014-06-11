@@ -15,6 +15,8 @@
 #include "gui.h"
 #include "player.h"
 
+#include "emscripten.h"
+
 //---------------------------------------------------------------------------
 
 Screen::Screen() : m_pos_x(0), m_pos_y(0), m_down_left(false), m_down_middle(false), m_down_right(false) {
@@ -293,16 +295,15 @@ void wait() {
 	next_time = now + res + TICK_INTERVAL;
 }
 
-void Application::runMainLoop() {
+void runMainLoopOneIteration() {
 	int elapsed_time = application->getTicks();
 
 	SDL_Event event;
-	quit = false;
+	//quit = false;
 	const bool print_fps = false;
 	int last_fps_time = clock();
 	const int fps_frames_c = 50;
 	int frames = 0;
-	while(!quit) {
 		if( print_fps && frames == fps_frames_c ) {
 			int new_fps_time = clock();
 			float t = ((float)(new_fps_time - last_fps_time)) / (float)CLOCKS_PER_SEC;
@@ -317,13 +318,6 @@ void Application::runMainLoop() {
 
 		// draw screen
 		drawGame();
-
-		/* wait() to avoid 100% CPU - it's debatable whether we should do this,
-		 * due to risk of SDL_Delay waiting too long, but since Gigalomania
-		 * doesn't really need high frame rate, might as well avoid using full
-		 * CPU.
-		 */
-		wait();
 
 		int new_time = application->getTicks();
 		if( !paused ) {
@@ -424,7 +418,7 @@ void Application::runMainLoop() {
 						//LOG("    unblank\n");
 						//LOG("    mouse motion %d, %d\n", m_x, m_y);
 						//LOG("    old %d, %d\n", old_m_x, old_m_y);
-						this->blank_mouse = false;
+						//this->blank_mouse = false;
 					}
 					screen->setMousePos(m_x, m_y);
 					break;
@@ -503,7 +497,25 @@ void Application::runMainLoop() {
 		SDL_PumpEvents();
 
 		updateGame();
-	}
 }
 
-//#endif
+
+void Application::runMainLoop() {
+
+#ifdef EMSCRIPTEN
+  // void emscripten_set_main_loop(void (*func)(), int fps, int simulate_infinite_loop);
+  emscripten_set_main_loop(runMainLoopOneIteration, 0, 1);
+#else
+  while (!quit) {
+    runMainLoopOneIteration();
+
+		/* wait() to avoid 100% CPU - it's debatable whether we should do this,
+		 * due to risk of SDL_Delay waiting too long, but since Gigalomania
+		 * doesn't really need high frame rate, might as well avoid using full
+		 * CPU.
+		 */
+		wait();
+  }
+#endif
+
+}
