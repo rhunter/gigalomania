@@ -26,7 +26,7 @@ gigalomania.html:
 		$(OFILES) \
 		-O0 -Wall -std=c++11 \
 		--embed-file islands --preload-file gfx --preload-file sound --preload-file music \
-		-lSDL -lSDL_mixer -lSDL_image \
+		-lSDL -lSDL_mixer -lSDL_image --js-library emscripten/library_sdl_stubs.js \
 		-o $@
 	patch -p 1 < html.patch
 
