@@ -243,6 +243,116 @@ void putpixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
 	}
 }
 
+// Creates an alpha from the mask; also adds in shadow effect based on supplied ar/ag/ab colour
+bool Image::createAlphaForColor(bool mask, unsigned char mr, unsigned char mg, unsigned char mb, unsigned char ar, unsigned char ag, unsigned char ab, unsigned char alpha) {
+	int w = this->getWidth();
+	int h = this->getHeight();
+
+	this->convertToHiColor(true);
+
+#ifdef TIMING
+	int time_s = clock();
+#endif
+
+	SDL_LockSurface(this->surface);
+	// faster to read in x direction! (caching?)
+	for(int cy=0;cy<h;cy++) {
+		for(int cx=0;cx<w;cx++) {
+			Uint32 pixel = getpixel(this->surface, cx, cy);
+			Uint8 r = 0, g = 0, b = 0, a = 0;
+			SDL_GetRGB(pixel, this->surface->format, &r, &g, &b);
+			if( r == ar && g == ag && b == ab ) {
+				r = 0;
+				g = 0;
+				b = 0;
+				a = alpha;
+				pixel = SDL_MapRGBA(this->surface->format, r, g, b, a);
+				putpixel(this->surface, cx, cy, pixel);
+			}
+			else if( mask && r == mr && g == mg && b == mb ) {
+				r = 0;
+				g = 0;
+				b = 0;
+				a = 0;
+				pixel = SDL_MapRGBA(this->surface->format, r, g, b, a);
+				putpixel(this->surface, cx, cy, pixel);
+			}
+		}
+	}
+
+	SDL_UnlockSurface(this->surface);
+#ifdef TIMING
+	int time_taken = clock() - time_s;
+	LOG("    image createAlphaForColor time %d\n", time_taken);
+	static int total = 0;
+	total += time_taken;
+	LOG("    image createAlphaForColor total %d\n", total);
+#endif
+	return true;
+}
+
+void Image::scaleAlpha(float scale) {
+	int bpp = this->surface->format->BitsPerPixel;
+	if( bpp != 32 )
+		return;
+
+#ifdef TIMING
+	int time_s = clock();
+#endif
+
+	int w = this->getWidth();
+	int h = this->getHeight();
+	SDL_LockSurface(this->surface);
+	// faster to read in x direction! (caching?)
+	for(int cy=0;cy<h;cy++) {
+		for(int cx=0;cx<w;cx++) {
+			Uint32 pixel = getpixel(this->surface, cx, cy);
+			Uint8 r = 0, g = 0, b = 0, a = 0;
+			SDL_GetRGBA(pixel, this->surface->format, &r, &g, &b, &a);
+			//a *= scale;
+			a = (Uint8)(a*scale);
+			pixel = SDL_MapRGBA(this->surface->format, r, g, b, a);
+			putpixel(this->surface, cx, cy, pixel);
+		}
+	}
+	SDL_UnlockSurface(this->surface);
+#ifdef TIMING
+	int time_taken = clock() - time_s;
+	LOG("    image scaleAlpha time %d\n", time_taken);
+	static int total = 0;
+	total += time_taken;
+	LOG("    image scaleAlpha total %d\n", total);
+#endif
+}
+
+bool Image::convertToHiColor(bool alpha) {
+#ifdef TIMING
+	int time_s = clock();
+#endif
+	// todo: repeated conversions don't seem to work? seems to be due to repeated blitting not working
+	int bpp = this->surface->format->BitsPerPixel;
+	if( bpp == 32 )
+		return false;
+	Uint32 rmask, gmask, bmask, amask;
+	CreateMask(rmask, gmask, bmask, amask);
+
+	int depth = alpha ? 32 : 24;
+	SDL_Surface *new_surf = SDL_CreateRGBSurface(0, this->getWidth(), this->getHeight(), depth, rmask, gmask, bmask, amask);
+	SDL_BlitSurface(this->surface, NULL, new_surf, NULL);
+	free();
+	this->surface = new_surf;
+	this->need_to_free_data = false;
+
+#ifdef TIMING
+	int time_taken = clock() - time_s;
+	LOG("    image convert time %d\n", time_taken);
+	static int total = 0;
+	total += time_taken;
+	LOG("    image convert total %d\n", total);
+#endif
+	return true;
+}
+
 bool Image::convertToDisplayFormat() {
 #if SDL_MAJOR_VERSION == 1
 	SDL_Surface *new_surf = NULL;
