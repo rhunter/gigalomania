@@ -26,9 +26,9 @@ $(APP): $(OFILES) $(HFILES) $(CFILES)
 LLVMIROFILES=$(patsubst %.o, %.llvmir.o, $(OFILES))
 
 # This is the final output
-gigalomania.html: $(LLVMIROFILES)
+gigalomania.html: $(LLVMIROFILES) islands emscripten/library_sdl_stubs.js
 	em++ \
-		$^ \
+		$(LLVMIROFILES) \
 		-O0 -Wall -std=c++11 \
 		--embed-file islands --preload-file gfx --preload-file sound --preload-file music \
 		-lSDL -lSDL_mixer -lSDL_image --js-library emscripten/library_sdl_stubs.js \
