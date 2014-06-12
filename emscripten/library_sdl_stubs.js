@@ -6,13 +6,26 @@
 // Emscripten, in the future).
 
 var LibrarySDLStubs = {
-  SDL_GetRGBA: function(pixel, format, ptr_r, ptr_g, ptr_b) {
+  SDL_GetRGBA: function(pixel, format, ptr_r, ptr_g, ptr_b, ptr_a) {
     Runtime.warnOnce('SDL_GetRGBA has not been implemented (though I expect it would be easy)');
     // the actual implementation would look something along the lines of:
     // var r_value = (rgba&0xff);
     // var g_value = (rgba>>8 & 0xff);
     // var b_value = (rgba>>16 & 0xff);
     // var a_value = (rgba>>>24);
+    //
+    // {{{ makeSetValue('ptr_r', 0, 'r_value', 'i8') }}}
+    // {{{ makeSetValue('ptr_g', 0, 'g_value', 'i8') }}}
+    // {{{ makeSetValue('ptr_b', 0, 'b_value', 'i8') }}}
+    // {{{ makeSetValue('ptr_a', 0, 'b_value', 'i8') }}}
+    return 0;
+  },
+  SDL_GetRGB: function(pixel, format, ptr_r, ptr_g, ptr_b) {
+    Runtime.warnOnce('SDL_GetRGB has not been implemented (though I expect it would be easy)');
+    // the actual implementation would look something along the lines of:
+    // var r_value = (rgba&0xff);
+    // var g_value = (rgba>>8 & 0xff);
+    // var b_value = (rgba>>16 & 0xff);
     //
     // {{{ makeSetValue('ptr_r', 0, 'r_value', 'i8') }}}
     // {{{ makeSetValue('ptr_g', 0, 'g_value', 'i8') }}}
