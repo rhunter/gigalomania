@@ -9,6 +9,12 @@ LINKPATH=`sdl-config --libs` -L/usr/X11R6/lib/ -L/usr/lib
 
 LIBS=-lSDL_image -lSDL_mixer
 
+
+# cancel the implicit rule that makes the `sound` dir look like it comes from
+# `sound.o`. helpful if you want a target to be out of date when the `sound`
+# directory changes.
+%: %.o
+
 .PHONY: all
 all: $(APP)
 
