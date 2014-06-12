@@ -15,7 +15,10 @@
 #include "gui.h"
 #include "player.h"
 
+#ifdef EMSCRIPTEN
 #include "emscripten.h"
+#endif
+
 
 //---------------------------------------------------------------------------
 

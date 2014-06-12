@@ -15,20 +15,32 @@ $(APP): $(OFILES) $(HFILES) $(CFILES)
 	$(CC) $(OFILES) $(CCFLAGS) $(LINKPATH) $(LIBS) -o $(APP)
 
 # build a HTML+Javascript page with Emscripten
-# (not ready for the prime time yet, and you need to be careful to clean
-# between builds to avoid mixing platforms for now)
+# (not ready for the prime time yet)
 #
 # For now, you'll also need a modified Emscripten. Apply the patch
 # in the file `emscripten-sdl-gigalomania.patch`.
 #
-gigalomania.html:
+
+# keep the LLVM IR (Emscripten-style) .o files separate from the native .o
+# files. XXX: would it be nicer to build into a subdir or something instead?
+LLVMIROFILES=$(patsubst %.o, %.llvmir.o, $(OFILES))
+
+# This is the final output
+gigalomania.html: $(LLVMIROFILES)
 	em++ \
-		$(OFILES) \
+		$^ \
 		-O0 -Wall -std=c++11 \
 		--embed-file islands --preload-file gfx --preload-file sound --preload-file music \
 		-lSDL -lSDL_mixer -lSDL_image --js-library emscripten/library_sdl_stubs.js \
 		-o $@
 	patch -p 1 < html.patch
+
+%.llvmir.o: %.cpp
+	em++ \
+		-O0 -Wall -std=c++11 \
+		-include stdlib.h \
+		-c $< \
+		-o $@
 
 .cpp.o:
 	$(CC) $(CCFLAGS) $(INC) -c $<
