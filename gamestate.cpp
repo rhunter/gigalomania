@@ -335,7 +335,7 @@ void GameState::requestQuit() {
 }
 
 void GameState::createQuitWindow() {
-    if( confirm_window == NULL /*&& gameResult != GAMERESULT_QUIT*/ && fade == NULL ) {
+    if( confirm_window == NULL && !state_changed ) {
 		confirm_type = CONFIRMTYPE_QUITGAME;
 		confirm_window = new PanelPage(120, 120, 64, 32);
 		Button *text_button = new Button(0, 0, "REALLY QUIT", letters_small);
@@ -677,7 +677,7 @@ void PlaceMenGameState::requestNewGame() {
 }
 
 void PlaceMenGameState::requestQuit() {
-	if( choosemenPanel->getPage() == ChooseMenPanel::STATE_CHOOSEMEN && fade == NULL ) {
+	if( choosemenPanel->getPage() == ChooseMenPanel::STATE_CHOOSEMEN && !state_changed ) {
 		choosemenPanel->setPage(ChooseMenPanel::STATE_CHOOSEISLAND);
 	}
 	else {
@@ -1855,7 +1855,6 @@ void ChoosePlayerGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle
 		::setClientPlayer(player);
 		setGameStateID(GAMESTATEID_PLACEMEN);
 		newGame();
-		//::gamestate->fadeScreen(false, 0, NULL); // n.b., must be "gamestate" not "this", to refer to the new gamestate!
 	}
 }
 
@@ -2245,6 +2244,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
         if( !state_changed ) {
 			gameResult = GAMERESULT_QUIT;
 			fadeMusic(1000);
+			state_changed = true;
 			this->fadeScreen(true, 0, endIsland);
 		}
 	}
