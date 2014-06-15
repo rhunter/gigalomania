@@ -3214,12 +3214,6 @@ bool isPaused() {
 	return paused;
 }
 
-/*void keypressQ() {
-	if( gameStateID == GAMESTATEID_PLAYING && !state_changed ) {
-		static_cast<PlayingGameState *>(gamestate)->requestQuit();
-	}
-}*/
-
 void mouseClick(int m_x, int m_y, bool m_left, bool m_middle, bool m_right, bool click) {
 	const int mousepress_delay = 100;
 	static int lastmousepress_time = 0;
