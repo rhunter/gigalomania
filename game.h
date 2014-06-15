@@ -60,7 +60,7 @@ enum GameStateID {
 
 extern GameStateID gameStateID;
 extern bool state_changed;
-extern bool paused;
+//extern bool paused;
 
 enum GameResult {
 	GAMERESULT_UNDEFINED = 0,
@@ -334,8 +334,8 @@ const Map *getMap();
 bool readLineFromRWOps(bool &ok, struct SDL_RWops *file, char *buffer, char *line, int MAX_LINE, int &buffer_offset, int &newline_index, bool &reached_end);
 
 void keypressEscape();
-void keypressP();
-//void keypressQ();
+void togglePause();
+bool isPaused();
 void mouseClick(int m_x, int m_y, bool m_left, bool m_middle, bool m_right, bool click);
 void updateGame();
 void drawGame();

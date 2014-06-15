@@ -326,7 +326,7 @@ void Application::runMainLoop() {
 		wait();
 
 		int new_time = application->getTicks();
-		if( !paused ) {
+		if( !isPaused() ) {
 			updateTime(new_time - elapsed_time);
 		}
 		else
@@ -356,7 +356,7 @@ void Application::runMainLoop() {
 						keypressEscape();
 					}
 					else if( key.sym == SDLK_p ) {
-						keypressP();
+						togglePause();
 					}
 					break;
 				}
@@ -380,9 +380,9 @@ void Application::runMainLoop() {
 						screen->setMouseRight(true);
 					}
 
-					if( paused ) {
+					if( isPaused() ) {
 						// click automatically unpaused (needed to work without keyboard!)
-						paused = false;
+						togglePause();
 					}
 					else if( m_left || m_middle || m_right ) {
 						/*int m_x = 0, m_y = 0;
@@ -494,8 +494,8 @@ void Application::runMainLoop() {
 				}
 				else if( event.window.event == SDL_WINDOWEVENT_HIDDEN || event.window.event == SDL_WINDOWEVENT_FOCUS_LOST ) {
 					// inactive
-					if( !paused ) {
-						keypressP(); // automatically pause when application goes inactive
+					if( !isPaused() ) {
+						togglePause(); // automatically pause when application goes inactive
 					}
 				}
 				break;

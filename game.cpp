@@ -3190,28 +3190,28 @@ void cleanup() {
 bool debugwindow = false;
 
 void keypressEscape() {
-    /*if( gameStateID == GAMESTATEID_PLACEMEN || gameStateID == GAMESTATEID_PLAYING ) {
-        gamestate->requestQuit();
-    }
-	else {
-		application->setQuit();
-	}*/
     if( !state_changed ) {
 	    gamestate->requestQuit();
 	}
 }
 
-void keypressP() {
+void togglePause() {
     if( gameStateID == GAMESTATEID_PLAYING ) {
         paused = !paused;
         if( paused ) {
             playSample(s_on_hold);
 
-            //playSample(s_conquered); // uncomment to test chained samples
-            //playSample(s_explosion, SOUND_CHANNEL_FX);
-            //playSample(s_explosion);
+			// n.b., pausing music absolutely important on Android, so music stops when game goes into background; but useful for other platforms too
+			Sample::pauseMusic();
         }
+		else {
+			Sample::unpauseMusic();
+		}
     }
+}
+
+bool isPaused() {
+	return paused;
 }
 
 /*void keypressQ() {

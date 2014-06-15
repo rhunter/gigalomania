@@ -316,7 +316,7 @@ void GameState::draw() {
 		}
 	}
 
-	if( paused ) {
+	if( isPaused() ) {
 		string str = mobile_ui ? "touch screen\nto unpause game" : "press p or click\nmouse to unpause game";
 		// n.b., don't use 120 for y pos, need to avoid collision with quit game message
 		// and offset x pos slightly, to avoid overlapping with GUI
@@ -2256,11 +2256,10 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
     }
 	else if( !done && m_left && click && pause_button != NULL && pause_button->mouseOver(m_x, m_y) ) {
 		// should always be non-paused if we are here!
-		if( !paused ) {
+		if( !isPaused() ) {
             done = true;
             registerClick();
-            paused = true;
-			playSample(s_on_hold);
+			togglePause();
 		}
 	}
 

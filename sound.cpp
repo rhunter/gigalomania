@@ -146,6 +146,18 @@ void Sample::play(int ch) {
 	}
 }
 
+void Sample::pauseMusic() {
+	if( have_sound ) {
+		 Mix_PauseMusic();
+	}
+}
+
+void Sample::unpauseMusic() {
+	if( have_sound ) {
+		 Mix_ResumeMusic();
+	}
+}
+
 void Sample::fadeOut(int duration_ms) {
 	if( have_sound ) {
 		if( is_music ) {
