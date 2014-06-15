@@ -1463,6 +1463,12 @@ void Image::writeMixedCase(int x,int y,Image *large[n_font_chars_c],Image *littl
 			else if( large[font_index_exclamation_c] != NULL )
 				large[font_index_exclamation_c]->draw(cx, y);
 		}
+		else if( ch == '?' ) {
+			if( little[font_index_question_c] != NULL )
+				little[font_index_question_c]->draw(cx, y);
+			else if( large[font_index_question_c] != NULL )
+				large[font_index_question_c]->draw(cx, y);
+		}
 		else {
 			continue; // don't increase cx
 		}

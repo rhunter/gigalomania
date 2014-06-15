@@ -338,7 +338,7 @@ void GameState::createQuitWindow() {
     if( confirm_window == NULL && !state_changed ) {
 		confirm_type = CONFIRMTYPE_QUITGAME;
 		confirm_window = new PanelPage(120, 120, 64, 32);
-		Button *text_button = new Button(0, 0, "REALLY QUIT", letters_small);
+		Button *text_button = new Button(0, 0, "REALLY QUIT?", letters_small);
 		confirm_window->add(text_button);
 		confirm_yes_button = new Button(0, 16, "YES", letters_small);
 		confirm_window->add(confirm_yes_button);
@@ -2813,15 +2813,15 @@ void EndIslandGameState::draw() {
 	background->draw(0, 0);
 	char text[4096] = "";
 	if( gameResult == GAMERESULT_QUIT )
-		strcpy(text, "QUITTER");
+		strcpy(text, "QUITTER!");
 	else if( gameResult == GAMERESULT_LOST )
-		strcpy(text, "LOSER");
+		strcpy(text, "LOSER!");
 	else if( gameResult == GAMERESULT_WON )
-		strcpy(text, "CONGRATULATIONS");
+		strcpy(text, "CONGRATULATIONS!");
 	else {
 		ASSERT(false);
 	}
-	Image::write(160, 120, letters_large, text, Image::JUSTIFY_CENTRE);
+	Image::write(160, 120, letters_small, text, Image::JUSTIFY_CENTRE);
 
 	bool suspend = false;
 	if( start_epoch >= 6 && gameResult == GAMERESULT_WON )

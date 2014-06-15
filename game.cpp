@@ -2039,6 +2039,7 @@ bool loadImages() {
 	letters_small[font_index_period_c] = icons->copy(296, 16, 6, number_h_c);
 	letters_small[font_index_apostrophe_c] = icons->copy(304, 16, 6, number_h_c);
 	letters_small[font_index_exclamation_c] = icons->copy(312, 16, 6, number_h_c);
+	letters_small[font_index_question_c] = icons->copy(320, 16, 6, number_h_c);
 
 	delete icons;
 	drawProgress(50);
