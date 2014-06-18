@@ -968,7 +968,7 @@ bool PlayingGameState::viewingAnyClientSector() const {
 bool PlayingGameState::openPitMine() {
 	if( current_sector->getActivePlayer() != -1 && current_sector->getBuilding(BUILDING_MINE) == NULL && current_sector->getEpoch() >= 1 ) {
 		for(int i=0;i<N_ID;i++) {
-			if( current_sector->anyElements(i) ) {
+			if( current_sector->anyElements((Id)i) ) {
 				Element *element = ::elements[i];
 				if( element->getType() == Element::OPENPITMINE )
 					return true;
@@ -1198,19 +1198,25 @@ void PlayingGameState::setFlashingSquare(int xpos,int ypos) {
 };
 
 void GameState::fadeScreen(bool out, int delay, void (*func_finish)()) {
-	/*FadeEffect *fade = new FadeEffect();
-	this->effects->add(fade);*/
-	//ASSERT( fade == NULL );
     if( fade != NULL )
         delete fade;
-    fade = new FadeEffect(false, out, delay, func_finish);
+	if( is_testing ) {
+		if( func_finish != NULL ) {
+			func_finish();
+		}
+	}
+	else {
+	    fade = new FadeEffect(false, out, delay, func_finish);
+	}
 }
 
 void GameState::whiteFlash() {
 	//ASSERT( whitefade == NULL );
     if( whitefade != NULL )
         delete whitefade;
-    whitefade = new FadeEffect(true, false, 0, NULL);
+	if( !is_testing ) {
+	    whitefade = new FadeEffect(true, false, 0, NULL);
+	}
 }
 
 void PlayingGameState::draw() {
@@ -1909,24 +1915,28 @@ void PlaceMenGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,boo
 		}
 		if( found ) {
 			LOG("starting epoch %d island %s at %d, %d\n", start_epoch, map->getName(), map_x, map_y);
-			this->start_map_x = map_x;
-			this->start_map_y = map_y;
-			if( !isDemo() ) {
-				players[client_player]->setNMenForThisIsland( this->choosemenPanel->getNMen() );
-				ASSERT( players[client_player]->getNMenForThisIsland() <= getMenAvailable() );
-				LOG("human is player %d, starting with %d men\n", client_player, players[client_player]->getNMenForThisIsland());
-			}
-			else {
-				LOG("DEMO mode\n");
-				//placeTower(map_x, map_y, 0);
-			}
-			placeTower();
+			this->setStartMapPos(map_x, map_y);
 			return;
 		}
 	}
 
     if( !done )
         this->choosemenPanel->input(m_x, m_y, m_left, m_middle, m_right, click);
+}
+
+void PlaceMenGameState::setStartMapPos(int start_map_x, int start_map_y ) {
+	this->start_map_x = start_map_x;
+	this->start_map_y = start_map_y;
+	if( !isDemo() ) {
+		players[client_player]->setNMenForThisIsland( this->choosemenPanel->getNMen() );
+		ASSERT( players[client_player]->getNMenForThisIsland() <= getMenAvailable() );
+		LOG("human is player %d, starting with %d men\n", client_player, players[client_player]->getNMenForThisIsland());
+	}
+	else {
+		LOG("DEMO mode\n");
+		//placeTower(map_x, map_y, 0);
+	}
+	placeTower();
 }
 
 bool PlayingGameState::canRequestAlliance(int player,int i) const {
@@ -2164,15 +2174,7 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
 							playSample(s_cant_nuke_ally);
 						}
 						else {
-							/*if( map->getSector(map_x, map_y)->nukeSector(current_sector) ) {
-								current_sector->getAssembledArmy()->empty();
-								this->moveTo(map_x,map_y);
-							}*/
-							if( !map->getSector(map_x, map_y)->isBeingNuked() ) {
-								//map->getSector(map_x, map_y)->nukeSector(current_sector);
-								this->nukeSector(current_sector->getXPos(), current_sector->getYPos(), map_x, map_y);
-								//current_sector->getAssembledArmy()->empty();
-								this->assembledArmyEmpty(current_sector->getXPos(), current_sector->getYPos());
+							if( this->nukeSector(current_sector->getXPos(), current_sector->getYPos(), map_x, map_y) ) {
 								this->moveTo(map_x,map_y);
 							}
 						}
@@ -2580,7 +2582,7 @@ void PlayingGameState::refreshButtons() {
 				for(int x=0;x<map_width_c;x++) {
 					if( map->isSectorAt(x, y) ) {
 						if( is_nukes ) {
-							if( map->getSector(x, y)->getPlayer() == current_sector->getPlayer() ) {
+							if( map->getSector(x, y)->getPlayer() == current_sector->getPlayer() || map->getSector(x, y)->isBeingNuked() || map->getSector(x, y)->isNuked() ) {
 								map_panels[x][y]->setInfoLMB("");
 							}
 							else {
@@ -2630,6 +2632,7 @@ void PlayingGameState::refreshShieldNumberPanels() {
 
 void PlayingGameState::setNDesigners(int sector_x, int sector_y, int n_designers) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		if( sector->getCurrentDesign() != NULL ) {
 			sector->setDesigners(n_designers);
@@ -2639,6 +2642,7 @@ void PlayingGameState::setNDesigners(int sector_x, int sector_y, int n_designers
 
 void PlayingGameState::setNWorkers(int sector_x, int sector_y, int n_workers) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		if( sector->getCurrentManufacture() != NULL ) {
 			sector->setWorkers(n_workers);
@@ -2648,6 +2652,7 @@ void PlayingGameState::setNWorkers(int sector_x, int sector_y, int n_workers) {
 
 void PlayingGameState::setFAmount(int sector_x, int sector_y, int n_famount) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		if( sector->getCurrentManufacture() != NULL ) {
 			sector->setFAmount(n_famount);
@@ -2657,6 +2662,7 @@ void PlayingGameState::setFAmount(int sector_x, int sector_y, int n_famount) {
 
 void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_miners) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		if( sector->canMine(element) ) {
 			sector->setMiners(element, n_miners);
@@ -2666,6 +2672,7 @@ void PlayingGameState::setNMiners(int sector_x, int sector_y, Id element, int n_
 
 void PlayingGameState::setNBuilders(int sector_x, int sector_y, Type type, int n_builders) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		if( sector->canBuild(type) ) {
 			sector->setBuilders(type, n_builders);
@@ -2675,6 +2682,7 @@ void PlayingGameState::setNBuilders(int sector_x, int sector_y, Type type, int n
 
 void PlayingGameState::setCurrentDesign(int sector_x, int sector_y, Design *design) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		sector->setCurrentDesign(design);
 	}
@@ -2682,6 +2690,7 @@ void PlayingGameState::setCurrentDesign(int sector_x, int sector_y, Design *desi
 
 void PlayingGameState::setCurrentManufacture(int sector_x, int sector_y, Design *design) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		sector->setCurrentManufacture(design);
 	}
@@ -2689,25 +2698,30 @@ void PlayingGameState::setCurrentManufacture(int sector_x, int sector_y, Design 
 
 void PlayingGameState::assembledArmyEmpty(int sector_x, int sector_y) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		sector->getAssembledArmy()->empty();
 	}
 }
 
-void PlayingGameState::assembleArmyUnarmed(int sector_x, int sector_y, int n) {
+bool PlayingGameState::assembleArmyUnarmed(int sector_x, int sector_y, int n) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		int n_spare = sector->getAvailablePopulation();
 		if( n_spare >= n ) {
 			int n_population = sector->getPopulation();
 			sector->getAssembledArmy()->add(n_epochs_c, n);
 			sector->setPopulation(n_population - n);
+			return true;
 		}
 	}
+	return false;
 }
 
 bool PlayingGameState::assembleArmy(int sector_x, int sector_y, int epoch, int n) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		if( sector->assembleArmy(epoch, n) ) {
 			return true;
@@ -2718,6 +2732,7 @@ bool PlayingGameState::assembleArmy(int sector_x, int sector_y, int epoch, int n
 
 void PlayingGameState::returnAssembledArmy(int sector_x, int sector_y) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		sector->returnAssembledArmy();
 	}
@@ -2725,6 +2740,7 @@ void PlayingGameState::returnAssembledArmy(int sector_x, int sector_y) {
 
 void PlayingGameState::returnArmy(int sector_x, int sector_y, int src_x, int src_y) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		Sector *src = map->getSector(src_x, src_y);
 		Army *army = src->getArmy(client_player);
@@ -2735,30 +2751,41 @@ void PlayingGameState::returnArmy(int sector_x, int sector_y, int src_x, int src
 bool PlayingGameState::moveArmyTo(int src_x, int src_y, int target_x, int target_y) {
 	Sector *src = map->getSector(src_x, src_y);
 	Sector *target = map->getSector(target_x, target_y);
+	ASSERT(src != NULL);
+	ASSERT(target != NULL);
 	Army *army = src->getArmy(client_player);
 	return target->moveArmy(army);
 }
 
 bool PlayingGameState::moveAssembledArmyTo(int src_x, int src_y, int target_x, int target_y) {
 	Sector *src = map->getSector(src_x, src_y);
+	ASSERT(src != NULL);
 	if( src->getActivePlayer() == client_player ) {
 		Army *army = src->getAssembledArmy();
 		Sector *target = map->getSector(target_x, target_y);
+		ASSERT(target != NULL);
 		return target->moveArmy(army);
 	}
 	return false;
 }
 
-void PlayingGameState::nukeSector(int src_x, int src_y, int target_x, int target_y) {
+bool PlayingGameState::nukeSector(int src_x, int src_y, int target_x, int target_y) {
 	Sector *src = map->getSector(src_x, src_y);
 	Sector *target = map->getSector(target_x, target_y);
+	ASSERT(src != NULL);
+	ASSERT(target != NULL);
 	if( src->getActivePlayer() == client_player ) {
-		target->nukeSector(src);
+		if( target->nukeSector(src) ) {
+			this->assembledArmyEmpty(src_x, src_y);
+			return true;
+		}
 	}
+	return false;
 }
 
 void PlayingGameState::deployDefender(int sector_x, int sector_y, Type type, int turret, int epoch) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		Building *building = sector->getBuilding(type);
 		if( building != NULL ) {
@@ -2769,6 +2796,7 @@ void PlayingGameState::deployDefender(int sector_x, int sector_y, Type type, int
 
 void PlayingGameState::returnDefender(int sector_x, int sector_y, Type type, int turret) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		Building *building = sector->getBuilding(type);
 		if( building != NULL ) {
@@ -2779,6 +2807,7 @@ void PlayingGameState::returnDefender(int sector_x, int sector_y, Type type, int
 
 void PlayingGameState::useShield(int sector_x, int sector_y, Type type, int shield) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		Building *building = sector->getBuilding(type);
 		if( building != NULL ) {
@@ -2789,6 +2818,7 @@ void PlayingGameState::useShield(int sector_x, int sector_y, Type type, int shie
 
 void PlayingGameState::trashDesign(int sector_x, int sector_y, Invention *invention) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		sector->trashDesign(invention);
 	}
@@ -2796,6 +2826,7 @@ void PlayingGameState::trashDesign(int sector_x, int sector_y, Invention *invent
 
 void PlayingGameState::shutdown(int sector_x, int sector_y) {
 	Sector *sector = map->getSector(sector_x, sector_y);
+	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		sector->shutdown();
 	}

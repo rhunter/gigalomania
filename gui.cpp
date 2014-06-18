@@ -664,7 +664,7 @@ void GamePanel::setup() {
 			if( indx == 4 )
 				break;
 			int n_elements = 0, fraction = 0;
-			gamestate->getCurrentSector()->getTotalElements(&n_elements, &fraction, i);
+			gamestate->getCurrentSector()->getTotalElements(&n_elements, &fraction, (Id)i);
 			if( n_elements > 0 || fraction > 0 ) {
 				/*this->button_elements[indx] = new Button(8 + 24*indx, 90, icon_elements[i]);
 				this->add(STATE_SECTORCONTROL, button_elements[indx]);*/

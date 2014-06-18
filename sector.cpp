@@ -1205,15 +1205,14 @@ void Sector::trashDesign(Design *design) {
 	}
 }
 
-void Sector::nukeSector(Sector *source) {
+bool Sector::nukeSector(Sector *source) {
 	LOG("Sector::nuke(%d) [%d: %d, %d]\n", source, player, xpos, ypos);
 	ASSERT( source->player != -1 );
 	ASSERT( this->player != source->player );
 	ASSERT( this->player == -1 || !Player::isAlliance( this->player, source->player ) );
 	if( isBeingNuked() ) {
 		ASSERT( this->nuke_time != -1 );
-		//return false;
-		return;
+		return false;
 	}
 
 	// we still start the timer, even if a laser will shoot it
@@ -1236,7 +1235,7 @@ void Sector::nukeSector(Sector *source) {
 		}
 	}
 
-	//return true;
+	return true;
 }
 
 Design *Sector::canResearch(Invention::Type type,int epoch) const {
@@ -1248,7 +1247,7 @@ Design *Sector::canResearch(Invention::Type type,int epoch) const {
 		return NULL; // need a lab for this
 
 	if( this->inventionKnown(type, epoch) )
-		return NULL; // already know it, so can't reserch it again
+		return NULL; // already know it, so can't research it again
 
 	return this->bestDesign(type, epoch);
 }
@@ -1272,13 +1271,13 @@ void Sector::consumeStocks(Design *design) {
 	}
 }
 
-void Sector::buildDesign(Design *design) {
-	//LOG("Sector::buildDesign(%d : %s) [%d: %d, %d]\n", design, design->getInvention()->getName(), player, xpos, ypos);
+void Sector::buildDesign() {
+	//LOG("Sector::buildDesign(%d : %s) [%d: %d, %d]\n", this->current_manufacture, this->current_manufacture->getInvention()->getName(), player, xpos, ypos);
 /*#ifdef _DEBUG
 	LOG("### Sector::buildDesign a\n");
 	map->checkSectors();
 #endif*/
-	Invention *invention = design->getInvention();
+	Invention *invention = this->current_manufacture->getInvention();
 	if( invention->getType() == Invention::WEAPON ) {
 		this->getStoredArmy()->add(invention->getEpoch(), 1);
 	}
@@ -1587,67 +1586,7 @@ void Sector::doPlayer(int client_player) {
 		int cost = this->getInventionCost();
 		if( this->researched > cost ) {
 			//LOG("Sector [%d: %d, %d] has made a %s\n", player, xpos, ypos, this->current_design->getInvention()->getName());
-			bool done_sound = false;
-			if( this->player != client_player )
-				done_sound = true;
-			this->inventions_known[ this->current_design->getInvention()->getType() ][ this->current_design->getInvention()->getEpoch() ] = true;
-			this->designs.push_back( this->current_design );
-
-			if( this->epoch < start_epoch + 3 && epoch < n_epochs_c-1 ) {
-				//int levels[4] = {0, 0, 0, 0};
-				int score = 0;
-				for(int i=0;i<3;i++) {
-					int val = 1;
-					for(int j=0;j<4;j++) {
-						if( start_epoch+j < n_epochs_c ) {
-							if( this->inventions_known[i][start_epoch+j] ) {
-								//levels[j]++;
-								score += val;
-							}
-						}
-						val *= 2;
-					}
-				}
-				/*if( levels[0] >= 3 || levels[1] >= 2 || levels[2] >= 1 || levels[3] >= 1 ) {
-				// advance a tech level!
-				this->epoch++;
-				if( !done_sound ) {
-				playSample(s_advanced_tech);
-				done_sound = true;
-				}
-				}*/
-				score = ( score + 3 ) / 3;
-				int new_epoch = start_epoch;
-				while( score > 1 ) {
-					new_epoch++;
-					score /= 2;
-				}
-				if( new_epoch > this->epoch ) {
-					// advance a tech level!
-					this->epoch = new_epoch;
-					LOG("Sector [%d: %d, %d] has advanced to tech level %d\n", player, xpos, ypos, epoch);
-					if( !done_sound ) {
-						playSample(s_advanced_tech);
-						done_sound = true;
-					}
-				}
-			}
-			if( this == gamestate->getCurrentSector() ) {
-				//((PlayingGameState *)gamestate)->getGamePanel()->refresh();
-				gamestate->getGamePanel()->refresh();
-			}
-			if( !done_sound ) {
-				if( this->current_design->isErgonomicallyTerrific() )
-					playSample(s_ergo);
-				else
-					playSample(s_design_is_ready);
-			}
-			if( this->player == client_player ) {
-				//((PlayingGameState *)gamestate)->setFlashingSquare(this->xpos, this->ypos);
-				gamestate->setFlashingSquare(this->xpos, this->ypos);
-			}
-
-			this->setCurrentDesign(NULL);
+			this->invent(client_player);
 		}
 	}
 
@@ -1684,7 +1623,7 @@ void Sector::doPlayer(int client_player) {
 		}
 		int cost = this->getManufactureCost();
 		if( this->manufactured > cost ) {
-			this->buildDesign( this->current_manufacture );
+			this->buildDesign();
 			this->manufactured = 0;
 			if( this->n_famount != infinity_c )
 				this->setFAmount( this->n_famount - 1 );
@@ -1724,17 +1663,7 @@ void Sector::doPlayer(int client_player) {
 			while( this->partial_elementstocks[i] > mine_rate_c * gameticks_per_hour_c ) {
 				new_stocks = true;
 				this->partial_elementstocks[i] -= mine_rate_c * gameticks_per_hour_c;
-				this->elementstocks[i]++;
-				this->elements[i]--;
-				if( this->elements[i] == 0 ) {
-					if( element->getType() != Element::GATHERABLE )
-						this->setMiners((Id)i, 0);
-					LOG("Sector [%d: %d, %d] running out of element %d : %s\n", player, xpos, ypos, i, ::elements[i]->getName());
-					if( this->player == client_player ) {
-						playSample(s_running_out_of_elements);
-						//((PlayingGameState *)gamestate)->setFlashingSquare(this->xpos, this->ypos);
-						gamestate->setFlashingSquare(this->xpos, this->ypos);
-					}
+				if( this->mineElement(client_player, (Id)i) ) {
 					break;
 				}
 			}
@@ -1762,29 +1691,7 @@ void Sector::doPlayer(int client_player) {
 	for(int i=0;i<N_BUILDINGS;i++) {
 		int cost = this->getBuildingCost((Type)i);
 		if( this->built[i] > cost ) {
-			LOG("Sector [%d: %d, %d] has built building type %d\n", player, xpos, ypos, i);
-			this->setBuilders((Type)i, 0);
-			this->built[i] = 0;
-			if( i == BUILDING_MINE ) {
-				this->buildings[BUILDING_MINE] = new Building(gamestate, this, BUILDING_MINE);
-			}
-			else if( i == BUILDING_FACTORY ) {
-				this->buildings[BUILDING_FACTORY] = new Building(gamestate, this, BUILDING_FACTORY);
-				this->setWorkers(0); // call to also set the particle system rate
-			}
-			else if( i == BUILDING_LAB ) {
-				this->buildings[BUILDING_LAB] = new Building(gamestate, this, BUILDING_LAB);
-			}
-			else {
-				// error
-				LOG("###Didn't expect completion of building type %d\n",i);
-				ASSERT(0);
-			}
-			if( this == gamestate->getCurrentSector() ) {
-				//((PlayingGameState *)gamestate)->getGamePanel()->refresh();
-				//((PlayingGameState *)gamestate)->addBuilding( this->buildings[(Type)i] ); // now done in Building constructor
-				gamestate->getGamePanel()->refresh();
-			}
+			this->buildBuilding((Type)i);
 		}
 	}
 
@@ -1938,6 +1845,108 @@ void Sector::update(int client_player) {
 			this->nuke_by_player = -1;
 			this->nuke_time = -1;
 		}
+	}
+}
+
+bool Sector::mineElement(int client_player, Id i) {
+	Element *element = ::elements[(int)i];
+	ASSERT( this->elements[(int)i] > 0 );
+	this->elementstocks[(int)i]++;
+	this->elements[(int)i]--;
+	if( this->elements[(int)i] == 0 ) {
+		if( element->getType() != Element::GATHERABLE )
+			this->setMiners(i, 0);
+		LOG("Sector [%d: %d, %d] running out of element %d : %s\n", player, xpos, ypos, (int)i, ::elements[(int)i]->getName());
+		if( this->player == client_player ) {
+			playSample(s_running_out_of_elements);
+			//((PlayingGameState *)gamestate)->setFlashingSquare(this->xpos, this->ypos);
+			gamestate->setFlashingSquare(this->xpos, this->ypos);
+		}
+		return true;
+	}
+	return false;
+}
+
+void Sector::invent(int client_player) {
+	ASSERT(current_design != NULL);
+	bool done_sound = false;
+	if( this->player != client_player )
+		done_sound = true;
+	ASSERT( !this->inventions_known[ current_design->getInvention()->getType() ][ current_design->getInvention()->getEpoch() ] );
+	this->inventions_known[ current_design->getInvention()->getType() ][ current_design->getInvention()->getEpoch() ] = true;
+	this->designs.push_back( current_design );
+
+	if( this->epoch < start_epoch + 3 && epoch < n_epochs_c-1 ) {
+		//int levels[4] = {0, 0, 0, 0};
+		int score = 0;
+		for(int i=0;i<3;i++) {
+			int val = 1;
+			for(int j=0;j<4;j++) {
+				if( start_epoch+j < n_epochs_c ) {
+					if( this->inventions_known[i][start_epoch+j] ) {
+						//levels[j]++;
+						score += val;
+					}
+				}
+				val *= 2;
+			}
+		}
+		score = ( score + 3 ) / 3;
+		int new_epoch = start_epoch;
+		while( score > 1 ) {
+			new_epoch++;
+			score /= 2;
+		}
+		if( new_epoch > this->epoch ) {
+			// advance a tech level!
+			this->epoch = new_epoch;
+			LOG("Sector [%d: %d, %d] has advanced to tech level %d\n", player, xpos, ypos, epoch);
+			if( !done_sound ) {
+				playSample(s_advanced_tech);
+				done_sound = true;
+			}
+		}
+	}
+	if( this == gamestate->getCurrentSector() ) {
+		//((PlayingGameState *)gamestate)->getGamePanel()->refresh();
+		gamestate->getGamePanel()->refresh();
+	}
+	if( !done_sound ) {
+		if( current_design->isErgonomicallyTerrific() )
+			playSample(s_ergo);
+		else
+			playSample(s_design_is_ready);
+	}
+	if( this->player == client_player ) {
+		//((PlayingGameState *)gamestate)->setFlashingSquare(this->xpos, this->ypos);
+		gamestate->setFlashingSquare(this->xpos, this->ypos);
+	}
+	this->setCurrentDesign(NULL);
+}
+
+void Sector::buildBuilding(Type type) {
+	LOG("Sector [%d: %d, %d] has built building type %d\n", player, xpos, ypos, (int)type);
+	this->setBuilders(type, 0);
+	this->built[(int)type] = 0;
+	if( type == BUILDING_MINE ) {
+		this->buildings[BUILDING_MINE] = new Building(gamestate, this, BUILDING_MINE);
+	}
+	else if( type == BUILDING_FACTORY ) {
+		this->buildings[BUILDING_FACTORY] = new Building(gamestate, this, BUILDING_FACTORY);
+		this->setWorkers(0); // call to also set the particle system rate
+	}
+	else if( type == BUILDING_LAB ) {
+		this->buildings[BUILDING_LAB] = new Building(gamestate, this, BUILDING_LAB);
+	}
+	else {
+		// error
+		LOG("###Didn't expect completion of building type %d\n", (int)type);
+		ASSERT(0);
+	}
+	if( this == gamestate->getCurrentSector() ) {
+		//((PlayingGameState *)gamestate)->getGamePanel()->refresh();
+		//((PlayingGameState *)gamestate)->addBuilding( this->buildings[(Type)i] ); // now done in Building constructor
+		gamestate->getGamePanel()->refresh();
 	}
 }
 
@@ -2133,21 +2142,21 @@ bool Sector::inventionKnown(Invention::Type type,int epoch) const {
 }
 
 // Set Elements Remaining
-void Sector::setElements(int id,int n_elements) {
+void Sector::setElements(Id id,int n_elements) {
 	ASSERT_ELEMENT_ID(id);
-	this->elements[id] = n_elements * element_multiplier_c;
+	this->elements[(int)id] = n_elements * element_multiplier_c;
 }
 
 // Get Elements Remaining
-void Sector::getElements(int *n,int *fraction,int id) const {
+void Sector::getElements(int *n,int *fraction,Id id) const {
 	ASSERT_ELEMENT_ID(id);
 	*n = this->elements[id] / element_multiplier_c;
-	*fraction = this->elements[id] % element_multiplier_c;
+	*fraction = this->elements[(int)id] % element_multiplier_c;
 }
 
-bool Sector::anyElements(int id) const {
+bool Sector::anyElements(Id id) const {
 	ASSERT_ELEMENT_ID(id);
-	return this->elements[id] > 0;
+	return this->elements[(int)id] > 0;
 }
 
 void Sector::reduceElementStocks(Id id,int reduce) {
@@ -2162,9 +2171,9 @@ void Sector::getElementStocks(int *n,int *fraction,Id id) const {
 	*fraction = this->elementstocks[(int)id] % element_multiplier_c;
 }
 
-void Sector::getTotalElements(int *n,int *fraction,int id) const {
+void Sector::getTotalElements(int *n,int *fraction,Id id) const {
 	ASSERT_ELEMENT_ID(id);
-	int total = this->elements[id] + this->elementstocks[id];
+	int total = this->elements[id] + this->elementstocks[(int)id];
 	*n = total / element_multiplier_c;
 	*fraction = total % element_multiplier_c;
 }

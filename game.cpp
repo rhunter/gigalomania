@@ -53,6 +53,7 @@ bool mobile_ui = false;
 
 bool using_old_gfx = false;
 
+bool is_testing = false;
 Application *application = NULL;
 
 const char *maps_dirname = "islands";
@@ -3040,6 +3041,31 @@ void setGameStateID(GameStateID state) {
 	/*if( state == GAMESTATE_PLACEMEN ) {
 	placeMenInfo.init();
 	}*/
+	// test:
+	/*if( gameStateID == GAMESTATEID_PLAYING ) {
+		int map_x = static_cast<PlaceMenGameState *>(old_gamestate)->getStartMapX();
+		int map_y = static_cast<PlaceMenGameState *>(old_gamestate)->getStartMapY();
+		Sector *start_sector = map->getSector(map_x, map_y);
+		if( start_sector->canBuild(BUILDING_MINE) ) {
+			start_sector->buildBuilding(BUILDING_MINE);
+		}
+		if( start_sector->canBuild(BUILDING_FACTORY) ) {
+			start_sector->buildBuilding(BUILDING_FACTORY);
+		}
+		if( start_sector->canBuild(BUILDING_LAB) ) {
+			start_sector->buildBuilding(BUILDING_LAB);
+		}
+		for(int i=0;i<N_ID;i++) {
+			while( start_sector->canMine((Id)i) && start_sector->anyElements((Id)i) ) {
+				start_sector->mineElement(human_player, (Id)i);
+			}
+		}
+		Design *design = start_sector->canResearch(Invention::WEAPON, 8);
+		if( design != NULL ) {
+			static_cast<PlayingGameState *>(gamestate)->setCurrentDesign(map_x, map_y, design);
+			start_sector->invent(human_player);
+		}
+	}*/
 }
 
 void startIsland() {
@@ -3400,6 +3426,146 @@ void savePrefs() {
 	delete [] prefs_fullfilename;
 }
 
+void runTests() {
+	is_testing = true;
+
+	setGameStateID(GAMESTATEID_PLACEMEN);
+	newGame();
+	// check all maps are loaded
+	for(int i=0;i<n_epochs_c;i++) {
+		int expected_n_islands = i==n_epochs_c-1 ? 1 : max_islands_per_epoch_c;
+		for(int j=0;j<expected_n_islands;j++) {
+			if( maps[i][j] == NULL ) {
+				LOG("failed to load island: %d , %d\n", i, j);
+				throw string("failed to load island");
+			}
+		}
+		for(int j=expected_n_islands;j<max_islands_per_epoch_c;j++) {
+			if( maps[i][j] != NULL ) {
+				LOG("unexpected island: %d , %d\n", i, j);
+				throw string("unexpected island");
+			}
+		}
+	}
+
+	while(true) {
+		LOG("###TEST: epoch %d island %d\n", start_epoch, selected_island);
+		PlaceMenGameState *placeMenGameState = static_cast<PlaceMenGameState *>(gamestate);
+		setupPlayers();
+		int sx = 0, sy = 0;
+		if( start_epoch == 0 && selected_island == 0 ) {
+			sx = 1;
+			sy = 2;
+			placeMenGameState->getChooseMenPanel()->setNMen(15);
+		}
+		else if( start_epoch == 5 && selected_island == 0 ) {
+			sx = 1;
+			sy = 4;
+			placeMenGameState->getChooseMenPanel()->setNMen(15);
+		}
+		else {
+			map->findRandomSector(&sx, &sy);
+			placeMenGameState->getChooseMenPanel()->setNMen(10);
+		}
+		placeMenGameState->setStartMapPos(sx, sy); // will automatically switch to playing gamestate
+		updateGame(); // needed to dispose the gamestate
+		PlayingGameState *playingGameState = static_cast<PlayingGameState *>(gamestate);
+
+		if( start_epoch == 0 && selected_island == 0 ) {
+			Sector *start_sector = map->getSector(sx, sy);
+			if( start_sector->bestDesign(Invention::WEAPON, 0) != NULL ) {
+				throw string("shouldn't be able to build a rock weapon yet");
+			}
+			while( start_sector->anyElements(ROCK) ) {
+				start_sector->mineElement(human_player, ROCK);
+			}
+			Design *design = start_sector->canResearch(Invention::WEAPON, 0);
+			if( design == NULL ) {
+				throw string("can't design rock weapon");
+			}
+			else if( !design->isErgonomicallyTerrific() ) {
+				throw string("rock weapon isn't ergonomically terrific");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design);
+			start_sector->invent(human_player);
+			if( !start_sector->canBuildDesign(Invention::WEAPON, 0) ) {
+				throw string("can't build rock weapon");
+			}
+			for(int i=0;i<10;i++) {
+				if( !playingGameState->assembleArmy(sx, sy, 0, 1) ) {
+					throw string("can't assemble rock weapon");
+				}
+			}
+			for(int i=0;i<4;i++) {
+				if( !playingGameState->assembleArmyUnarmed(sx, sy, 1) ) {
+					throw string("can't assemble unarmed");
+				}
+			}
+			if( !playingGameState->moveAssembledArmyTo(sx, sy, sx+1, sy) ) {
+				throw string("can't move assembled army");
+			}
+		}
+		else if( start_epoch == 5 && selected_island == 0 ) {
+			Sector *start_sector = map->getSector(sx, sy);
+			if( start_sector->canBuild(BUILDING_MINE) ) {
+				start_sector->buildBuilding(BUILDING_MINE);
+			}
+			if( start_sector->canBuild(BUILDING_FACTORY) ) {
+				start_sector->buildBuilding(BUILDING_FACTORY);
+			}
+			if( start_sector->canBuild(BUILDING_LAB) ) {
+				start_sector->buildBuilding(BUILDING_LAB);
+			}
+			for(int i=0;i<N_ID;i++) {
+				while( start_sector->canMine((Id)i) && start_sector->anyElements((Id)i) ) {
+					start_sector->mineElement(human_player, (Id)i);
+				}
+			}
+			Design *design = start_sector->canResearch(Invention::WEAPON, 8);
+			if( design == NULL ) {
+				throw string("can't design nuke");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design);
+			start_sector->invent(human_player);
+			if( !start_sector->canBuildDesign(Invention::WEAPON, 8) ) {
+				throw string("can't build nuke");
+			}
+			playingGameState->setCurrentManufacture(sx, sy, design);
+			start_sector->buildDesign();
+			if( !playingGameState->assembleArmy(sx, sy, 8, 1) ) {
+				throw string("can't assemble nuke");
+			}
+			if( !playingGameState->nukeSector(sx, sy, sx+1, sy) ) {
+				throw string("can't nuke sector");
+			}
+			// build another one
+			if( !start_sector->canBuildDesign(Invention::WEAPON, 8) ) {
+				throw string("can't build nuke");
+			}
+			start_sector->buildDesign();
+			if( !playingGameState->assembleArmy(sx, sy, 8, 1) ) {
+				throw string("can't assemble nuke");
+			}
+			// shouldn't be able to nuke again
+			if( playingGameState->nukeSector(sx, sy, sx+1, sy) ) {
+				throw string("didn't expect to nuke sector again");
+			}
+		}
+
+		endIsland();
+		updateGame(); // needed to dispose the gamestate
+
+		setGameStateID(GAMESTATEID_PLACEMEN);
+		updateGame(); // needed to dispose the gamestate
+		nextIsland();
+		if( selected_island == 0 ) {
+			nextEpoch();
+			if( start_epoch == 0 )
+				break;
+		}
+	}
+}
+
 void playGame(int n_args, char *args[]) {
     LOG("playGame()\n");
 	bool fullscreen = false;
@@ -3560,11 +3726,20 @@ void playGame(int n_args, char *args[]) {
 	sprintf(buffer, "Gigalomania, version %d.%d", majorVersion, minorVersion);
 	screen->setTitle(buffer);
 
-	setGameStateID(GAMESTATEID_CHOOSEGAMETYPE);
-	//setGameStateID(GAMESTATEID_CHOOSEPLAYER);
-
     LOG("all done!\n");
-	application->runMainLoop();
+
+	//bool run_tests = true;
+	bool run_tests = false;
+
+	if( run_tests ) {
+		runTests();
+	}
+	else {
+		setGameStateID(GAMESTATEID_CHOOSEGAMETYPE);
+		//setGameStateID(GAMESTATEID_CHOOSEPLAYER);
+
+		application->runMainLoop();
+	}
 
 	cleanup();
 	LOG("exiting..\n");

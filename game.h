@@ -35,6 +35,7 @@ bool oneMouseButtonMode();
 
 extern bool using_old_gfx;
 
+extern bool is_testing;
 extern Application *application;
 
 extern const char *maps_dirname;

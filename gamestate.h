@@ -287,6 +287,7 @@ public:
 	int getStartMapY() const {
 		return this->start_map_y;
 	}
+	void setStartMapPos(int start_map_x, int start_map_y );
 	void requestNewGame();
 };
 
@@ -406,13 +407,13 @@ public:
 	void setCurrentManufacture(int sector_x, int sector_y, Design *design);
 
 	void assembledArmyEmpty(int sector_x, int sector_y);
-	void assembleArmyUnarmed(int sector_x, int sector_y, int n);
+	bool assembleArmyUnarmed(int sector_x, int sector_y, int n);
 	bool assembleArmy(int sector_x, int sector_y, int epoch, int n);
 	void returnAssembledArmy(int sector_x, int sector_y);
 	void returnArmy(int sector_x, int sector_y, int src_x, int src_y);
 	bool moveArmyTo(int src_x, int src_y, int target_x, int target_y);
 	bool moveAssembledArmyTo(int src_x, int src_y, int target_x, int target_y);
-	void nukeSector(int src_x, int src_y, int target_x, int target_y);
+	bool nukeSector(int src_x, int src_y, int target_x, int target_y);
 
 	void deployDefender(int sector_x, int sector_y, Type type, int turret, int epoch);
 	void returnDefender(int sector_x, int sector_y, Type type, int turret);

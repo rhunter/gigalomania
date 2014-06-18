@@ -332,7 +332,6 @@ class Sector {
 
 	void initTowerStuff();
 	void consumeStocks(Design *design);
-	void buildDesign(Design *design);
 
 	int getInventionCost() const;
 	int getManufactureCost() const;
@@ -429,7 +428,7 @@ public:
 	bool inventionKnown(Invention::Type type,int epoch) const;
 	void trashDesign(Invention *invention);
 	void trashDesign(Design *design);
-	void nukeSector(Sector *source);
+	bool nukeSector(Sector *source);
 	int beingNuked(int *nuke_time) const {
 		*nuke_time = this->nuke_time;
 		return nuke_by_player;
@@ -444,12 +443,12 @@ public:
 		return this->trees_nuked;
 	}
 
-	void setElements(int id,int n_elements);
-	void getElements(int *n,int *fraction,int id) const;
-	bool anyElements(int id) const;
+	void setElements(Id id,int n_elements);
+	void getElements(int *n,int *fraction,Id id) const;
+	bool anyElements(Id id) const;
 	void reduceElementStocks(Id id,int reduce);
 	void getElementStocks(int *n,int *fraction,Id id) const;
-	void getTotalElements(int *n,int *fraction,int id) const;
+	void getTotalElements(int *n,int *fraction,Id id) const;
 
 	void buildingTowerTimeLeft(int player,int *halfdays,int *hours) const;
 	void buildingTimeLeft(Type type,int *halfdays,int *hours) const;
@@ -492,6 +491,10 @@ public:
 	void returnArmy(Army *army);
 	bool moveArmy(Army *army);
 	void evacuate();
+	bool mineElement(int client_player, Id i);
+	void invent(int client_player);
+	void buildDesign();
+	void buildBuilding(Type type);
 
 	//void doAIUpdate();
 

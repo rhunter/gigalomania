@@ -103,6 +103,9 @@ public:
 	int getNMen() const {
 		return n_men;
 	}
+	void setNMen(int n_men) {
+		this->n_men = n_men;
+	}
 };
 
 class GamePanel : public MultiPanel {
