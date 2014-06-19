@@ -3429,6 +3429,7 @@ void savePrefs() {
 void runTests() {
 	is_testing = true;
 
+	human_player = rand() % 4;
 	setGameStateID(GAMESTATEID_PLACEMEN);
 	newGame();
 	// check all maps are loaded
