@@ -2360,13 +2360,11 @@ void PlayingGameState::mouseClick(int m_x,int m_y,bool m_left,bool m_middle,bool
                 registerClick();
                 // move selected army
 				if( clicked_fortress && current_sector->getPlayer() == selected_army->getPlayer() ) {
-					//current_sector->returnArmy(selected_army);
 					this->returnArmy(current_sector->getXPos(), current_sector->getYPos(), selected_army->getSector()->getXPos(), selected_army->getSector()->getYPos());
 				}
 				else {
 					if( selected_army->getSector() != current_sector ) {
 						// move selected army
-						//current_sector->moveArmy(client_player, selected_army);
 						this->moveArmyTo(selected_army->getSector()->getXPos(), selected_army->getSector()->getYPos(), current_sector->getXPos(), current_sector->getYPos());
 					}
 				}
@@ -2734,14 +2732,15 @@ void PlayingGameState::returnAssembledArmy(int sector_x, int sector_y) {
 	}
 }
 
-void PlayingGameState::returnArmy(int sector_x, int sector_y, int src_x, int src_y) {
+bool PlayingGameState::returnArmy(int sector_x, int sector_y, int src_x, int src_y) {
 	Sector *sector = map->getSector(sector_x, sector_y);
 	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
 		Sector *src = map->getSector(src_x, src_y);
 		Army *army = src->getArmy(client_player);
-		sector->returnArmy(army);
+		return sector->returnArmy(army);
 	}
+	return false;
 }
 
 bool PlayingGameState::moveArmyTo(int src_x, int src_y, int target_x, int target_y) {

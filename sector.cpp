@@ -2373,13 +2373,13 @@ void Sector::returnAssembledArmy() {
 	}
 }
 
-void Sector::returnArmy() {
+bool Sector::returnArmy() {
 	LOG("Sector::returnArmy() [%d: %d,%d]\n", player, xpos, ypos);
 	ASSERT( this->player != -1 );
-	this->returnArmy( this->getArmy( this->player ) );
+	return this->returnArmy( this->getArmy( this->player ) );
 }
 
-void Sector::returnArmy(Army *army) {
+bool Sector::returnArmy(Army *army) {
 	//LOG("Sector::returnArmy(%d)\n",army);
 	ASSERT( this->player != -1 );
 
@@ -2388,6 +2388,7 @@ void Sector::returnArmy(Army *army) {
 	getMap()->canMoveTo(temp, src_sector->xpos, src_sector->ypos, army->getPlayer());
 	//bool adj = map->temp[this->xpos][this->ypos];
 	bool adj = temp[this->xpos][this->ypos];
+	bool moved_all = true;
 
 	if( !army->canLeaveSafely() ) {
 		// retreat
@@ -2399,6 +2400,7 @@ void Sector::returnArmy(Army *army) {
 		if( n_soldiers > 0 ) {
 			if( !adj && !isAirUnit( i ) ) {
 				// can't move
+				moved_all = false;
 			}
 			else {
 				int n_men = ( i==n_epochs_c ? 1 : invention_weapons[i]->getNMen() );
@@ -2417,6 +2419,7 @@ void Sector::returnArmy(Army *army) {
 		gamestate->getGamePanel()->refresh();
 		gamestate->refreshSoldiers(true);
 	}
+	return moved_all;
 }
 
 /** Move Army 'army' into this sector.

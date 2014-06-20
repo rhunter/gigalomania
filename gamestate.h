@@ -413,7 +413,7 @@ public:
 	bool assembleArmyUnarmed(int sector_x, int sector_y, int n);
 	bool assembleArmy(int sector_x, int sector_y, int epoch, int n);
 	void returnAssembledArmy(int sector_x, int sector_y);
-	void returnArmy(int sector_x, int sector_y, int src_x, int src_y);
+	bool returnArmy(int sector_x, int sector_y, int src_x, int src_y);
 	bool moveArmyTo(int src_x, int src_y, int target_x, int target_y);
 	bool moveAssembledArmyTo(int src_x, int src_y, int target_x, int target_y);
 	bool nukeSector(int src_x, int src_y, int target_x, int target_y);

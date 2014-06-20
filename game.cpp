@@ -3527,6 +3527,56 @@ void runTests() {
 			if( !playingGameState->moveAssembledArmyTo(sx, sy, sx+1, sy) ) {
 				throw string("can't move assembled army");
 			}
+			Sector *target_sector = map->getSector(sx+1, sy);
+			Army *army = target_sector->getArmy(human_player);
+			if( army->getTotal() != 14 ) {
+				throw string("unexpected army total (1)");
+			}
+			if( army->getTotalMen() != 14 ) {
+				throw string("unexpected army total men");
+			}
+			if( army->getSoldiers(0) != 10 ) {
+				throw string("unexpected army number of rock weapons");
+			}
+			if( !playingGameState->moveArmyTo(sx+1, sy, sx, sy) ) {
+				throw string("can't return army");
+			}
+			army = start_sector->getArmy(human_player);
+			if( army->getTotal() >= 14 ) {
+				throw string("no men were lost from retreating");
+			}
+			int n_men = army->getTotal();
+			int n_rocks = army->getSoldiers(0);
+			int n_population = start_sector->getPopulation();
+			if( !playingGameState->moveArmyTo(sx, sy, sx+1, sy) ) {
+				throw string("can't move army out again");
+			}
+			army = target_sector->getArmy(human_player);
+			if( army->getTotal() != n_men ) {
+				throw string("unexpected army total (2)");
+			}
+			if( !playingGameState->returnArmy(sx, sy, sx+1, sy) ) {
+				throw string("can't return army to tower");
+			}
+			if( army->getTotal() != 0 ) {
+				throw string("shouldn't have any men in the target sector");
+			}
+			army = start_sector->getArmy(human_player);
+			if( army->getTotal() != 0 ) {
+				throw string("shouldn't have any men in the start sector");
+			}
+			if( start_sector->getPopulation() <= n_population ) {
+				throw string("didn't return any men");
+			}
+			else if( start_sector->getPopulation() >= n_population+n_men ) {
+				throw string("no men were lost from retreating to tower");
+			}
+			else if( start_sector->getStoredArmy()->getSoldiers(0) <= 0 ) {
+				throw string("didn't return any rock weapons");
+			}
+			else if( start_sector->getStoredArmy()->getSoldiers(0) >= n_rocks ) {
+				throw string("no rock weapons were lost from retreating to tower");
+			}
 		}
 		else if( start_epoch == 4 && selected_island == 1 ) {
 			Sector *start_sector = map->getSector(sx, sy);
@@ -3666,7 +3716,9 @@ void runTests() {
 			if( storedArmy->getTotal() != 0 ) {
 				throw string("still didn't expect a stored army");
 			}
-			playingGameState->returnArmy(sx, sy, sx-3, sy);
+			if( playingGameState->returnArmy(sx, sy, sx-3, sy) ) {
+				throw string("shouldn't have been able to move all the army back to tower");
+			}
 			if( army->getTotal() != 11 ) {
 				throw string("unexpected army total after returning biplanes to tower");
 			}

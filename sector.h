@@ -487,8 +487,8 @@ public:
 	bool enemiesPresent(int player) const;
 	bool enemiesPresent(int player,bool include_unarmed) const;
 	void returnAssembledArmy();
-	void returnArmy();
-	void returnArmy(Army *army);
+	bool returnArmy();
+	bool returnArmy(Army *army);
 	bool moveArmy(Army *army);
 	void evacuate();
 	bool mineElement(int client_player, Id i);
