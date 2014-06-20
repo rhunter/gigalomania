@@ -3459,6 +3459,11 @@ void runTests() {
 			sy = 2;
 			placeMenGameState->getChooseMenPanel()->setNMen(15);
 		}
+		else if( start_epoch == 4 && selected_island == 1 ) {
+			sx = 3;
+			sy = 4;
+			placeMenGameState->getChooseMenPanel()->setNMen(15);
+		}
 		else if( start_epoch == 5 && selected_island == 0 ) {
 			sx = 1;
 			sy = 4;
@@ -3489,7 +3494,7 @@ void runTests() {
 			}
 			playingGameState->setCurrentDesign(sx, sy, design);
 			start_sector->invent(human_player);
-			if( !start_sector->canBuildDesign(Invention::WEAPON, 0) ) {
+			if( !start_sector->canBuildDesign(design) ) {
 				throw string("can't build rock weapon");
 			}
 			for(int i=0;i<10;i++) {
@@ -3506,17 +3511,172 @@ void runTests() {
 				throw string("can't move assembled army");
 			}
 		}
+		else if( start_epoch == 4 && selected_island == 1 ) {
+			Sector *start_sector = map->getSector(sx, sy);
+			if( !start_sector->canBuild(BUILDING_MINE) ) {
+				throw string("can't build mine");
+			}
+			start_sector->buildBuilding(BUILDING_MINE);
+			if( !start_sector->canBuild(BUILDING_FACTORY) ) {
+				throw string("can't build factory");
+			}
+			start_sector->buildBuilding(BUILDING_FACTORY);
+			if( start_sector->canBuild(BUILDING_LAB) ) {
+				throw string("shouldn't be able to build lab yet");
+			}
+			for(int i=0;i<N_ID;i++) {
+				while( start_sector->canMine((Id)i) && start_sector->anyElements((Id)i) ) {
+					start_sector->mineElement(human_player, (Id)i);
+				}
+			}
+			Design *design_shield0 = start_sector->canResearch(Invention::SHIELD, 4);
+			if( design_shield0 == NULL ) {
+				throw string("can't design shield0");
+			}
+			Design *design_crossbow = start_sector->canResearch(Invention::DEFENCE, 4);
+			if( design_crossbow == NULL ) {
+				throw string("can't design crossbow");
+			}
+			Design *design_catapult = start_sector->canResearch(Invention::WEAPON, 4);
+			if( design_catapult == NULL ) {
+				throw string("can't design catapult");
+			}
+			Design *design_biplane = start_sector->canResearch(Invention::WEAPON, 6);
+			if( design_biplane != NULL ) {
+				throw string("shouldn't be able to design biplane yet (no lab)");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design_shield0);
+			start_sector->invent(human_player);
+			playingGameState->setCurrentDesign(sx, sy, design_crossbow);
+			start_sector->invent(human_player);
+			if( start_sector->getEpoch() != start_epoch ) {
+				throw string("not on expected epoch");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design_catapult);
+			start_sector->invent(human_player);
+			if( start_sector->getEpoch() != start_epoch+1 ) {
+				throw string("didn't advance a tech level");
+			}
+			design_biplane = start_sector->canResearch(Invention::WEAPON, 6);
+			if( design_biplane != NULL ) {
+				throw string("still shouldn't be able to design biplane yet (no lab)");
+			}
+			if( !start_sector->canBuild(BUILDING_LAB) ) {
+				throw string("can't build lab");
+			}
+			start_sector->buildBuilding(BUILDING_LAB);
+			design_biplane = start_sector->canResearch(Invention::WEAPON, 6);
+			if( design_biplane == NULL ) {
+				throw string("can't design biplane");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design_biplane);
+			start_sector->invent(human_player);
+			if( !start_sector->canBuildDesign(design_biplane) ) {
+				throw string("can't build biplane");
+			}
+			playingGameState->setCurrentManufacture(sx, sy, design_biplane);
+			start_sector->buildDesign();
+			int n_men = start_sector->getPopulation();
+			if( !playingGameState->assembleArmy(sx, sy, 6, 1) ) {
+				throw string("can't assemble biplane");
+			}
+			if( playingGameState->assembleArmy(sx, sy, 6, 1) ) {
+				throw string("shouldn't be able to assemble another biplane");
+			}
+			if( !playingGameState->assembleArmyUnarmed(sx, sy, 1) ) {
+				throw string("can't assemble unarmed");
+			}
+			if( start_sector->getPopulation() != n_men - 3 ) {
+				throw string("unexpected remaining population");
+			}
+			if( start_sector->getAssembledArmy()->getTotal() != 2 ) {
+				throw string("unexpected assembled army");
+			}
+			if( playingGameState->moveAssembledArmyTo(sx, sy, sx-3, sy) ) {
+				throw string("shouldn't have been able to move all the assembled army");
+			}
+			if( start_sector->getAssembledArmy()->getTotal() != 1 ) {
+				throw string("unexpected assembled army after moving biplanes");
+			}
+			Army *storedArmy = start_sector->getStoredArmy();
+			if( storedArmy->getTotal() != 0 ) {
+				throw string("didn't expect a stored army");
+			}
+			playingGameState->returnAssembledArmy(sx, sy);
+			if( storedArmy->getTotal() != 0 ) {
+				// unarmed men shouldn't be kept in stored_army
+				throw string("didn't expect a stored army after returning assembled army");
+			}
+			if( start_sector->getPopulation() != n_men - 2 ) {
+				throw string("unexpected remaining population after returning unarmed man");
+			}
+			Sector *targ_sector = map->getSector(sx-3, sy);
+			Army *army = targ_sector->getArmy(human_player);
+			if( army->getTotal() != 1 ) {
+				throw string("unexpected army total");
+			}
+			if( army->getTotalMen() != 2 ) {
+				throw string("unexpected army total men");
+			}
+			if( army->getSoldiers(6) != 1 ) {
+				throw string("unexpected army number of biplanes");
+			}
+			// now put some unarmed men to destination
+			army->add(n_epochs_c, 10);
+			if( army->getTotal() != 11 ) {
+				throw string("unexpected army total after adding unarmed men");
+			}
+			if( playingGameState->moveArmyTo(sx-3, sy, sx, sy) ) {
+				throw string("shouldn't have been able to move all the army back");
+			}
+			if( army->getTotal() != 10 ) {
+				throw string("unexpected army total after returning biplanes");
+			}
+			if( !playingGameState->moveArmyTo(sx, sy, sx-3, sy) ) {
+				throw string("should have been able to move all the biplanes back again");
+			}
+			if( army->getTotal() != 11 ) {
+				throw string("unexpected army total after moving biplanes back again");
+			}
+			// now put a catapult to destination
+			army->add(4, 1);
+			if( army->getTotal() != 12 ) {
+				throw string("unexpected army total after adding a catapult");
+			}
+			if( army->getTotalMen() != 14 ) {
+				throw string("unexpected army total men after adding a catapult");
+			}
+			if( storedArmy->getTotal() != 0 ) {
+				throw string("still didn't expect a stored army");
+			}
+			playingGameState->returnArmy(sx, sy, sx-3, sy);
+			if( army->getTotal() != 11 ) {
+				throw string("unexpected army total after returning biplanes to tower");
+			}
+			if( army->getSoldiers(4) != 1 ) {
+				throw string("unexpected army number of catapults after returning biplanes to tower");
+			}
+			if( storedArmy->getTotal() != 1 ) {
+				throw string("unexpected stored army after returning biplanes");
+			}
+			if( storedArmy->getSoldiers(6) != 1 ) {
+				throw string("unexpected stored army number of biplanes after returning biplanes");
+			}
+		}
 		else if( start_epoch == 5 && selected_island == 0 ) {
 			Sector *start_sector = map->getSector(sx, sy);
-			if( start_sector->canBuild(BUILDING_MINE) ) {
-				start_sector->buildBuilding(BUILDING_MINE);
+			if( !start_sector->canBuild(BUILDING_MINE) ) {
+				throw string("can't build mine");
 			}
-			if( start_sector->canBuild(BUILDING_FACTORY) ) {
-				start_sector->buildBuilding(BUILDING_FACTORY);
+			start_sector->buildBuilding(BUILDING_MINE);
+			if( !start_sector->canBuild(BUILDING_FACTORY) ) {
+				throw string("can't build factory");
 			}
-			if( start_sector->canBuild(BUILDING_LAB) ) {
-				start_sector->buildBuilding(BUILDING_LAB);
+			start_sector->buildBuilding(BUILDING_FACTORY);
+			if( !start_sector->canBuild(BUILDING_LAB) ) {
+				throw string("can't build lab");
 			}
+			start_sector->buildBuilding(BUILDING_LAB);
 			for(int i=0;i<N_ID;i++) {
 				while( start_sector->canMine((Id)i) && start_sector->anyElements((Id)i) ) {
 					start_sector->mineElement(human_player, (Id)i);
@@ -3528,7 +3688,7 @@ void runTests() {
 			}
 			playingGameState->setCurrentDesign(sx, sy, design);
 			start_sector->invent(human_player);
-			if( !start_sector->canBuildDesign(Invention::WEAPON, 8) ) {
+			if( !start_sector->canBuildDesign(design) ) {
 				throw string("can't build nuke");
 			}
 			playingGameState->setCurrentManufacture(sx, sy, design);
@@ -3540,9 +3700,10 @@ void runTests() {
 				throw string("can't nuke sector");
 			}
 			// build another one
-			if( !start_sector->canBuildDesign(Invention::WEAPON, 8) ) {
+			if( !start_sector->canBuildDesign(design) ) {
 				throw string("can't build nuke");
 			}
+			playingGameState->setCurrentManufacture(sx, sy, design);
 			start_sector->buildDesign();
 			if( !playingGameState->assembleArmy(sx, sy, 8, 1) ) {
 				throw string("can't assemble nuke");

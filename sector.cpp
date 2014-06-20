@@ -2395,21 +2395,27 @@ void Sector::returnArmy(Army *army) {
 	}
 
 	for(int i=0;i<=n_epochs_c;i++) {
-			int n_soldiers = army->getSoldiers(i);
-			if( n_soldiers > 0 ) {
-				if( !adj && !isAirUnit( i ) ) {
-					// can't move
-				}
-				else {
-					int n_men = ( i==n_epochs_c ? 1 : invention_weapons[i]->getNMen() );
-					this->population += army->getSoldiers(i) * n_men;
-				}
+		int n_soldiers = army->getSoldiers(i);
+		if( n_soldiers > 0 ) {
+			if( !adj && !isAirUnit( i ) ) {
+				// can't move
 			}
+			else {
+				int n_men = ( i==n_epochs_c ? 1 : invention_weapons[i]->getNMen() );
+				this->population += army->getSoldiers(i) * n_men;
+				if( i != n_epochs_c ) {
+					// unarmed men are never stored in the stored_army (as not actually a weapon)
+					this->stored_army->add(i, n_soldiers);
+				}
+				army->remove(i, n_soldiers);
+			}
+		}
 	}
-	this->stored_army->add(army);
+
 	if( this == gamestate->getCurrentSector() ) {
 		//((PlayingGameState *)gamestate)->getGamePanel()->refresh();
 		gamestate->getGamePanel()->refresh();
+		gamestate->refreshSoldiers(true);
 	}
 }
 
