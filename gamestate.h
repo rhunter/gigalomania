@@ -198,6 +198,9 @@ public:
 	void setClientPlayer(int client_player) {
 		this->client_player = client_player;
 	}
+	int getClientPlayer() const {
+		return this->client_player;
+	}
 	virtual void reset();
 	virtual void draw();
 	virtual void update() {};

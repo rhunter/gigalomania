@@ -284,6 +284,7 @@ class Map {
 	int n_opponents;
 	Sector *sectors[map_width_c][map_height_c];
 	bool sector_at[map_width_c][map_height_c];
+	bool reserved[map_width_c][map_height_c]; // if true, don't use for starting players - used for testing
 	//bool temp[map_width_c][map_height_c];
 
 	//void clearTemp();
@@ -320,6 +321,12 @@ public:
 	int getNSquares() const;
 	void draw(int offset_x, int offset_y) const;
 	void findRandomSector(int *rx,int *ry) const;
+	bool isReserved(int x, int y) const {
+		return this->reserved[x][y];
+	}
+	void setReserved(int x, int y, bool r) {
+		this->reserved[x][y] = r;
+	}
 	void canMoveTo(bool temp[map_width_c][map_height_c], int sx,int sy,int player) const;
 	void calculateStats() const;
 };

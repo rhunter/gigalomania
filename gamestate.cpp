@@ -912,12 +912,8 @@ void PlayingGameState::createSectors(int x, int y, int n_men) {
 		int ex = 0, ey = 0;
 		while( true ) {
 			map->findRandomSector(&ex, &ey);
-			/*if( ex != x || ey != y )
-			break;*/
-			//ASSERT( map->sector_at[ex][ey] );
 			ASSERT( map->isSectorAt(ex, ey) );
-			//if( map->sectors[ex][ey]->getPlayer() == -1 )
-			if( map->getSector(ex, ey)->getPlayer() == -1 )
+			if( map->getSector(ex, ey)->getPlayer() == -1 && !map->isReserved(ex, ey) )
 				break;
 		}
 		//Sector *enemy_sector = map->sectors[ex][ey];

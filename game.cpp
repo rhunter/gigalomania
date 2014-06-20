@@ -293,6 +293,7 @@ Map::Map(MapColour colour,int n_opponents,const char *name) {
 		for(int y=0;y<map_height_c;y++) {
 			sector_at[x][y] = false;
 			sectors[x][y] = NULL;
+			reserved[x][y] = false;
 			//panels[x][y] = NULL;
 		}
 	}
@@ -661,23 +662,12 @@ void nextIsland() {
     LOG("done reset\n");
 }
 
-char *getFilename(int slot) {
-	char name[300] = "";
-	sprintf(name, "game_%d.SAV", slot);
-	char *filename = getApplicationFilename(name);
-    //LOG("filename: %s\n", filename);
-	return filename;
-}
-
-bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int suspended[n_players_c], int *epoch, bool completed[max_islands_per_epoch_c], int slot) {
+bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int suspended[n_players_c], int *epoch, bool completed[max_islands_per_epoch_c], const char *filename) {
     //LOG("loadGameInfo(%d)\n",slot);
 	ASSERT( gameStateID == GAMESTATEID_PLACEMEN );
-	ASSERT( slot >= 0 && slot < n_slots_c );
 
-	char *filename = getFilename(slot);
     //LOG("loading: %s\n", filename);
 	FILE *file = fopen(filename, "rb+");
-	delete [] filename;
 	if( file == NULL ) {
         //LOG("FAILED to open file\n");
 		return false;
@@ -746,11 +736,10 @@ bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int susp
 	return true;
 }
 
-bool loadGame(int slot) {
-	LOG("loadGame(%d)\n",slot);
+bool loadGame(const char *filename) {
+	LOG("loadGame(%s)\n",filename);
 	ASSERT( gameType == GAMETYPE_ALLISLANDS );
 	ASSERT( gameStateID == GAMESTATEID_PLACEMEN );
-	ASSERT( slot >= 0 && slot < n_slots_c );
 
 	DifficultyLevel temp_difficulty = DIFFICULTY_EASY;
 	int temp_player = 0;
@@ -758,7 +747,7 @@ bool loadGame(int slot) {
 	int temp_start_epoch = 0;
 	int temp_suspended[n_players_c];
 	bool temp_completed[max_islands_per_epoch_c];
-	if( loadGameInfo(&temp_difficulty, &temp_player, &temp_n_men_store, temp_suspended, &temp_start_epoch, temp_completed, slot) ) {
+	if( loadGameInfo(&temp_difficulty, &temp_player, &temp_n_men_store, temp_suspended, &temp_start_epoch, temp_completed, filename) ) {
 		difficulty_level = temp_difficulty;
 		setClientPlayer(temp_player);
 		n_men_store = temp_n_men_store;
@@ -770,6 +759,31 @@ bool loadGame(int slot) {
 		return true;
 	}
 	return false;
+}
+
+char *getFilename(int slot) {
+	char name[300] = "";
+	sprintf(name, "game_%d.SAV", slot);
+	char *filename = getApplicationFilename(name);
+    //LOG("filename: %s\n", filename);
+	return filename;
+}
+
+bool loadGameInfo(DifficultyLevel *difficulty, int *player, int *n_men, int suspended[n_players_c], int *epoch, bool completed[max_islands_per_epoch_c], int slot) {
+	ASSERT( slot >= 0 && slot < n_slots_c );
+	char *filename = getFilename(slot);
+	bool ok = loadGameInfo(difficulty, player, n_men, suspended, epoch, completed, filename);
+	delete [] filename;
+	return ok;
+}
+
+bool loadGame(int slot) {
+	LOG("loadGame(%d)\n",slot);
+	ASSERT( slot >= 0 && slot < n_slots_c );
+	char *filename = getFilename(slot);
+	bool ok = loadGame(filename);
+	delete [] filename;
+	return ok;
 }
 
 void saveGame(int slot) {
@@ -3430,6 +3444,8 @@ void runTests() {
 	is_testing = true;
 
 	human_player = rand() % 4;
+	//human_player = 0;
+	//human_player = 1;
 	setGameStateID(GAMESTATEID_PLACEMEN);
 	newGame();
 	// check all maps are loaded
@@ -3463,6 +3479,7 @@ void runTests() {
 			sx = 3;
 			sy = 4;
 			placeMenGameState->getChooseMenPanel()->setNMen(15);
+			map->setReserved(sx-3, sy, true);
 		}
 		else if( start_epoch == 5 && selected_island == 0 ) {
 			sx = 1;
@@ -3725,6 +3742,22 @@ void runTests() {
 			if( start_epoch == 0 )
 				break;
 		}
+	}
+
+	// now test loading
+	gameType = GAMETYPE_ALLISLANDS;
+	newGame();
+	if( n_men_store != getMenPerEpoch() ) {
+		throw string("unexpected number of men");
+	}
+	if( !loadGame("_test_savegames/game_0.SAV") ) {
+		throw string("failed to load game");
+	}
+	if( human_player != gamestate->getClientPlayer() ) {
+		throw string("human_player doesn't match gamestate client_player");
+	}
+	if( human_player != 2 ) {
+		throw string("didn't set human_player from saved game");
 	}
 }
 
