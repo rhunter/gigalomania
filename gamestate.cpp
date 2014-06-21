@@ -323,6 +323,15 @@ void GameState::draw() {
 		Image::write(120, 100, letters_small, str.c_str(), Image::JUSTIFY_LEFT);
 	}
 
+	if( application->hasFPS() ) {
+		float fps = application->getFPS();
+		if( fps > 0.0f ) {
+			stringstream str;
+			str << fps;
+			Image::writeMixedCase(4, default_height_c - 16, letters_large, letters_small, numbers_white, str.str().c_str(), Image::JUSTIFY_LEFT);
+		}
+	}
+
 	screen->refresh();
 }
 

@@ -64,6 +64,8 @@ namespace Gigalomania {
 class Application {
 	bool quit;
 	bool blank_mouse;
+	bool compute_fps;
+	float fps;
 
 public:
 	Application();
@@ -76,6 +78,12 @@ public:
 	void runMainLoop();
 	void setQuit() {
 		quit = true;
+	}
+	bool hasFPS() const {
+		return compute_fps;
+	}
+	float getFPS() const {
+		return fps;
 	}
 	bool isBlankMouse() const {
 		return this->blank_mouse;

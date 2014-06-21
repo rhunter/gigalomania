@@ -251,7 +251,9 @@ bool Screen::getMouseState(int *m_x, int *m_y, bool *m_left, bool *m_middle, boo
 	return ( *m_left || *m_middle || *m_right );
 }
 
-Application::Application() : quit(false), blank_mouse(false) {
+Application::Application() : quit(false), blank_mouse(false), compute_fps(false), fps(0.0f) {
+	// uncomment to display fps
+	//compute_fps = true;
 }
 
 Application::~Application() {
@@ -298,16 +300,15 @@ void Application::runMainLoop() {
 
 	SDL_Event event;
 	quit = false;
-	const bool print_fps = false;
 	int last_fps_time = clock();
 	const int fps_frames_c = 50;
 	int frames = 0;
 	while(!quit) {
-		if( print_fps && frames == fps_frames_c ) {
+		if( compute_fps && frames == fps_frames_c ) {
 			int new_fps_time = clock();
 			float t = ((float)(new_fps_time - last_fps_time)) / (float)CLOCKS_PER_SEC;
-			float fps = fps_frames_c / t;
-			LOG("FPS: %f\n", fps);
+			this->fps = fps_frames_c / t;
+			//LOG("FPS: %f\n", fps);
 			frames = 0;
 			last_fps_time = new_fps_time;
 		}
