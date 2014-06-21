@@ -283,7 +283,7 @@ void Application::delay(int time) {
 	SDL_Delay(time);
 }
 
-const int TICK_INTERVAL = 25; // 40 fps max
+const int TICK_INTERVAL = 16; // 62.5 fps max
 static int next_time = 0;
 
 void wait() {
@@ -330,6 +330,7 @@ void Application::runMainLoop() {
 		wait();
 
 		int new_time = application->getTicks();
+		//LOG("%d, %d\n", new_time, new_time - elapsed_time);
 		if( !isPaused() ) {
 			updateTime(new_time - elapsed_time);
 		}
