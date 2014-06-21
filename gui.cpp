@@ -761,7 +761,7 @@ void GamePanel::setup() {
 	this->button_bigshield = new ImageButton(33, 0, 32, 16, panel_bigshield, "return to main screen");
 	this->addToPanel(STATE_SHIELD, button_bigshield);
 	for(int i=0;i<n_sub_epochs;i++) {
-		this->button_deploy_shields[i] = new ImageButton(28 + 22*i, 24, icon_shields[i]);
+		this->button_deploy_shields[i] = new ImageButton(offset_attack_x_c + space_attack_x_c*i, 24, icon_shields[i]);
 		this->button_deploy_shields[i]->setInfoLMB("select a shield to use");
 		this->addToPanel(STATE_SHIELD, button_deploy_shields[i]);
 	}
@@ -772,7 +772,7 @@ void GamePanel::setup() {
 	this->button_bigdefence = new ImageButton(33, 0, 32, 16, panel_bigdefence, "return to main screen");
 	this->addToPanel(STATE_DEFENCE, button_bigdefence);
 	for(int i=0;i<n_sub_epochs;i++) {
-		this->button_deploy_defences[i] = new ImageButton(28 + 22*i, 24, numbered_defences[start_epoch + i]);
+		this->button_deploy_defences[i] = new ImageButton(offset_attack_x_c + space_attack_x_c*i, 56, numbered_defences[start_epoch + i]);
 		sprintf(buffer, "deploy a %s", Invention::getInvention(Invention::DEFENCE, start_epoch + i)->getName());
 		this->button_deploy_defences[i]->setInfoLMB(buffer);
 		this->addToPanel(STATE_DEFENCE, button_deploy_defences[i]);
@@ -1287,10 +1287,6 @@ void GamePanel::draw() {
 				//health = 50;
 				//max_health = 60;
 				int offx = offset_panel_x_c + 24;
-				/*rect.x = (short)(scale_width * ( offset_panel_x_c + 24 ));
-				rect.y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
-				rect.w = (short)(( scale_width * health ) * 0.6);
-				rect.h = (short)(scale_height * 4);*/
 				short x = (short)(scale_width * offx + ( scale_width * health * width ) / (float)max_health);
 				short y = (short)(scale_height * ( offset_panel_y_c + 64 + 16 * i ));
 				short w = (short)ceil(( scale_width * (max_health - health) * width ) / (float)max_health);
@@ -1304,14 +1300,16 @@ void GamePanel::draw() {
 		for(int i=0;i<n_sub_epochs;i++) {
 			if( this->button_deploy_shields[i]->isEnabled() ) {
 				int n_store = gamestate->getCurrentSector()->getStoredShields(i);
+				int pos_x = button_deploy_shields[i]->getLeft() + 8;
+				int pos_y = button_deploy_shields[i]->getBottom() + 2;
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::SHIELD, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE);
+						Image::write(pos_x, pos_y, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
+						Image::writeNumbers(pos_x, pos_y, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
-					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46);
+					dash_grey->draw(pos_x - 4, pos_y + 4);
 				}
 			}
 		}
@@ -1323,14 +1321,16 @@ void GamePanel::draw() {
 		for(int i=0;i<n_sub_epochs;i++) {
 			if( this->button_deploy_defences[i]->isEnabled() ) {
 				int n_store = gamestate->getCurrentSector()->getStoredDefenders(start_epoch+i);
+				int pos_x = button_deploy_defences[i]->getLeft() + 8;
+				int pos_y = button_deploy_defences[i]->getBottom() + 2;
 				if( gamestate->getCurrentSector()->canBuildDesign(Invention::DEFENCE, start_epoch+i) || n_store > 0 ) {
 					if( n_store == 0 && start_epoch + i < factory_epoch_c )
-						Image::write(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, letters_small, "OK", Image::JUSTIFY_CENTRE);
+						Image::write(pos_x, pos_y, letters_small, "OK", Image::JUSTIFY_CENTRE);
 					else
-						Image::writeNumbers(offset_panel_x_c + 36 + 22*i, offset_panel_y_c + 42, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
+						Image::writeNumbers(pos_x, pos_y, numbers_yellow, n_store, Image::JUSTIFY_CENTRE);
 				}
 				else {
-					dash_grey->draw(offset_panel_x_c + 32 + 22*i, offset_panel_y_c + 46);
+					dash_grey->draw(pos_x - 4, pos_y + 4);
 				}
 			}
 		}
