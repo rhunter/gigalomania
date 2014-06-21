@@ -34,8 +34,7 @@
 //const bool DEBUG = true;
 //const int DEBUGLEVEL = 4;
 
-const int MAX_TIME = 1000;
-const int ticks_per_frame_c = 100;
+const int ticks_per_frame_c = 100; // game time ticks per frame rate (used for various animated sprites)
 const float time_ratio_c = 0.15f; // game time ticks per time ticks [correct]
 int time_rate = 1; // time factor
 
@@ -80,8 +79,10 @@ current_time = time;
 }*/
 
 void updateTime(int time) {
-	if( time > MAX_TIME )
-		time = MAX_TIME;
+	// prevent instability on slow machines
+	const int max_interval_c = 200;
+	if( time > max_interval_c )
+		time = max_interval_c;
 	real_loop_time = time;
 	real_time += time;
 	loop_time = (int)(time * time_ratio_c * time_rate);
