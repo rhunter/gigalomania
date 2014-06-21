@@ -168,6 +168,7 @@ Image *arrow_left = NULL;
 Image *arrow_right = NULL;
 Image *death_flashes[n_death_flashes_c];
 Image *blue_flashes[n_blue_flashes_c];
+Image *explosions[n_explosions_c];
 //Image *icon_mice[3];
 Image *icon_mice[2];
 Image *icon_speeds[3];
@@ -1370,6 +1371,9 @@ bool loadOldImages() {
 	blue_flashes[5] = icons->copy(305, 165, 15, 19);
 	blue_flashes[6] = icons->copy(305, 184, 15, 17);
 
+	for(int i=0;i<n_explosions_c;i++)
+		explosions[i] = NULL;
+
 	for(int i=0;i<n_players_c;i++) {
 		icon_towers[i] = icons->copy(160 + 16*i, 81, 6, 6);
 		icon_armies[i] = icons->copy(160 + 16*i, 87, 4, 4);
@@ -2001,6 +2005,18 @@ bool loadImages() {
 	icon_ergo = icons->copy(176, 112, 16, 16);
 	icon_trash = icons->copy(192, 112, 16, 16);
 
+	icons = Image::loadImage(gfx_dir + "explosions_test4.png");
+	if( icons == NULL )
+		return false;
+	drawProgress(42);
+	processImage(icons);
+	for(int i=0;i<n_explosions_c;i++) {
+		int x = (i % 10);
+		int y = i/10;
+		int w = 25,  h = 25;
+		explosions[i] = icons->copy(x*w, y*h, w, h);
+	}
+
 	icons = Image::loadImage(gfx_dir + "icons64.png");
 	if( icons == NULL )
 		return false;
@@ -2219,8 +2235,7 @@ bool loadImages() {
 			attackers_ammo[i][ATTACKER_AMMO_DOWN] = gfx_ammo->copy(48, 16*i, 16, 16);
 		}
 		// bombs
-		//attackers_ammo[6][ATTACKER_AMMO_BOMB] = armies->copy(304, 208, 16, 16);
-		attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 16, 16); // different size
+		attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 10, 16); // different size
 
 		delete gfx_def_image;
 		delete gfx_planes;
@@ -3075,10 +3090,12 @@ void setGameStateID(GameStateID state) {
 				start_sector->mineElement(human_player, (Id)i);
 			}
 		}
-		Design *design = start_sector->canResearch(Invention::WEAPON, 8);
-		if( design != NULL ) {
-			static_cast<PlayingGameState *>(gamestate)->setCurrentDesign(map_x, map_y, design);
-			start_sector->invent(human_player);
+		for(int i=0;i<n_epochs_c;i++) {
+			Design *design = start_sector->canResearch(Invention::WEAPON, i);
+			if( design != NULL ) {
+				static_cast<PlayingGameState *>(gamestate)->setCurrentDesign(map_x, map_y, design);
+				start_sector->invent(human_player);
+			}
 		}
 	}*/
 }

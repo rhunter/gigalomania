@@ -76,9 +76,9 @@ TimedEffect::TimedEffect(int delay, void (*func_finish)()) {
 }
 
 const int ammo_time_c = 1000;
-const float ammo_speed_c = 1.5; // higher is slower
+const float ammo_speed_c = 1.5f; // higher is faster
 
-AmmoEffect::AmmoEffect(int epoch, AmmoDirection dir, int xpos, int ypos) {
+AmmoEffect::AmmoEffect(PlayingGameState *gamestate,int epoch, AmmoDirection dir, int xpos, int ypos) : TimedEffect(), gamestate(gamestate) {
 	ASSERT_EPOCH(epoch);
 	this->gametimeset = getGameTime();
 	this->epoch = epoch;
@@ -97,9 +97,6 @@ bool AmmoEffect::render() const {
 	int dist = (int)(gametime * ammo_speed_c);
 	if( dir == ATTACKER_AMMO_BOMB )
 		dist /= 2;
-	if( dir == ATTACKER_AMMO_BOMB && dist > 24 ) {
-		return true;
-	}
 	if( dir == ATTACKER_AMMO_DOWN )
 		y += dist;
 	else if( dir == ATTACKER_AMMO_UP )
@@ -113,11 +110,19 @@ bool AmmoEffect::render() const {
 	else {
 		ASSERT(0);
 	}
+	Image *image = attackers_ammo[epoch][dir];
+	if( dir == ATTACKER_AMMO_BOMB && dist > 24 ) {
+		if( explosions[0] != NULL ) {
+			int w = image->getScaledWidth();
+			int w2 = explosions[0]->getScaledWidth();
+			gamestate->explosionEffect(offset_land_x_c + x + (w-w2)/2, offset_land_y_c + y);
+		}
+		return true;
+	}
 	if( x < 0 || y < 0 )
 		return true;
 	x += offset_land_x_c;
 	y += offset_land_y_c;
-	Image *image = attackers_ammo[epoch][dir];
 	if( x + image->getScaledWidth() >= screen->getWidth() || y + image->getScaledHeight() >= screen->getHeight() )
 		return true;
 	image->draw(x, y);
@@ -1674,7 +1679,7 @@ void PlayingGameState::update() {
 					int fire_random = rand() % RAND_MAX;
 					if( fire_random <= fire_prob ) {
 						// fire!
-						AmmoEffect *ammoeffect = new AmmoEffect( soldier->epoch, ATTACKER_AMMO_BOMB, soldier->xpos + 4, soldier->ypos + 8 );
+						AmmoEffect *ammoeffect = new AmmoEffect( this, soldier->epoch, ATTACKER_AMMO_BOMB, soldier->xpos + 4, soldier->ypos + 8 );
 						//this->ammo_effects->add(ammoeffect);
 						this->ammo_effects.push_back(ammoeffect);
 					}
@@ -1742,7 +1747,7 @@ void PlayingGameState::update() {
 					if( fire_random <= fire_prob ) {
 						// fire!
 						Image *image = attackers_walking[soldier->player][soldier->epoch][soldier->dir][0];
-						AmmoEffect *ammoeffect = new AmmoEffect( soldier->epoch, soldier->dir, soldier->xpos + image->getScaledWidth()/2, soldier->ypos );
+						AmmoEffect *ammoeffect = new AmmoEffect( this, soldier->epoch, soldier->dir, soldier->xpos + image->getScaledWidth()/2, soldier->ypos );
 						//this->ammo_effects->add(ammoeffect);
 						this->ammo_effects.push_back(ammoeffect);
 					}
@@ -2477,17 +2482,11 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 						ypos = rand() % land_height_c;
 						found_loc = validSoldierLocation(j, xpos, ypos);
 					}
-					//soldiers[i][ n_soldiers[i] ] = new Soldier(i, j, xpos, ypos);
 					Soldier *soldier = new Soldier(i, j, xpos, ypos);
-					//soldiers[i]->add( soldier );
 					soldiers[i].push_back( soldier );
 					if( flash && !isAirUnit( soldier->epoch ) ) {
 						blueEffect(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
-						//blueEffect(offset_land_x_c + soldiers[i][n_soldiers[i]]->xpos, offset_land_y_c + soldiers[i][n_soldiers[i]]->ypos, true);
 					}
-					/*n_soldiers[i]++;
-					ASSERT(soldiers[i]->size() == n_soldiers[i]);*/
-					//ASSERT(n_soldiers[i] <= max_soldiers_in_sector_c);
 				}
 			}
 			else if( diff < 0 ) {
@@ -2533,14 +2532,19 @@ n_soldiers[i] = 0;
 
 void PlayingGameState::deathEffect(int xpos,int ypos) {
 	AnimationEffect *animationeffect = new AnimationEffect(xpos, ypos, death_flashes, n_death_flashes_c, 100, true);
-	//this->effects->add(animationeffect);
 	this->effects.push_back(animationeffect);
 }
 
 void PlayingGameState::blueEffect(int xpos,int ypos,bool dir) {
 	AnimationEffect *animationeffect = new AnimationEffect(xpos, ypos, blue_flashes, n_blue_flashes_c, 50, dir);
-	//this->effects->add(animationeffect);
 	this->effects.push_back(animationeffect);
+}
+
+void PlayingGameState::explosionEffect(int xpos,int ypos) {
+	if( explosions[0] != NULL ) { // not available with "old" graphics
+		AnimationEffect *animationeffect = new AnimationEffect(xpos, ypos, explosions, n_explosions_c, 50, true);
+		this->effects.push_back(animationeffect);
+	}
 }
 
 void PlayingGameState::refreshButtons() {

@@ -18,6 +18,7 @@ namespace Gigalomania {
 
 using namespace Gigalomania;
 
+class PlayingGameState;
 class ChooseGameTypePanel;
 class ChooseDifficultyPanel;
 class ChooseMenPanel;
@@ -111,12 +112,13 @@ public:
 };
 
 class AmmoEffect : public TimedEffect {
+	PlayingGameState *gamestate;
 	int gametimeset;
 	int epoch;
 	AmmoDirection dir;
 	int xpos, ypos;
 public:
-	AmmoEffect(int epoch, AmmoDirection dir, int xpos, int ypos);
+	AmmoEffect(PlayingGameState *gamestate, int epoch, AmmoDirection dir, int xpos, int ypos);
 	virtual bool render() const;
 };
 
@@ -370,6 +372,7 @@ public:
 	void addBuilding(Building *building);
 	void refreshSoldiers(bool flash);
 	void deathEffect(int xpos,int ypos);
+	void explosionEffect(int xpos,int ypos);
 	void addEffect(TimedEffect *effect) {
 		this->effects.push_back(effect);
 	}

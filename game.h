@@ -105,6 +105,7 @@ const int n_nuke_frames_c = 2;
 const int n_saucer_frames_c = 4;
 const int n_death_flashes_c = 3;
 const int n_blue_flashes_c = 7;
+const int n_explosions_c = 59;
 const int n_coast_c = 15;
 const int n_map_sq_c = 16;
 
@@ -194,6 +195,7 @@ extern Image *arrow_left;
 extern Image *arrow_right;
 extern Image *death_flashes[];
 extern Image *blue_flashes[];
+extern Image *explosions[];
 extern Image *icon_mice[];
 extern Image *icon_speeds[];
 extern Image *smoke_image;
