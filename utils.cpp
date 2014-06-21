@@ -35,7 +35,7 @@
 //const int DEBUGLEVEL = 4;
 
 const int ticks_per_frame_c = 100; // game time ticks per frame rate (used for various animated sprites)
-const float time_ratio_c = 0.15f; // game time ticks per time ticks [correct]
+const float time_ratio_c = 0.15f; // game time ticks per time ticks
 int time_rate = 1; // time factor
 
 int frame_counter = 0;
@@ -78,14 +78,24 @@ int getLoopTime() {
 current_time = time;
 }*/
 
+float accumulated_time = 0;
+
 void updateTime(int time) {
 	// prevent instability on slow machines
 	const int max_interval_c = 200;
 	if( time > max_interval_c )
 		time = max_interval_c;
+
 	real_loop_time = time;
 	real_time += time;
-	loop_time = (int)(time * time_ratio_c * time_rate);
+
+	// Ideally we'd have always had time_rate being an integer, and have all usages of loop_time cope with that, but this would now be a significant change.
+	// So we add this fix so that we don't have inaccuracy due to rounding. To test this code, disable wait() in Application::runMainLoop(), which means
+	// we'll test this function with very small values of time.
+	loop_time = (int)(time * time_ratio_c * time_rate + accumulated_time);
+	accumulated_time = (time * time_ratio_c * time_rate + accumulated_time) - loop_time;
+	//LOG("time %d loop time %d accumulated %f\n", time, loop_time, accumulated_time);
+
 	game_time += loop_time;
 	frame_counter = getRealTime() / ticks_per_frame_c;
 }
