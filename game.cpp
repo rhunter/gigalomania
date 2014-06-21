@@ -3441,6 +3441,8 @@ void savePrefs() {
 }
 
 void runTests() {
+	// disabled for Android for now, due to needing exceptions
+#if !defined(__ANDROID__)
 	is_testing = true;
 
 	human_player = rand() % 4;
@@ -3811,6 +3813,7 @@ void runTests() {
 	if( human_player != 2 ) {
 		throw string("didn't set human_player from saved game");
 	}
+#endif
 }
 
 void playGame(int n_args, char *args[]) {
