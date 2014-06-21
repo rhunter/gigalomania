@@ -321,7 +321,10 @@ void Application::runMainLoop() {
 		/* wait() to avoid 100% CPU - it's debatable whether we should do this,
 		 * due to risk of SDL_Delay waiting too long, but since Gigalomania
 		 * doesn't really need high frame rate, might as well avoid using full
-		 * CPU.
+		 * CPU. Also good for battery-life on mobile platforms.
+		 * This also has the side-effect of meaning we don't call updateGame()
+		 * with too small timestep - we have a minimum step of at least
+		 * TICK_INTERVAL.
 		 */
 		wait();
 
