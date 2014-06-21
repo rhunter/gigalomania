@@ -804,6 +804,7 @@ void Sector::destroyBuilding(Type building_type,int client_player) {
 
 void Sector::destroyBuilding(Type building_type,bool silent,int client_player) {
 	LOG("Sector::destroyBuilding(%d) [%d: %d, %d]\n", building_type, player, xpos, ypos);
+	ASSERT( buildings[(int)building_type] != NULL );
 	if( this == gamestate->getCurrentSector() && !silent ) {
 		playSample(s_buildingdestroyed, SOUND_CHANNEL_FX);
 	}
@@ -902,7 +903,7 @@ bool Sector::canShutdown() const {
 	return false;
 }
 
-void Sector::shutdown() {
+void Sector::shutdown(int client_player) {
 	LOG("Sector::shutdown [%d: %d, %d]\n", player, xpos, ypos);
 	ASSERT_PLAYER( this->player );
 	ASSERT( this->player != -1 );
@@ -916,8 +917,8 @@ void Sector::shutdown() {
 					this->returnDefender(this->buildings[i], j);
 			}
 		}
-		if( i != BUILDING_TOWER )
-			this->destroyBuilding((Type)i, true);
+		if( i != BUILDING_TOWER && this->buildings[i] != NULL )
+			this->destroyBuilding((Type)i, true, client_player);
 	}
 
 	this->is_shutdown = true;
@@ -1544,8 +1545,6 @@ void Sector::doCombat(int client_player) {
 #endif
 							if( building->getHealth() <= 0 ) {
 								// destroy building
-								/*delete building;
-								this->buildings[i] = NULL;*/
 								destroyBuilding((Type)i, client_player);
 							}
 							else if( this->player == client_player && building->getHealth() == 10 && building->getType() == BUILDING_TOWER ) {

@@ -363,7 +363,7 @@ public:
 	void createTower(int player,int population);
 	void destroyTower(bool nuked, int client_player);
 	bool canShutdown() const;
-	void shutdown();
+	void shutdown(int client_player);
 	bool isShutdown() const {
 		return this->is_shutdown;
 	}

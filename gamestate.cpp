@@ -2836,7 +2836,7 @@ void PlayingGameState::shutdown(int sector_x, int sector_y) {
 	Sector *sector = map->getSector(sector_x, sector_y);
 	ASSERT(sector != NULL);
 	if( sector->getActivePlayer() == client_player ) {
-		sector->shutdown();
+		sector->shutdown(client_player);
 	}
 }
 

@@ -3818,6 +3818,23 @@ void runTests() {
 				throw string("didn't expect to nuke sector again");
 			}
 		}
+		else if( start_epoch == 9 && selected_island == 0 ) {
+			// test shutting down the sector
+			Sector *start_sector = map->getSector(sx, sy);
+			if( start_sector->canShutdown() ) {
+				throw string("shouldn't be able to shutdown the sector yet");
+			}
+			if( !playingGameState->assembleArmyUnarmed(sx, sy, 1) ) {
+				throw string("can't assemble unarmed");
+			}
+			if( !playingGameState->moveAssembledArmyTo(sx, sy, sx, sy) ) {
+				throw string("can't move assembled army");
+			}
+			if( !start_sector->canShutdown() ) {
+				throw string("can't shutdown the sector");
+			}
+			playingGameState->shutdown(sx, sy);
+		}
 
 		endIsland();
 		updateGame(); // needed to dispose the gamestate
