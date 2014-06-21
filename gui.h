@@ -62,6 +62,7 @@ class ChooseMenPanel : public MultiPanel {
 	CycleButton *button_sound;
 	CycleButton *button_music;
 	CycleButton *button_onemousebutton;
+	CycleButton *button_disallow_nukes;
 	Button *button_nextisland;
 	Button *button_nextepoch;
 	Button *button_options;

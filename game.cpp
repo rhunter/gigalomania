@@ -279,9 +279,10 @@ GameState *gamestate = NULL;
 
 const bool default_pref_sound_on_c = true;
 const bool default_pref_music_on_c = true;
+const bool default_pref_disallow_nukes_c = false;
 bool pref_sound_on = default_pref_sound_on_c;
 bool pref_music_on = default_pref_music_on_c;
-
+bool pref_disallow_nukes = default_pref_disallow_nukes_c;
 
 Sample *music = NULL;
 
@@ -3365,6 +3366,7 @@ const char prefs_filename[] = "prefs";
 const char onemousebutton_key[] = "onemousebutton";
 const char sound_on_key[] = "sound_on";
 const char music_on_key[] = "music_on";
+const char disallow_nukes_key[] = "disallow_nukes";
 
 void loadPrefs() {
 	char *prefs_fullfilename = getApplicationFilename(prefs_filename);
@@ -3373,6 +3375,7 @@ void loadPrefs() {
 		// reset
 		pref_sound_on = false;
 		pref_music_on = false;
+		pref_disallow_nukes = false;
 		onemousebutton = false;
 
 		const int MAX_LINE = 4096;
@@ -3404,6 +3407,10 @@ void loadPrefs() {
 					LOG("enable pref_music_on from prefs\n");
 					pref_music_on = true;
 				}
+				else if( strncmp(line, disallow_nukes_key, strlen(disallow_nukes_key)) == 0 ) {
+					LOG("enable pref_disallow_nukes from prefs\n");
+					pref_disallow_nukes = true;
+				}
 			}
 		}
 		prefs_file->close(prefs_file);
@@ -3433,6 +3440,10 @@ void savePrefs() {
 		}
 		if( pref_music_on ) {
 			prefs_file->write(prefs_file, music_on_key, sizeof(char), strlen(music_on_key));
+			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
+		}
+		if( pref_disallow_nukes ) {
+			prefs_file->write(prefs_file, disallow_nukes_key, sizeof(char), strlen(disallow_nukes_key));
 			prefs_file->write(prefs_file, "\n", sizeof(char), 1);
 		}
 		prefs_file->close(prefs_file);
@@ -3753,7 +3764,14 @@ void runTests() {
 					start_sector->mineElement(human_player, (Id)i);
 				}
 			}
+			// first test with disallow nukes pref
+			pref_disallow_nukes = true;
 			Design *design = start_sector->canResearch(Invention::WEAPON, 8);
+			if( design != NULL ) {
+				throw string("didn't expect to design nuke when disallow nukes is on");
+			}
+			pref_disallow_nukes = false;
+			design = start_sector->canResearch(Invention::WEAPON, 8);
 			if( design == NULL ) {
 				throw string("can't design nuke");
 			}
@@ -3860,6 +3878,9 @@ void playGame(int n_args, char *args[]) {
 
 	initLogFile();
 
+	//bool run_tests = true;
+	bool run_tests = false;
+
         /*if( access("data", 0)==0 ) {
 	use_amigadata = true;
 	}
@@ -3873,7 +3894,9 @@ void playGame(int n_args, char *args[]) {
 	LOG("onemousebutton?: %d\n", onemousebutton);
 	LOG("mobile_ui?: %d\n", mobile_ui);
 
-	loadPrefs();
+	if( !run_tests ) {
+		loadPrefs();
+	}
 
 	for(int i=0;i<n_epochs_c;i++)
 		for(int j=0;j<max_islands_per_epoch_c;j++)
@@ -3977,9 +4000,6 @@ void playGame(int n_args, char *args[]) {
 	screen->setTitle(buffer);
 
     LOG("all done!\n");
-
-	//bool run_tests = true;
-	bool run_tests = false;
 
 	if( run_tests ) {
 		runTests();

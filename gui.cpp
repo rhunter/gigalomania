@@ -199,20 +199,20 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
 	this->button_cancel = new Button((int)(mx - 10.5*fw), 210, "CHOOSE ANOTHER ISLAND", letters_large);
     this->addToPanel(STATE_CHOOSEMEN, button_cancel);
 
-    cy = start_y;
+    cy = start_y - 52;
     step_y = 26;
     this->button_continue = new Button((int)(mx - 4.0*fw), cy, "CONTINUE", letters_large);
     cy += step_y;
     this->addToPanel(STATE_OPTIONS, button_continue);
 
     const char *sound_texts[] = { "SOUND ON", "SOUND OFF" };
-    this->button_sound = new CycleButton((int)(mx - 4.5*fw), cy, sound_texts, 2, letters_large);
+    this->button_sound = new CycleButton((int)(mx - 4.25*fw), cy, sound_texts, 2, letters_large);
     cy += step_y;
     this->button_sound->setActive( pref_sound_on ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_sound);
 
     const char *music_texts[] = { "MUSIC ON", "MUSIC OFF" };
-    this->button_music = new CycleButton((int)(mx - 4.5*fw), cy, music_texts, 2, letters_large);
+    this->button_music = new CycleButton((int)(mx - 4.25*fw), cy, music_texts, 2, letters_large);
     cy += step_y;
     this->button_music->setActive( pref_music_on ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_music);
@@ -226,6 +226,12 @@ ChooseMenPanel::ChooseMenPanel(PlaceMenGameState *gamestate) : MultiPanel(N_STAT
     this->button_onemousebutton->setActive( onemousebutton ? 0 : 1 );
 	this->addToPanel(STATE_OPTIONS, button_onemousebutton);
 #endif
+
+    const char *disallow_nukes_texts[] = { "DISALLOW NUKES", "ALLOW NUKES" };
+    this->button_disallow_nukes = new CycleButton((int)(mx - 6.25*fw), cy, disallow_nukes_texts, 2, letters_large);
+    cy += step_y;
+    this->button_disallow_nukes->setActive( pref_disallow_nukes ? 0 : 1 );
+	this->addToPanel(STATE_OPTIONS, button_disallow_nukes);
 
 	this->button_new = NULL;
 	this->button_load = NULL;
@@ -488,6 +494,9 @@ void ChooseMenPanel::input(int m_x,int m_y,bool m_left,bool m_middle,bool m_righ
 			}
 			if( button_onemousebutton != NULL ) {
 				onemousebutton = button_onemousebutton->getActive() == 0;
+			}
+			if( button_disallow_nukes != NULL ) {
+				pref_disallow_nukes = button_disallow_nukes->getActive() == 0;
 			}
 			savePrefs();
 

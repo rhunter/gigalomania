@@ -1157,6 +1157,9 @@ Design *Sector::bestDesign(Invention::Type type,int epoch) const {
 		//Design *design = (Design *)invention->designs->elementAt(i);
 		Design *design = invention->getDesign(i);
 		bool ok = true;
+		if( pref_disallow_nukes && ( type == Invention::DEFENCE || type == Invention::WEAPON ) && epoch == nuclear_epoch_c ) {
+			ok = false;
+		}
 		for(int j=0;j<N_ID && ok;j++) {
 			if( design->getCost((Id)j) > this->elementstocks[j] ) {
 				// not enough elements
