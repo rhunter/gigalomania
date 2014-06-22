@@ -3619,6 +3619,38 @@ void runTests() {
 			if( start_sector->bestDesign(Invention::WEAPON, 0) != NULL ) {
 				throw string("shouldn't be able to build a rock weapon yet");
 			}
+			// test time with and without sleep for mining:
+			for(int type=0;type<2;type++) {
+				int time_s = application->getTicks();
+				int elapsed_time = time_s;
+				int i_mined = 0, i_mined_fraction = 0;
+				start_sector->getElementStocks(&i_mined, &i_mined_fraction, ROCK);
+				int i_total = i_mined*element_multiplier_c + i_mined_fraction;
+				const int n_steps_c = 3;
+				for(;;) {
+					if( type == 0 ) {
+						application->wait();
+					}
+					int new_time = application->getTicks();
+					updateTime(new_time - elapsed_time);
+					elapsed_time = new_time;
+					updateGame();
+					int mined = 0, mined_fraction = 0;
+					start_sector->getElementStocks(&mined, &mined_fraction, ROCK);
+					int total = mined*element_multiplier_c + mined_fraction;
+					if( total >= i_total + n_steps_c ) {
+						break;
+					}
+				}
+				int time = application->getTicks() - time_s;
+				int expected_time = (int)(( mine_rate_c * gameticks_per_hour_c * n_steps_c ) / ( 2 * element_multiplier_c * n_gatherable_rate_c * time_ratio_c ));
+				int allowed_error = 100;
+				if( abs(time - expected_time) > allowed_error ) {
+					LOG("halfday took %d , expected %d\n", time, expected_time);
+					throw string("unexpected time for designing, without sleep");
+				}
+			}
+			// now mine the rest
 			while( start_sector->anyElements(ROCK) ) {
 				start_sector->mineElement(human_player, ROCK);
 			}
@@ -3631,7 +3663,7 @@ void runTests() {
 			}
 			playingGameState->setCurrentDesign(sx, sy, design);
 			playingGameState->setNDesigners(sx, sy, 1);
-			// test time with and without sleep:
+			// test time with and without sleep for designing:
 			for(int type=0;type<2;type++) {
 				int time_s = application->getTicks();
 				int elapsed_time = time_s;

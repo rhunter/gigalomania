@@ -20,17 +20,6 @@ using std::max;
 
 //---------------------------------------------------------------------------
 
-const int max_grow_population_c = 500;
-//const int max_population_c = 999;
-const int growth_rate_c = 100; // higher is slower
-//const int research_rate_c = 1000; // higher is slower
-//const int build_rate_c = 1000; // higher is slower
-const int mine_rate_c = 60; // higher is slower
-//const int combat_rate_c = 500; // higher is slower combat
-const int combat_rate_c = 50; // higher is slower combat
-const int bombard_rate_c = 5; // higher is slower damage
-const int max_gatherables_stored_c = 22;
-
 const int offset_fortress_x_c = 150;
 const int offset_fortress_y_c = 14;
 //const int offset_fortress_x_c = 100;
@@ -1655,9 +1644,7 @@ void Sector::doPlayer(int client_player) {
 		{
 			int n_gatherers = 0;
 			if( element->getType() == Element::GATHERABLE ) {
-				//n_gatherers = 80;
-				n_gatherers = 500;
-				//n_gatherers = this->getPopulation();
+				n_gatherers = n_gatherable_rate_c;
 			}
 			else
 				n_gatherers = this->getMiners((Id)i);

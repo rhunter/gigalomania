@@ -21,6 +21,15 @@ using std::string;
 
 #include "common.h"
 
+const int element_multiplier_c = 2;
+const int n_gatherable_rate_c = 500;
+const int max_grow_population_c = 500;
+const int growth_rate_c = 100; // higher is slower
+const int mine_rate_c = 60; // higher is slower
+const int combat_rate_c = 50; // higher is slower combat
+const int bombard_rate_c = 5; // higher is slower damage
+const int max_gatherables_stored_c = 22;
+
 bool isAirUnit(int epoch);
 bool defenceNeedsMan(int epoch);
 
@@ -113,8 +122,6 @@ public:
 	static int getIndividualStrength(int i);
 	static int getIndividualBombardStrength(int i);
 };
-
-const int element_multiplier_c = 2;
 
 class Element {
 	string name;
