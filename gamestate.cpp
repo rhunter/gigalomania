@@ -21,7 +21,7 @@ using std::stringstream;
 //---------------------------------------------------------------------------
 
 const int defenders_frames_per_update_c = (int)(2.0 * ticks_per_frame_c * time_ratio_c); // consider a turn every this number of frames
-const int soldier_move_rate_c = (int)(0.6 * ticks_per_frame_c * time_ratio_c); // ticks per pixel
+const int soldier_move_rate_c = (int)(1.2 * ticks_per_frame_c * time_ratio_c); // ticks per pixel
 const int air_move_rate_c = (int)(0.2 * ticks_per_frame_c * time_ratio_c); // ticks per pixel
 const int soldier_turn_rate_c = (int)(20.0 * ticks_per_frame_c * time_ratio_c); // mean ticks per turn
 
@@ -61,7 +61,7 @@ int Soldier::sort_soldier_pair(const void *v1,const void *v2) {
 
 void Feature::draw() const {
 	const int ticks_per_frame_c = 110; // tree animation looks better if offset from main animation, and if slightly slower
-	int counter = getRealTime() / ticks_per_frame_c;
+	int counter = ( getRealTime() * time_rate ) / ticks_per_frame_c;
 	image[counter % n_frames]->draw(xpos, ypos);
 }
 
@@ -1331,10 +1331,6 @@ void PlayingGameState::draw() {
 	// trees etc (not at front)
 	for(int i=0;i<current_sector->getNFeatures();i++) {
 		const Feature *feature = current_sector->getFeature(i);
-		/*const int tree_ticks_per_frame_c = 110; // tree animation looks better if offset from main animation, and if slightly slower
-		int tree_counter = getRealTime() / tree_ticks_per_frame_c;
-		const Image *image = current_sector->isTreesNuked() ? icon_trees[2][0] : feature->getImage(tree_counter);
-		image->draw(feature->getX(), feature->getY(), true);*/
 		if( !feature->isAtFront() ) {
 			feature->draw();
 		}

@@ -97,7 +97,7 @@ void updateTime(int time) {
 	//LOG("time %d loop time %d accumulated %f\n", time, loop_time, accumulated_time);
 
 	game_time += loop_time;
-	frame_counter = getRealTime() / ticks_per_frame_c;
+	frame_counter = (getRealTime() * time_rate) / ticks_per_frame_c;
 }
 
 int mouseTime = -1;
