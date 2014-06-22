@@ -3626,7 +3626,7 @@ void runTests() {
 				int i_mined = 0, i_mined_fraction = 0;
 				start_sector->getElementStocks(&i_mined, &i_mined_fraction, ROCK);
 				int i_total = i_mined*element_multiplier_c + i_mined_fraction;
-				const int n_steps_c = 3;
+				const int n_steps_c = 22; // must not be greater than element_multiplier_c*max_gatherables_stored_c/2
 				for(;;) {
 					if( type == 0 ) {
 						application->wait();
@@ -3643,10 +3643,10 @@ void runTests() {
 					}
 				}
 				int time = application->getTicks() - time_s;
-				int expected_time = (int)(( mine_rate_c * gameticks_per_hour_c * n_steps_c ) / ( 2 * element_multiplier_c * n_gatherable_rate_c * time_ratio_c ));
-				int allowed_error = 100;
+				int expected_time = (int)(( mine_rate_c * gameticks_per_hour_c * n_steps_c ) / ( element_multiplier_c * n_gatherable_rate_c * time_ratio_c ));
+				int allowed_error = 20;
 				if( abs(time - expected_time) > allowed_error ) {
-					LOG("halfday took %d , expected %d\n", time, expected_time);
+					LOG("mining took %d , expected %d\n", time, expected_time);
 					throw string("unexpected time for designing, without sleep");
 				}
 			}

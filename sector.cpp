@@ -1648,7 +1648,7 @@ void Sector::doPlayer(int client_player) {
 			}
 			else
 				n_gatherers = this->getMiners((Id)i);
-			this->partial_elementstocks[i] += 2 * element_multiplier_c * n_gatherers * looptime;
+			this->partial_elementstocks[i] += element_multiplier_c * n_gatherers * looptime;
 			while( this->partial_elementstocks[i] > mine_rate_c * gameticks_per_hour_c ) {
 				new_stocks = true;
 				this->partial_elementstocks[i] -= mine_rate_c * gameticks_per_hour_c;
