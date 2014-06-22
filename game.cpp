@@ -2250,7 +2250,8 @@ bool loadImages() {
 		}
 
 		attackers_ammo[7][ATTACKER_AMMO_BOMB] = attackers_ammo[6][ATTACKER_AMMO_BOMB];
-		attackers_ammo[9][ATTACKER_AMMO_BOMB] = attackers_ammo[6][ATTACKER_AMMO_BOMB];
+		attackers_ammo[9][ATTACKER_AMMO_BOMB] = Image::createRadial((int)(scale_width * 16), (int)(scale_height * 16), 1.0f, 0, 255, 255);
+		processImage(attackers_ammo[9][ATTACKER_AMMO_BOMB]);
 
         for(int i=0;i<=n_epochs_c;i++) {
             if( i == 6 || i == 7 || i == 8 || i == 9 )

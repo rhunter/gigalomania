@@ -103,6 +103,7 @@ namespace Gigalomania {
 		};
 		static Image * createNoise(int w,int h,float scale_u,float scale_v,const unsigned char filter_max[3],const unsigned char filter_min[3],NOISEMODE_t noisemode,int n_iterations);
 		static Image * createRadial(int w,int h,float alpha_scale);
+		static Image * createRadial(int w,int h,float alpha_scale, Uint8 r, Uint8 g, Uint8 b);
 
 		enum Justify {
 			JUSTIFY_LEFT = 0,

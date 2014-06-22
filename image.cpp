@@ -1340,6 +1340,10 @@ Image *Image::createNoise(int w,int h,float scale_u,float scale_v,const unsigned
 }
 
 Image * Image::createRadial(int w,int h,float alpha_scale) {
+	return createRadial(w, h, alpha_scale, 255, 255, 255);
+}
+
+Image * Image::createRadial(int w,int h,float alpha_scale, Uint8 r, Uint8 g, Uint8 b) {
 	Image *image = Image::createBlankImage(w, h, 32);
 	SDL_LockSurface(image->surface);
 	int radius = min(w/2, h/2);
@@ -1354,9 +1358,6 @@ Image * Image::createRadial(int w,int h,float alpha_scale) {
 			dist = 1.0f - dist;
 			dist *= alpha_scale;
 			unsigned char v = (int)(255.0f * dist);
-			Uint8 r = 255;
-			Uint8 g = 255;
-			Uint8 b = 255;
 			Uint8 a = v;
 			Uint32 pixel = SDL_MapRGBA(image->surface->format, r, g, b, a);
 			putpixel(image->surface, x, y, pixel);
