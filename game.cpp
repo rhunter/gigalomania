@@ -3506,6 +3506,11 @@ void runTests() {
 			sy = 2;
 			placeMenGameState->getChooseMenPanel()->setNMen(15);
 		}
+		else if( start_epoch == 0 && selected_island == 1 ) {
+			sx = 1;
+			sy = 2;
+			placeMenGameState->getChooseMenPanel()->setNMen(15);
+		}
 		else if( start_epoch == 4 && selected_island == 1 ) {
 			sx = 3;
 			sy = 4;
@@ -3607,6 +3612,55 @@ void runTests() {
 			}
 			else if( start_sector->getStoredArmy()->getSoldiers(0) >= n_rocks ) {
 				throw string("no rock weapons were lost from retreating to tower");
+			}
+		}
+		else if( start_epoch == 0 && selected_island == 1 ) {
+			Sector *start_sector = map->getSector(sx, sy);
+			if( start_sector->bestDesign(Invention::WEAPON, 0) != NULL ) {
+				throw string("shouldn't be able to build a rock weapon yet");
+			}
+			while( start_sector->anyElements(ROCK) ) {
+				start_sector->mineElement(human_player, ROCK);
+			}
+			Design *design = start_sector->canResearch(Invention::WEAPON, 0);
+			if( design == NULL ) {
+				throw string("can't design rock weapon");
+			}
+			else if( !design->isErgonomicallyTerrific() ) {
+				throw string("rock weapon isn't ergonomically terrific");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design);
+			playingGameState->setNDesigners(sx, sy, 1);
+			// test time with and without sleep:
+			for(int type=0;type<2;type++) {
+				int time_s = application->getTicks();
+				int elapsed_time = time_s;
+				int i_halfdays = 0, i_hours = 0;
+				start_sector->inventionTimeLeft(&i_halfdays, &i_hours);
+				int i_total = i_halfdays*12 + i_hours;
+				const int n_steps_c = 3;
+				for(;;) {
+					if( type == 0 ) {
+						application->wait();
+					}
+					int new_time = application->getTicks();
+					updateTime(new_time - elapsed_time);
+					elapsed_time = new_time;
+					updateGame();
+					int halfdays = 0, hours = 0;
+					start_sector->inventionTimeLeft(&halfdays, &hours);
+					int total = halfdays*12 + hours;
+					if( total <= i_total - n_steps_c ) {
+						break;
+					}
+				}
+				int time = application->getTicks() - time_s;
+				int expected_time = (int)(( gameticks_per_hour_c * n_steps_c ) / time_ratio_c);
+				int allowed_error = 100;
+				if( abs(time - expected_time) > allowed_error ) {
+					LOG("halfday took %d , expected %d\n", time, expected_time);
+					throw string("unexpected time for designing, without sleep");
+				}
 			}
 		}
 		else if( start_epoch == 4 && selected_island == 1 ) {

@@ -286,7 +286,7 @@ void Application::delay(int time) {
 const int TICK_INTERVAL = 16; // 62.5 fps max
 static int next_time = 0;
 
-void wait() {
+void Application::wait() {
 	int now = application->getTicks();
 	int res = 0;
 	if(next_time > now)

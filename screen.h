@@ -75,6 +75,7 @@ public:
 
 	int getTicks() const;
 	void delay(int time);
+	void wait();
 	void runMainLoop();
 	void setQuit() {
 		quit = true;
