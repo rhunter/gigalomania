@@ -385,7 +385,6 @@ void launchUrl(string url);
 const int SHORT_DELAY = 4000;
 const int nuke_delay_c = 250;
 
-//const int gameticks_per_hour_c = 1000;
 const int gameticks_per_hour_c = 200;
 const int hours_per_day_c = 12;
 
