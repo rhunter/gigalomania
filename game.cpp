@@ -2235,7 +2235,8 @@ bool loadImages() {
 			attackers_ammo[i][ATTACKER_AMMO_DOWN] = gfx_ammo->copy(48, 16*i, 16, 16);
 		}
 		// bombs
-		attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 8, 16);
+		attackers_ammo[6][ATTACKER_AMMO_BOMB] = gfx_ammo->copy(0, 96, 8, 16);
+
 		delete gfx_def_image;
 		delete gfx_planes;
 		delete gfx_ammo;
