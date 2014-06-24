@@ -478,22 +478,32 @@ void ChoosePlayerGameState::reset() {
 	this->screen_page->free(true);
 
 	const int xpos = 64;
-	int ypos = 64;
+	int ypos = 48;
 	const int ydiff = 48;
+	const int xindent = 8;
+	const int ysmalldiff = 10;
 
-	button_red = new Button(xpos, ypos, "CONTROLLER OF THE RED PEOPLE", letters_large);
+	button_red = new Button(xpos, ypos, 3*ysmalldiff, "CONTROLLER OF THE RED PEOPLE", letters_large);
+	screen_page->add(new Button(xpos+xindent, ypos+ysmalldiff, "SPECIAL SKILL STRENGTH", letters_small));
+	screen_page->add(new Button(xpos+xindent, ypos+2*ysmalldiff, "UNARMED MEN ARE STRONGER IN COMBAT", letters_small));
 	ypos += ydiff;
 	screen_page->add(button_red);
 
-	button_yellow = new Button(xpos, ypos, "CONTROLLER OF THE YELLOW PEOPLE", letters_large);
+	button_yellow = new Button(xpos, ypos, 3*ysmalldiff, "CONTROLLER OF THE YELLOW PEOPLE", letters_large);
+	screen_page->add(new Button(xpos+xindent, ypos+ysmalldiff, "SPECIAL SKILL DIPLOMACY", letters_small));
+	screen_page->add(new Button(xpos+xindent, ypos+2*ysmalldiff, "EASIER TO FORM ALLIANCES", letters_small));
 	ypos += ydiff;
 	screen_page->add(button_yellow);
 
-	button_green = new Button(xpos, ypos, "CONTROLLER OF THE GREEN PEOPLE", letters_large);
+	button_green = new Button(xpos, ypos, 3*ysmalldiff, "CONTROLLER OF THE GREEN PEOPLE", letters_large);
+	screen_page->add(new Button(xpos+xindent, ypos+ysmalldiff, "SPECIAL SKILL CONSTRUCTION", letters_small));
+	screen_page->add(new Button(xpos+xindent, ypos+2*ysmalldiff, "FASTER AT BUILDING NEW TOWERS", letters_small));
 	ypos += ydiff;
 	screen_page->add(button_green);
 
-	button_blue = new Button(xpos, ypos, "CONTROLLER OF THE BLUE PEOPLE", letters_large);
+	button_blue = new Button(xpos, ypos, 3*ysmalldiff, "CONTROLLER OF THE BLUE PEOPLE", letters_large);
+	screen_page->add(new Button(xpos+xindent, ypos+ysmalldiff, "SPECIAL SKILL DEFENCE", letters_small));
+	screen_page->add(new Button(xpos+xindent, ypos+2*ysmalldiff, "BUILDINGS STRONGER AGAINST ATTACK", letters_small));
 	ypos += ydiff;
 	screen_page->add(button_blue);
 }
@@ -1806,26 +1816,8 @@ bool PlayingGameState::buildingMouseClick(int s_m_x,int s_m_y,bool m_left,bool m
 
 	if( !done && this->getGamePanel()->getMouseState() == GamePanel::MOUSESTATE_DEPLOY_SHIELD ) {
 		if( building->getHealth() < building->getMaxHealth() ) {
-			//bool ok = true;
 			int deploy_shield = this->getGamePanel()->getDeployShield();
 			ASSERT(deploy_shield != -1);
-			/*if( current_sector->stored_shields[deploy_shield] == 0 ) {
-			// not enough - try to make one
-			Design *design = current_sector->canBuildDesign(Invention::SHIELD, deploy_shield);
-			if( design == NULL )
-			ok = false; // can't make a new one
-			else {
-			current_sector->consumeStocks(design);
-			current_sector->stored_shields[deploy_shield]++;
-			}
-			}
-			if( ok ) {
-			building->health += 10 * ( deploy_shield + 1 );
-			if( building->health > building->max_health )
-			building->health = building->max_health;
-			current_sector->stored_shields[deploy_shield]--;
-			}*/
-			//current_sector->useShield(building, deploy_shield);
 			this->useShield(current_sector->getXPos(), current_sector->getYPos(), building->getType(), deploy_shield);
 		}
 	}

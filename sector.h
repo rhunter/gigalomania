@@ -119,7 +119,8 @@ public:
 	bool canLeaveSafely() const;
 	void retreat(bool only_air);
 
-	static int getIndividualStrength(int i);
+	int getIndividualStrength(int i) const;
+	static int getIndividualStrength(int player, int i);
 	static int getIndividualBombardStrength(int i);
 };
 
@@ -345,11 +346,11 @@ class Sector {
 	bool inventions_known[3][n_epochs_c];
 	vector<Design *> designs;
 
-	int getBuildingCost(Type type) const;
+	static int getBuildingCost(Type type, int building_player);
 	void destroyBuilding(Type building_type,int client_player);
 	void destroyBuilding(Type building_type,bool silent,int client_player);
 
-	int getDefenceStrength() const;
+	float getDefenceStrength() const;
 	void doCombat(int client_player);
 	void doPlayer(int client_player);
 

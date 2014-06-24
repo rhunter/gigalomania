@@ -346,13 +346,21 @@ this->image = image;
 }*/
 
 Button::Button(int x,int y,const char *text,Image *font[]) : PanelPage(x, y) {
-	//init_button();
-	/*strncpy(this->text, text, GUI_MAX_STRING);
-	this->text[GUI_MAX_STRING] = '\0';*/
 	this->text = text;
 	this->font = font;
 	this->w = font[0]->getScaledWidth() * this->text.length();
 	this->h = font[0]->getScaledHeight();
+	if( mobile_ui ) {
+		this->tolerance += 4;
+		this->h += 8; // useful for Android, where touches often seem to register lower than I seem to expect
+	}
+}
+
+Button::Button(int x,int y,int h,const char *text,Image *font[]) : PanelPage(x, y) {
+	this->text = text;
+	this->font = font;
+	this->w = font[0]->getScaledWidth() * this->text.length();
+	this->h = h;
 	if( mobile_ui ) {
 		this->tolerance += 4;
 		this->h += 8; // useful for Android, where touches often seem to register lower than I seem to expect

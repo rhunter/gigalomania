@@ -134,15 +134,12 @@ namespace Gigalomania {
 	};
 
 	class Button : public PanelPage {
-		//void init_button();
 		Image **font;
 		string text;
 	public:
 
-		/*Button(int x,int y,Image *image);
-		Button(int x,int y,Image *image,char *infoLMB);
-		Button(int x,int y,int w,int h,Image *image);*/
 		Button(int x,int y,const char *text,Image *font[]);
+		Button(int x,int y,int h,const char *text,Image *font[]);
 		virtual ~Button();
 
 		virtual const char *getClass() const { return "CLASS_BUTTON"; }

@@ -163,7 +163,8 @@ bool Player::requestAlliance(int player) {
 	int time = getGameTime();
 	if( last_asked == -1 || time >= last_asked + wait_time_c ) {
 		Player::setAllianceLastAsked(index, player, time);
-		if( rand() % 3 == 0 )
+		bool has_diplomatic_bonus = player == PlayerType::PLAYER_YELLOW;
+		if( has_diplomatic_bonus ? (rand() % 2 == 0)  : (rand() % 3 == 0) )
 		{
 			return true;
 		}

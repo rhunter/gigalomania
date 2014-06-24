@@ -272,15 +272,21 @@ void Army::retreat(bool only_air) {
 	}
 }
 
-int Army::getIndividualStrength(int i) {
-	/*if( i < start_epoch || i > n_epochs_c ) {
-	printf("");
-	}*/
+int Army::getIndividualStrength(int i) const {
+	return getIndividualStrength(this->player, i);
+}
+
+int Army::getIndividualStrength(int player, int i) {
 	ASSERT_S_EPOCH(i);
+	ASSERT_PLAYER(player);
 	int str = 0;
-	if( i == n_epochs_c && start_epoch != end_epoch_c )
-		//if( i == n_epochs_c )
-		str = 1;
+	if( i == n_epochs_c && start_epoch != end_epoch_c ) {
+		// unarmed
+		if( player == PlayerType::PLAYER_RED )
+			str = 2;
+		else
+			str = 1;
+	}
 	else if( i == nuclear_epoch_c )
 		str = 0;
 	else {
@@ -522,7 +528,7 @@ int Building::getDefenderStrength() const {
 	int n = 0;
 	for(int i=0;i<n_turrets;i++) {
 		if( turret_man[i] != -1 )
-			n += Army::getIndividualStrength( turret_man[i] );
+			n += Army::getIndividualStrength( sector->getPlayer(), turret_man[i] );
 	}
 	//n *= 2;
 	n *= 4;
@@ -1408,19 +1414,19 @@ int Sector::getStoredShields(int shield) const {
 	return this->stored_shields[shield];
 }
 
-int Sector::getDefenceStrength() const {
+float Sector::getDefenceStrength() const {
 	//LOG("Sector::getDefenceStrength() [%d: %d, %d]\n", player, xpos, ypos);
-	/*int str = 1;
-	for(int i=0;i<=this->epoch;i++)
-	str *= 2;*/
-	//int str = this->epoch + 1;
-	int str = 0;
+	ASSERT_PLAYER(player);
+	float str = 0.0f;
 	if( start_epoch == end_epoch_c ) {
-		str = 4;
+		str = 4.0f;
 	}
 	else {
 		//str = ( this->epoch - start_epoch ) + 1;
-		str = 1;
+		str = 1.0f;
+	}
+	if( this->player == PlayerType::PLAYER_BLUE ) {
+		str *= 1.25f;
 	}
 	return str;
 }
@@ -1510,8 +1516,7 @@ void Sector::doCombat(int client_player) {
 		}
 		if( bombard > 0 ) {
 			int bombard_rate = ( bombard_rate_c * gameticks_per_hour_c ) / bombard;
-			//bombard_rate *= ( this->epoch + 1 );
-			bombard_rate *= this->getDefenceStrength();
+			bombard_rate = (int)(bombard_rate * this->getDefenceStrength());
 			int prob = poisson(bombard_rate, looptime);
 			int random = rand() % RAND_MAX;
 			if( random <= prob ) {
@@ -1678,7 +1683,7 @@ void Sector::doPlayer(int client_player) {
 		this->built_lasttime += gameticks_per_hour_c;
 	}
 	for(int i=0;i<N_BUILDINGS;i++) {
-		int cost = this->getBuildingCost((Type)i);
+		int cost = getBuildingCost((Type)i, this->player);
 		if( this->built[i] > cost ) {
 			this->buildBuilding((Type)i);
 		}
@@ -1751,7 +1756,7 @@ void Sector::update(int client_player) {
 				this->built_lasttime += gameticks_per_hour_c;
 			}
 
-			int cost = this->getBuildingCost(BUILDING_TOWER);
+			int cost = getBuildingCost(BUILDING_TOWER, player_in_sector);
 			if( this->built_towers[player_in_sector] > cost ) {
 				/*if( ((PlayingGameState *)gamestate)->getSelectedArmy() == this->getArmy(player_in_sector) ) {
 					((PlayingGameState *)gamestate)->clearSelectedArmy();
@@ -1986,20 +1991,28 @@ int Sector::getManufactureCost() const {
 	return cost;
 }
 
-int Sector::getBuildingCost(Type type) const {
+int Sector::getBuildingCost(Type type, int building_player) {
 	//LOG("Sector::getBuildingcost(%d)\n",type);
-	if( type == BUILDING_TOWER )
-		return hours_per_day_c * BUILDTIME_TOWER;
+	int cost = 0;
+	if( type == BUILDING_TOWER ) {
+		cost = hours_per_day_c * BUILDTIME_TOWER;
+		if( building_player == PlayerType::PLAYER_GREEN ) {
+			cost = (int)(cost / 2.0f);
+		}
+	}
 	else if( type == BUILDING_MINE )
-		return hours_per_day_c * BUILDTIME_MINE;
+		cost = hours_per_day_c * BUILDTIME_MINE;
 	else if( type == BUILDING_FACTORY )
-		return hours_per_day_c * BUILDTIME_FACTORY;
+		cost = hours_per_day_c * BUILDTIME_FACTORY;
 	else if( type == BUILDING_LAB )
-		return hours_per_day_c * BUILDTIME_LAB;
+		cost = hours_per_day_c * BUILDTIME_LAB;
+	else {
+		// error
+		ASSERT(0);
+		cost = -1;
+	}
 
-	// error
-	ASSERT(0);
-	return -1;
+	return cost;
 }
 
 void Sector::setEpoch(int epoch) {
@@ -2170,7 +2183,7 @@ void Sector::getTotalElements(int *n,int *fraction,Id id) const {
 void Sector::buildingTowerTimeLeft(int player,int *halfdays,int *hours) const {
 	//LOG("Sector::buildingTowerTimeLeft(%d)\n",player);
 	ASSERT(player != -1);
-	int cost = this->getBuildingCost(BUILDING_TOWER) - this->built_towers[player];
+	int cost = getBuildingCost(BUILDING_TOWER, player) - this->built_towers[player];
 	int n_builders = this->getArmy(player)->getTotal();
 	ASSERT(n_builders != 0);
 	int time = cost / n_builders;
@@ -2181,7 +2194,7 @@ void Sector::buildingTowerTimeLeft(int player,int *halfdays,int *hours) const {
 void Sector::buildingTimeLeft(Type type,int *halfdays,int *hours) const {
 	//LOG("Sector::buildingTimeLeft(%d)\n",type);
 	ASSERT(type != BUILDING_TOWER);
-	int cost = this->getBuildingCost(type) - this->built[type];
+	int cost = getBuildingCost(type, this->player) - this->built[type];
 	int n_builders = this->getBuilders(type);
 	ASSERT(n_builders != 0);
 	int time = cost / n_builders;
