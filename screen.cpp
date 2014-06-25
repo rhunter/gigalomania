@@ -487,7 +487,7 @@ void Application::runMainLoop() {
 					}
 					else if( event.active.gain == 0 ) {
 						// inactive
-						keypressP(); // automatically pause when application goes inactive
+						togglePause(); // automatically pause when application goes inactive
 					}
 				}
 #endif
