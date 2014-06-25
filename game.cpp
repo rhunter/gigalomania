@@ -3957,23 +3957,25 @@ void runTests() {
 
 void playGame(int n_args, char *args[]) {
     LOG("playGame()\n");
-	bool fullscreen = false;
 #ifdef _DEBUG
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );  // TEST!
 	debugwindow = true;
 #endif
 	//debugwindow = true;
-	//fullscreen = true;
+	//fullscreen = false;
 
-#if defined(__ANDROID__)
-	fullscreen = true; // always fullscreen on Android
+	bool fullscreen = true;
+#if defined(__amigaos4__) || defined(AROS) || defined(__MORPHOS__)
+	fullscreen = false; // run in windowed mode due to reported performance problems in fullscreen mode on AmigaOS 4; also randomly hangs on AROS in fullscreen mode; also included MorphOS just to be safe
 #endif
 
 #if !defined(__ANDROID__)
-        // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
+    // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)
 	for(int i=0;i<n_args;i++) {
 		if( strcmp(args[i], "fullscreen") == 0 )
 			fullscreen = true;
+		else if( strcmp(args[i], "windowed") == 0 )
+			fullscreen = false;
 		else if( strcmp(args[i], "debugwindow") == 0 )
 			debugwindow = true;
 		else if( strcmp(args[i], "onemousebutton") == 0 )

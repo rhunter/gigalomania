@@ -25,9 +25,9 @@ copy %src%\gigalomania.ico %dst%
 REM Linux etc stuff:
 
 copy %src%\Makefile %dst%
-copy %src%\gigalomania_fullscreen.sh %dst%
+REM copy %src%\gigalomania_fullscreen.sh %dst%
 copy %src%\gigalomania.desktop %dst%
-copy %src%\gigalomania_fullscreen.desktop %dst%
+REM copy %src%\gigalomania_fullscreen.desktop %dst%
 copy %src%\gigalomania_maemo.desktop %dst%
 copy %src%\gigalomania_mobile.sh %dst%
 copy %src%\gigalomania64.png %dst%

@@ -26,14 +26,14 @@ install: $(APP)
 	cp -a islands/ $(DESTDIR)/opt/gigalomania
 	cp -a sound/ $(DESTDIR)/opt/gigalomania
 	cp gigalomania.desktop $(DESTDIR)/usr/share/applications/
-	cp gigalomania_fullscreen.desktop $(DESTDIR)/usr/share/applications/
+	#cp gigalomania_fullscreen.desktop $(DESTDIR)/usr/share/applications/
 	cp gigalomania64.png $(DESTDIR)/usr/share/pixmaps/
 # REMEMBER to update debian/dirs if the system directories that we use are changed!!!
 
 uninstall:
 	rm -rf $(DESTDIR)/opt/gigalomania # -f so we don't fail if folder doesn't exist
 	rm -f $(DESTDIR)/usr/share/applications/gigalomania.desktop
-	rm -f $(DESTDIR)/usr/share/applications/gigalomania_fullscreen.desktop
+	#rm -f $(DESTDIR)/usr/share/applications/gigalomania_fullscreen.desktop
 	rm -f $(DESTDIR)/usr/share/pixmaps/gigalomania64.png
 
 install_maemo: $(APP)

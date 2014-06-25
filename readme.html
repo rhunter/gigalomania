@@ -138,7 +138,6 @@ compile.</p></li>
 <p><b>Contents:</b>
 <ul>
 <li><a href="#requirements">Requirements</a></li>
-<li><a href="#windowedfullscreen">Choosing windowed or fullscreen mode</a></li>
 <li><a href="#quickstart">Quickstart</a></li>
 <li><a href="#controls">Controls</a></li>
 <li><a href="#gametypes">Game types</a></li>
@@ -146,6 +145,7 @@ compile.</p></li>
 <li><a href="#maingame">Main game</a></li>
 <li><a href="#armies">Armies</a></li>
 <li><a href="#suspendedanimation">Suspended animation</a></li>
+<li><a href="#windowedfullscreen">Choosing windowed or fullscreen mode</a></li>
 <li><a href="#credits">Credits etc</a></li>
 <li><a href="#contact">Contacting me (bugs etc)</a></li>
 <li><a href="#helpwanted">Help wanted!</a></li>
@@ -184,14 +184,6 @@ this has been tested on the Nokia N900. For Meego, this has been tested on the N
 <p>On PC platforms, Gigalomania also supports using the graphics from Mega Lo Mania (from the Amiga version - should be in hard disk format, e.g., Whdload version)
 if you have that game. The "data/" folder should be copied into the main gigalomania/ folder, and then rename the "gfx/" folder to something else (e.g., "xgfx/"). 
 It's up to you to legally obtain the game if you want this feature!</p>
-
-<p><a name="windowedfullscreen"><b>Choosing windowed or fullscreen mode</b></p>
-
-<p>On non-mobile platforms, Gigalomania runs in windowed mode. On Windows and Linux, you can run
-"Gigalomania Fullscreen" to run in fullscreen mode. You can also force fullscreen mode on any platform by running from the commandline with the option:
- fullscreen</p>  
-
-<p>Mobile platforms always run in fullscreen mode. AmigaOS 4 is currently limited to 640x480, due to reported performance problems.</p>
 
 <p><a name="quickstart"><b>Quickstart</b></p>
 
@@ -440,6 +432,17 @@ by deploying armies.</p>
 of your people in suspended animation, to "save" them. This has no real effect when playing in "Single Island" mode,
 but in "All Islands" mode, it contributes to your final score if you complete the game (finish all the islands).</p>
 
+<p><a name="windowedfullscreen"><b>Choosing windowed or fullscreen mode</b></p>
+
+<p>Gigalomania runs in fullscreen mode by default on most platforms, but you can in windowed mode by running from the command line with the argument
+"windowed". E.g., on Windows, run with:
+
+<p><pre>gigalomania.exe windowed</pre></p>
+
+<p>On Windows you can also doubleclick on gigalomania_windowed.bat to run in windowed mode.</p>
+
+<p>On platforms where Gigalomania runs in windowed mode by default, use the command line option "fullscreen" to force fullscreen mode.</p>
+
 <p><a name="credits"><b>Credits etc</b></p>
 
 <p><ul>
@@ -553,6 +556,8 @@ UPDATED Now using SDL 2 for Android instead of Qt: no longer requires Ministro
         app; now properly scales to fullscreen (and takes full advantage of
         devices with FullHD displays or higher); now supports using device's
         volume keys to change volume.
+UPDATED Now runs fullscreen by default on most platforms (use "windowed"
+        command line argument to run in windowed mode).
 UPDATED Improved graphics: unarmed man, caveman, bombs, and minor changes to
         some of the defenders.
 UPDATED Faster startup time.

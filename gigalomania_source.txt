@@ -17,15 +17,15 @@ To compile Gigalomania, open a terminal window in the Gigalomania folder, and ty
 
 This will produce the Gigalomania executable, which you can run with: ./gigalomania
 
-To run in fullscreen mode, run the script gigalomania_fullscreen.sh. If this doesn't run, you may need to make the file executable with:
+To run in windowed mode, run:
 
-chmod 755 gigalomania_fullscreen.sh
+./gigalomania windowed
 
 Linux installation:
 
 You can install Gigalomania by typing (still from the source directory): sudo make install
 
-This means that you can then run the game by typing gigalomania at a terminal (without being in the source directory). To run in full screen mode, type: gigalomania fullscreen
+This means that you can then run the game by typing gigalomania at a terminal (without being in the source directory).
 
 It will also (at least in GNOME) add shortcuts to the menu Applications/Games/.
 

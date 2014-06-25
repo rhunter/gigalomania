@@ -10,7 +10,7 @@ copy %src%\Release\gigalomania.exe %src%\gigalomania.exe
 copy %src%\gigalomania.exe %dst%\gigalomania.exe
 copy %src%\readme.html %dst%
 copy %src%\gigalomania_debugwindow.bat %dst%
-copy %src%\gigalomania_fullscreen.bat %dst%
+copy %src%\gigalomania_windowed.bat %dst%
 copy %src%\gpl.txt %dst%
 
 REM copy %src%\fmod.dll %dst%
