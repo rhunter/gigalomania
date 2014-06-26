@@ -3511,6 +3511,11 @@ void runTests() {
 			sy = 2;
 			placeMenGameState->getChooseMenPanel()->setNMen(15);
 		}
+		else if( start_epoch == 0 && selected_island == 2 ) {
+			sx = 1;
+			sy = 2;
+			placeMenGameState->getChooseMenPanel()->setNMen(15);
+		}
 		else if( start_epoch == 4 && selected_island == 1 ) {
 			sx = 3;
 			sy = 4;
@@ -3693,6 +3698,62 @@ void runTests() {
 					LOG("halfday took %d , expected %d\n", time, expected_time);
 					throw string("unexpected time for designing, without sleep");
 				}
+			}
+		}
+		else if( start_epoch == 0 && selected_island == 2 ) {
+			Sector *start_sector = map->getSector(sx, sy);
+			if( start_sector->bestDesign(Invention::DEFENCE, 0) != NULL ) {
+				throw string("shouldn't be able to build a stick weapon yet");
+			}
+			while( start_sector->anyElements(WOOD) ) {
+				start_sector->mineElement(human_player, WOOD);
+			}
+			Design *design_stick = start_sector->canResearch(Invention::DEFENCE, 0);
+			if( design_stick == NULL ) {
+				throw string("can't design stick weapon");
+			}
+			else if( design_stick->isErgonomicallyTerrific() ) {
+				throw string("stick weapon shouldn't be ergonomically terrific");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design_stick);
+			start_sector->invent(human_player);
+			if( start_sector->getEpoch() != start_epoch ) {
+				throw string("not on expected epoch");
+			}
+			if( !start_sector->canBuildDesign(design_stick) ) {
+				throw string("can't build stick weapon");
+			}
+			playingGameState->deployDefender(sx, sy, BUILDING_TOWER, 1, 0);
+			if( start_sector->getBuilding(BUILDING_TOWER)->getTurretMan(1) != 0 ) {
+				throw string("didn't deploy defender");
+			}
+
+			Design *design_shield = start_sector->canResearch(Invention::SHIELD, 1);
+			if( design_shield == NULL ) {
+				throw string("can't design shield");
+			}
+			else if( design_shield->isErgonomicallyTerrific() ) {
+				throw string("shield shouldn't be ergonomically terrific");
+			}
+			playingGameState->setCurrentDesign(sx, sy, design_shield);
+			start_sector->invent(human_player);
+			if( start_sector->getEpoch() != start_epoch+1 ) {
+				throw string("didn't advance a tech level");
+			}
+			if( !start_sector->canBuildDesign(design_shield) ) {
+				throw string("can't build shield");
+			}
+			int max_health = start_sector->getBuilding(BUILDING_TOWER)->getMaxHealth();
+			if( start_sector->getBuilding(BUILDING_TOWER)->getHealth() != max_health ) {
+				throw string("building not at max health");
+			}
+			start_sector->getBuilding(BUILDING_TOWER)->addHealth(-20);
+			if( start_sector->getBuilding(BUILDING_TOWER)->getHealth() != max_health-20 ) {
+				throw string("building not at reduced health");
+			}
+			playingGameState->useShield(sx, sy, BUILDING_TOWER, 1);
+			if( start_sector->getBuilding(BUILDING_TOWER)->getHealth() != max_health-10 ) {
+				throw string("shield didn't work as expected");
 			}
 		}
 		else if( start_epoch == 4 && selected_island == 1 ) {
@@ -3967,6 +4028,9 @@ void playGame(int n_args, char *args[]) {
 	bool fullscreen = true;
 #if defined(__amigaos4__) || defined(AROS) || defined(__MORPHOS__)
 	fullscreen = false; // run in windowed mode due to reported performance problems in fullscreen mode on AmigaOS 4; also randomly hangs on AROS in fullscreen mode; also included MorphOS just to be safe
+#endif
+#ifdef _DEBUG
+	fullscreen = false;
 #endif
 
 #if !defined(__ANDROID__)
