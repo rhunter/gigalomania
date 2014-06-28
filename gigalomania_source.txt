@@ -1,4 +1,4 @@
-This source has been tested with Visual C++ Express 2012 for Desktop under Windows 8, GCC under Linux (Ubuntu 12.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego.
+This source has been tested with Visual C++ Express 2012 for Desktop under Windows 8, GCC under Linux (Ubuntu 14.04 64 bit) and AROS x86 (Icaros 1.5), XCode under OS X, on a Nokia N900 for Maemo, and a Nokia N950 for Meego.
 
 Linux
 =====
