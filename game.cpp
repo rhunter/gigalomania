@@ -3516,6 +3516,11 @@ void runTests() {
 			sy = 2;
 			placeMenGameState->getChooseMenPanel()->setNMen(15);
 		}
+		else if( start_epoch == 1 && selected_island == 0 ) {
+			sx = 1;
+			sy = 2;
+			placeMenGameState->getChooseMenPanel()->setNMen(15);
+		}
 		else if( start_epoch == 4 && selected_island == 1 ) {
 			sx = 3;
 			sy = 4;
@@ -3754,6 +3759,61 @@ void runTests() {
 			playingGameState->useShield(sx, sy, BUILDING_TOWER, 1);
 			if( start_sector->getBuilding(BUILDING_TOWER)->getHealth() != max_health-10 ) {
 				throw string("shield didn't work as expected");
+			}
+		}
+		else if( start_epoch == 1 && selected_island == 0 ) {
+			int ex = -1, ey = -1;
+			for(int y=0;y<map_height_c && ex==-1;y++) {
+				for(int x=0;x<map_width_c && ex==-1;x++) {
+					Sector *sector = map->getSector(x, y);
+					if( sector != NULL ) {
+						if( sector->getPlayer() != -1 && sector->getPlayer() != human_player ) {
+							ex = x;
+							ey = y;
+						}
+					}
+				}
+			}
+			if( ex == -1 || ey == -1 ) {
+				throw string("couldn't find ai player");
+			}
+			Sector *sector = map->getSector(ex, ey);
+			players[sector->getPlayer()]->doAIUpdate(human_player, playingGameState);
+			if( sector->getCurrentDesign() != NULL ) {
+				throw string("ai shouldn't be able to design anything yet");
+			}
+			for(int i=0;i<N_ID;i++) {
+				while( sector->anyElements((Id)i) ) {
+					sector->mineElement(human_player, (Id)i);
+				}
+			}
+			players[sector->getPlayer()]->doAIUpdate(human_player, playingGameState);
+			if( sector->getCurrentDesign() == NULL ) {
+				throw string("ai didn't design anything");
+			}
+			// now invent everything
+			for(int i=0;i<3;i++) {
+				for(int j=0;j<n_epochs_c;j++) {
+					Design *design = sector->canResearch((Invention::Type)i, j);
+					if( design != NULL ) {
+						sector->setCurrentDesign(design);
+						sector->invent(human_player);
+					}
+				}
+			}
+			players[sector->getPlayer()]->doAIUpdate(human_player, playingGameState);
+			if( sector->canBuild(BUILDING_MINE) ) {
+				if( sector->getBuilders(BUILDING_MINE) <= 0 ) {
+					throw string("didn't start building mine");
+				}
+			}
+			if( sector->canBuild(BUILDING_FACTORY) ) {
+				if( sector->getBuilders(BUILDING_FACTORY) <= 0 ) {
+					throw string("didn't start building factory");
+				}
+			}
+			if( sector->canBuild(BUILDING_LAB) ) {
+				throw string("shouldn't be able to build a lab");
 			}
 		}
 		else if( start_epoch == 4 && selected_island == 1 ) {
