@@ -24,6 +24,7 @@ install: $(APP)
 	cp readme.html $(DESTDIR)/opt/gigalomania
 	cp -a gfx/ $(DESTDIR)/opt/gigalomania # -a need to copy permissions etc
 	cp -a islands/ $(DESTDIR)/opt/gigalomania
+	cp -a music/ $(DESTDIR)/opt/gigalomania
 	cp -a sound/ $(DESTDIR)/opt/gigalomania
 	cp gigalomania.desktop $(DESTDIR)/usr/share/applications/
 	#cp gigalomania_fullscreen.desktop $(DESTDIR)/usr/share/applications/
@@ -41,6 +42,7 @@ install_maemo: $(APP)
 	cp $(APP) $(DESTDIR)/opt/gigalomania
 	cp -a gfx/ $(DESTDIR)/opt/gigalomania # -a need to copy permissions etc
 	cp -a islands/ $(DESTDIR)/opt/gigalomania
+	cp -a music/ $(DESTDIR)/opt/gigalomania
 	cp -a sound/ $(DESTDIR)/opt/gigalomania
 	mkdir -p $(DESTDIR)/usr/share/applications/hildon/
 	cp gigalomania_maemo.desktop $(DESTDIR)/usr/share/applications/hildon/
@@ -61,6 +63,7 @@ install_meego: $(APP)
 	cp $(APP) $(DESTDIR)/opt/gigalomania
 	cp -a gfx/ $(DESTDIR)/opt/gigalomania # -a need to copy permissions etc
 	cp -a islands/ $(DESTDIR)/opt/gigalomania
+	cp -a music/ $(DESTDIR)/opt/gigalomania
 	cp -a sound/ $(DESTDIR)/opt/gigalomania
 	cp gigalomania_maemo.desktop $(DESTDIR)/usr/share/applications/
 	mkdir -p $(DESTDIR)/usr/share/icons/hicolor/48x48/apps/

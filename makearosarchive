@@ -17,6 +17,9 @@ copy islands/#? all ram:Gigalomania/islands
 makedir ram:Gigalomania/gfx
 copy gfx/#? all ram:Gigalomania/gfx
 
+makedir ram:Gigalomania/music
+copy music/#? all ram:Gigalomania/music
+
 makedir ram:Gigalomania/sound
 copy sound/#? all ram:Gigalomania/sound
 

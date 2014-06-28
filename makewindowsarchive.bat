@@ -41,7 +41,8 @@ copy %src%\islands\ %dst%\islands\
 mkdir %dst%\gfx
 copy %src%\gfx\ %dst%\gfx\
 
-copy %src%\gamemusic.ogg %dst%\
+mkdir %dst%\music
+copy %src%\music\ %dst%\music\
 
 mkdir %dst%\sound
 copy %src%\sound\ %dst%\sound\
