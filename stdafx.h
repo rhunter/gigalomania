@@ -16,7 +16,7 @@
 #if defined(__ANDROID__)
 #include <sdl.h>
 #elif defined(__linux)
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #elif defined(__MORPHOS__)
 #include <SDL/SDL.h>
 #else

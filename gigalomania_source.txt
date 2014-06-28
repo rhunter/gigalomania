@@ -3,15 +3,15 @@ This source has been tested with Visual C++ Express 2012 for Desktop under Windo
 Linux
 =====
 
-You need to install the following libraries: SDL ( http://www.libsdl.org/ ), SDL_Image ( http://www.libsdl.org/projects/SDL_image/ ), SDL_Mixer ( http://www.libsdl.org/projects/SDL_mixer/ ).
+You need to install the following libraries: SDL2 ( http://www.libsdl.org/ ), SDL2_Image ( http://www.libsdl.org/projects/SDL_image/ ), SDL2_Mixer ( http://www.libsdl.org/projects/SDL_mixer/ ).
 
-Note that Gigalomania supports compiling with both SDL 1.2, and SDL 2, though at the time of writing, SDL 2 does not appear to be well supporting in Linux repositories, so these instructions assume usage of SDL 1.2.
+Note that since v0.27, Gigalomania uses SDL 2 rather than SDL 1.2.
 
 On Ubuntu and Debian, you can install the required libraries with:
 
-sudo apt-get install libsdl1.2-dev
-sudo apt-get install libsdl-image1.2-dev
-sudo apt-get install libsdl-mixer1.2-dev
+sudo apt-get install libsdl2-dev
+sudo apt-get install libsdl2-image-dev
+sudo apt-get install libsdl2-mixer-dev
 
 To compile Gigalomania, open a terminal window in the Gigalomania folder, and type: make
 
@@ -32,6 +32,18 @@ It will also (at least in GNOME) add shortcuts to the menu Applications/Games/.
 Uninstallation can be done with: sudo make uninstall
 
 Packages can also be created using debuild.
+
+If SDL 2 isn't available on your distribution, you can also compile with SDL 1.2, though some changes are required:
+
+* The #include directories in stdafx.h, image.h, sound.h need to be changed from SDL2/ to SDL/ .
+
+* References to sdl2-config in the makefile should be changed to sdl-config, and should link to "-lSDL_image -lSDL_mixer" instead of "-lSDL2_image -lSDL2_mixer".
+
+On Ubuntu and Debian, you can install the required libraries for SDL 1.2 with:
+
+sudo apt-get install libsdl1.2-dev
+sudo apt-get install libsdl-image1.2-dev
+sudo apt-get install libsdl-mixer1.2-dev
 
 Windows
 =======
@@ -77,6 +89,8 @@ When running from the command line, you'll need to do:
 ./gigalomania fullscreen onemousebutton mobile_ui
 
 to get the correct options for mobile touchscreen devices. When installed and launched from the applications menu, this should happen automatically.
+
+If SDL2 isn't available, follow the instructions for compiling with SDL 1.2 on Linux, above.
 
 Meego
 =====
@@ -177,7 +191,7 @@ History
 
 Note, this history is only for changes related to the source code. See the Gigalomania readme or homepage for a full history.
 
-Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition. Also now using SDLmain.lib instead of SDL_main.c on Windows, and compiled with SDL 2. Android port now compiled using SDL 2 instead of Qt/necessitas. Symbian port now dropped.
+Version 0.27, Windows version now compiled with Visual C++ 2012 Express Edition. Also now using SDLmain.lib instead of SDL_main.c on Windows, and compiled with SDL 2. Linux version now compiles with SDL 2. Android port now compiled using SDL 2 instead of Qt/necessitas. Symbian port now dropped.
 
 Version 0.26 adds the MorphOS and AmigaOS 4 ports.
 

@@ -10,7 +10,7 @@ using std::string;
 #if defined(__ANDROID__)
 #include <SDL_image.h>
 #elif defined(__linux)
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL_image.h>
 #elif defined(__MORPHOS__)
 #include <SDL/SDL_image.h>
 #else

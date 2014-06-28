@@ -4,10 +4,10 @@ CFILES=game.cpp gamestate.cpp gui.cpp image.cpp main.cpp panel.cpp player.cpp re
 HFILES=game.h gamestate.h gui.h image.h panel.h player.h resources.h screen.h sector.h sound.h utils.h common.h stdafx.h
 OFILES=game.o gamestate.o gui.o image.o panel.o player.o resources.o screen.o sector.o sound.o utils.o main.o
 APP=gigalomania
-INC=`sdl-config --cflags`
-LINKPATH=`sdl-config --libs` -L/usr/X11R6/lib/ -L/usr/lib
+INC=`sdl2-config --cflags`
+LINKPATH=`sdl2-config --libs` -L/usr/X11R6/lib/ -L/usr/lib
 
-LIBS=-lSDL_image -lSDL_mixer
+LIBS=-lSDL2_image -lSDL2_mixer
 
 all: $(APP)
 

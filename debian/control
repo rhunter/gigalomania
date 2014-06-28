@@ -3,7 +3,7 @@ Section: games
 Priority: optional
 Maintainer: Mark Harman <mark.harman@ntlworld.com>
 Standards-Version: 3.8.3.0
-Build-Depends: debhelper (>=7), libsdl1.2-dev, libsdl-image1.2-dev, libsdl-mixer1.2-dev
+Build-Depends: debhelper (>=7), libsdl2-dev, libsdl2-image-dev, libsdl2-mixer-dev
 Homepage: http://homepage.ntlworld.com/mark.harman/comp_gigalomania.html
 
 Package: gigalomania
