@@ -12,15 +12,6 @@ namespace Gigalomania {
 
 using namespace Gigalomania;
 
-
-/*inline bool mouse_left(Uint32 m_b) {
-	return ( m_b & SDL_BUTTON(1) ) != 0;
-}
-
-inline bool mouse_right(Uint32 m_b) {
-	return ( m_b & SDL_BUTTON(3) ) != 0;
-}*/
-
 void registerClick();
 
 using std::vector;

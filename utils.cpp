@@ -40,16 +40,6 @@ int time_rate = 1; // time factor
 
 int frame_counter = 0;
 
-/*int timeLeft() {
-	//int now = SDL_GetTicks();
-	int now = clock();
-	int res = 0;
-	if(next_time > now)
-		res = next_time - now;
-	next_time = now + TICK_INTERVAL;
-	return res;
-}*/
-
 static int real_time = 0;
 static int real_loop_time = 0;
 static int game_time = 0;

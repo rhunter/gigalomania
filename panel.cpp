@@ -253,7 +253,6 @@ void PanelPage::drawPopups() {
 					popup_y += new_y - rect_y;
 					rect_y = new_y;
 				}
-				//SDL_FillRect(screen->getSurface(), &rect, col_outline);
 				rect_x++;
 				rect_y++;
 				rect_w -= 2;
