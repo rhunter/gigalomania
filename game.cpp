@@ -206,6 +206,7 @@ Sample *s_buildingdestroyed = NULL;
 Sample *s_guiclick = NULL;
 Sample *s_biplane = NULL;
 Sample *s_jetplane = NULL;
+Sample *s_spaceship = NULL;
 
 const unsigned char shadow_alpha_c = (unsigned char)160;
 
@@ -984,6 +985,7 @@ bool loadSamples() {
     s_guiclick = Sample::loadSample(sound_dir + "misc_menu_3.wav");
     s_biplane = Sample::loadSample(sound_dir + "biplane.ogg");
     s_jetplane = Sample::loadSample(sound_dir + "jetplane.ogg");
+    s_spaceship = Sample::loadSample(sound_dir + "spaceship.ogg");
 
 	bool ok = !errorSound();
 	return ok;
@@ -3261,11 +3263,18 @@ void togglePause() {
         if( paused ) {
             playSample(s_on_hold);
 
-			// n.b., pausing music absolutely important on Android, so music stops when game goes into background; but useful for other platforms too
+			// n.b., pausing music/looped-sounds absolutely important on Android, so music stops when game goes into background; but useful for other platforms too
+			// note also that we don't pause all sounds, as it would immediately pause the "putting you on hold" sample!
 			Sample::pauseMusic();
+			Sample::pauseChannel(SOUND_CHANNEL_BIPLANE);
+			Sample::pauseChannel(SOUND_CHANNEL_BOMBER);
+			Sample::pauseChannel(SOUND_CHANNEL_SPACESHIP);
         }
 		else {
 			Sample::unpauseMusic();
+			Sample::unpauseChannel(SOUND_CHANNEL_BIPLANE);
+			Sample::unpauseChannel(SOUND_CHANNEL_BOMBER);
+			Sample::unpauseChannel(SOUND_CHANNEL_SPACESHIP);
 		}
     }
 }

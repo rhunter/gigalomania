@@ -753,6 +753,7 @@ PlayingGameState::~PlayingGameState() {
 	LOG("~PlayingGameState()\n");
 	s_biplane->fadeOut(500);
 	s_jetplane->fadeOut(500);
+	s_spaceship->fadeOut(500);
 	for(size_t i=0;i<effects.size();i++) {
 		TimedEffect *effect = effects.at(i);
 		delete effect;
@@ -2476,10 +2477,13 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 					}
 				}
 				if( j == biplane_epoch_c ) {
-					playSample(s_biplane, SOUND_CHANNEL_PLANES, -1); // n.b., doesn't matter if this restarts the currently playing sample
+					playSample(s_biplane, SOUND_CHANNEL_BIPLANE, -1); // n.b., doesn't matter if this restarts the currently playing sample
 				}
 				else if( j == jetplane_epoch_c ) {
-					playSample(s_jetplane, SOUND_CHANNEL_PLANES+1, -1); // n.b., doesn't matter if this restarts the currently playing sample
+					playSample(s_jetplane, SOUND_CHANNEL_BOMBER, -1); // n.b., doesn't matter if this restarts the currently playing sample
+				}
+				else if( j == spaceship_epoch_c ) {
+					playSample(s_spaceship, SOUND_CHANNEL_SPACESHIP, -1); // n.b., doesn't matter if this restarts the currently playing sample
 				}
 			}
 			else if( diff < 0 ) {
@@ -2515,6 +2519,9 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 					}
 					else if( j == jetplane_epoch_c ) {
 						s_jetplane->fadeOut(500);
+					}
+					else if( j == spaceship_epoch_c ) {
+						s_spaceship->fadeOut(500);
 					}
 				}
 			}

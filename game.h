@@ -92,6 +92,7 @@ const int end_epoch_c = -1; // use this to have the last epoch as being 2100AD
 const int biplane_epoch_c = 6;
 const int jetplane_epoch_c = 7;
 const int nuclear_epoch_c = 8;
+const int spaceship_epoch_c = 9;
 const int laser_epoch_c = 9;
 const int n_shields_c = 4;
 const int n_playershields_c = 16;
@@ -231,6 +232,7 @@ extern Sample *s_buildingdestroyed;
 extern Sample *s_guiclick;
 extern Sample *s_biplane;
 extern Sample *s_jetplane;
+extern Sample *s_spaceship;
 
 extern const int epoch_dates[];
 extern const char *epoch_names[];

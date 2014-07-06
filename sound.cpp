@@ -160,6 +160,18 @@ void Sample::unpauseMusic() {
 	}
 }
 
+void Sample::pauseChannel(int ch) {
+	if( have_sound ) {
+		 Mix_Pause(ch);
+	}
+}
+
+void Sample::unpauseChannel(int ch) {
+	if( have_sound ) {
+		 Mix_Resume(ch);
+	}
+}
+
 void Sample::fadeOut(int duration_ms) {
 	if( have_sound ) {
 		if( is_music && music != NULL ) {
