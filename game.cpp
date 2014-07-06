@@ -888,12 +888,8 @@ void playMusic() {
 	}
 	else if( pref_music_on && gameStateID == GAMESTATEID_PLAYING ) {
 		music = Sample::loadMusic("music/gamemusic.ogg");
-		if( music == NULL ) {
-			LOG("Failed to load music\n");
-		}
-		else {
-			music->play(SOUND_CHANNEL_MUSIC, -1);
-		}
+		// n.b., a music structure is always created, even if we fail to load, so no need to check for NULL pointers here (though we do elsewhere, as music not created if pref_music_on is false)
+		music->play(SOUND_CHANNEL_MUSIC, -1);
 	}
 }
 
