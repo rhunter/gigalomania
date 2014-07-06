@@ -204,6 +204,8 @@ Sample *s_explosion = NULL;
 Sample *s_scream = NULL;
 Sample *s_buildingdestroyed = NULL;
 Sample *s_guiclick = NULL;
+Sample *s_biplane = NULL;
+Sample *s_jetplane = NULL;
 
 const unsigned char shadow_alpha_c = (unsigned char)160;
 
@@ -890,7 +892,7 @@ void playMusic() {
 			LOG("Failed to load music\n");
 		}
 		else {
-			music->play(SOUND_CHANNEL_MUSIC);
+			music->play(SOUND_CHANNEL_MUSIC, -1);
 		}
 	}
 }
@@ -984,6 +986,8 @@ bool loadSamples() {
     s_scream = Sample::loadSample(sound_dir + "pain1.wav");
 	s_buildingdestroyed = Sample::loadSample(sound_dir + "woodbrk.wav");
     s_guiclick = Sample::loadSample(sound_dir + "misc_menu_3.wav");
+    s_biplane = Sample::loadSample(sound_dir + "biplane.ogg");
+    s_jetplane = Sample::loadSample(sound_dir + "jetplane.ogg");
 
 	bool ok = !errorSound();
 	return ok;
@@ -4082,8 +4086,6 @@ void playGame(int n_args, char *args[]) {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );  // TEST!
 	debugwindow = true;
 #endif
-	//debugwindow = true;
-	//fullscreen = false;
 
 	bool fullscreen = true;
 #if defined(__amigaos4__) || defined(AROS) || defined(__MORPHOS__)
@@ -4092,6 +4094,8 @@ void playGame(int n_args, char *args[]) {
 #ifdef _DEBUG
 	fullscreen = false;
 #endif
+	//debugwindow = true;
+	//fullscreen = false;
 
 #if !defined(__ANDROID__)
     // n.b., crashes when run on Galaxy Nexus (even though fine in the emulator)

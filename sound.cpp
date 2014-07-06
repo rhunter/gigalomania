@@ -70,7 +70,7 @@ Sample *Sample::loadSample(const char *filename, bool iff) {
 		}
 	}
 
-	// we still create the structure even if no sample is loaded, as we also use for displaying the associated text
+	// we still create the structure even if no sample is loaded, as we also use for displaying the associated text; also means we don't have to check for NULL pointers every time we want to play a sample
 	Sample *sample = new Sample(false, NULL, chunk);
 	return sample;
 }
@@ -103,10 +103,10 @@ Sample *Sample::loadMusic(const char *filename) {
 	return sample;
 }
 
-void Sample::play(int ch) {
+void Sample::play(int ch, int loops) {
 	if( have_sound ) {
 		if( is_music && pref_music_on ) {
-			if( Mix_PlayMusic(music, -1) == -1 ) {
+			if( Mix_PlayMusic(music, loops) == -1 ) {
 			//if( Mix_FadeInMusic(music, -1, 2000) == -1 ) {
 				LOG("Mix_PlayMusic failed: %s\n", Mix_GetError());
 			}
@@ -125,9 +125,7 @@ void Sample::play(int ch) {
 					Mix_HaltChannel(channel);
 				}
 				if( !done ) {
-					const bool loop = false;
-					//channel = Mix_PlayChannel(-1, chunk, loop ? -1 : 0);
-					channel = Mix_PlayChannel(ch, chunk, loop ? -1 : 0);
+					channel = Mix_PlayChannel(ch, chunk, loops);
 					if( channel == -1 ) {
 						LOG("Failed to play sound: %s\n", Mix_GetError());
 					}
@@ -146,6 +144,17 @@ void Sample::play(int ch) {
 	}
 }
 
+/*bool Sample::isPlaying() const {
+	// also returns true if the channel is paused - this is about whether the sample has finished (or not yet started)
+	if( channel != -1 ) {
+		// still need to check in case sample ended
+		if( Mix_Playing(channel) != 0 ) {
+			return true;
+		}
+	}
+	return false;
+}*/
+
 void Sample::pauseMusic() {
 	if( have_sound ) {
 		 Mix_PauseMusic();
@@ -160,8 +169,11 @@ void Sample::unpauseMusic() {
 
 void Sample::fadeOut(int duration_ms) {
 	if( have_sound ) {
-		if( is_music ) {
+		if( is_music && music != NULL ) {
 			Mix_FadeOutMusic(duration_ms);
+		}
+		else if( channel != -1 ) {
+			Mix_FadeOutChannel(channel, duration_ms);
 		}
 	}
 }

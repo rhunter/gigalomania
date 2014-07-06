@@ -38,7 +38,8 @@ namespace Gigalomania {
 		}
 		virtual ~Sample();
 		virtual const char *getClass() const { return "CLASS_SAMPLE"; }
-		void play(int ch);
+		void play(int ch, int loops);
+		//bool isPlaying() const;
 		void fadeOut(int duration_ms);
 		void setVolume(float volume);
 		void setText(const char *text) {
@@ -60,9 +61,10 @@ using namespace Gigalomania;
 const int SOUND_CHANNEL_SAMPLES = 0;
 const int SOUND_CHANNEL_MUSIC   = 1;
 const int SOUND_CHANNEL_FX      = 2;
+const int SOUND_CHANNEL_PLANES  = 3;
 
-inline void playSample(Sample *sample, int channel = SOUND_CHANNEL_SAMPLES) {
-	sample->play(channel);
+inline void playSample(Sample *sample, int channel = SOUND_CHANNEL_SAMPLES, int loops = 0) {
+	sample->play(channel, loops);
 }
 
 bool isPlaying(int ch);

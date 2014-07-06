@@ -751,6 +751,8 @@ PlayingGameState::PlayingGameState(int client_player) : GameState(client_player)
 
 PlayingGameState::~PlayingGameState() {
 	LOG("~PlayingGameState()\n");
+	s_biplane->fadeOut(500);
+	s_jetplane->fadeOut(500);
 	for(size_t i=0;i<effects.size();i++) {
 		TimedEffect *effect = effects.at(i);
 		delete effect;
@@ -2450,9 +2452,6 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 		int n_soldiers_type[n_epochs_c+1];
 		for(int j=0;j<=n_epochs_c;j++)
 			n_soldiers_type[j] = 0;
-		/*for(j=0;j<n_soldiers[i];j++)
-		n_soldiers_type[ soldiers[i][j]->epoch ]++;*/
-		//for(j=0;j<n_soldiers[i];j++) {
 		for(size_t j=0;j<soldiers[i].size();j++) {
 			Soldier *soldier = soldiers[i].at(j);
 			n_soldiers_type[ soldier->epoch ]++;
@@ -2476,10 +2475,15 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 						blueEffect(offset_land_x_c + soldier->xpos, offset_land_y_c + soldier->ypos, true);
 					}
 				}
+				if( j == biplane_epoch_c ) {
+					playSample(s_biplane, SOUND_CHANNEL_PLANES, -1); // n.b., doesn't matter if this restarts the currently playing sample
+				}
+				else if( j == jetplane_epoch_c ) {
+					playSample(s_jetplane, SOUND_CHANNEL_PLANES+1, -1); // n.b., doesn't matter if this restarts the currently playing sample
+				}
 			}
 			else if( diff < 0 ) {
 				// remove some
-				//for(int k=0;k<n_soldiers[i];) {
 				for(size_t k=0;k<soldiers[i].size();) {
 					Soldier *soldier = soldiers[i].at(k);
 					if( soldier->epoch == j ) {
@@ -2504,6 +2508,14 @@ void PlayingGameState::refreshSoldiers(bool flash) {
 					}
 					else
 						k++;
+				}
+				if( army->getSoldiers(j) == 0 ) {
+					if( j == biplane_epoch_c ) {
+						s_biplane->fadeOut(500);
+					}
+					else if( j == jetplane_epoch_c ) {
+						s_jetplane->fadeOut(500);
+					}
 				}
 			}
 		}
