@@ -79,13 +79,6 @@ Sample *Sample::loadSample(string filename, bool iff) {
 	return loadSample(filename.c_str(), iff);
 }
 
-Sample *Sample::loadSamplesChained(const char *filename1,const char *filename2,const char *filename3) {
-	// TODO:
-	error_occurred = true;
-	Sample *sample = new Sample(false, NULL, NULL);
-	return sample;
-}
-
 Sample *Sample::loadMusic(const char *filename) {
 	LOG("loadMusic %s\n", filename);
 	Mix_Music *music = NULL;
