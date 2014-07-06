@@ -98,7 +98,7 @@ Sample *Sample::loadMusic(const char *filename) {
 			error_occurred = true;
 		}
 	}
-	// we still create the structure even if no sample is loaded, as we also use for displaying the associated text
+	// we still create the structure even if no sample is loaded, as means we don't have to check for NULL pointers every time we want to play a sample
 	Sample *sample = new Sample(true, music, NULL);
 	return sample;
 }
